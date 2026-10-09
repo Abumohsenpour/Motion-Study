@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دفاع پروپوزال · اگزواسکلتون پشتیبان پیش‌بند سربی</title>
+<meta name="description" content="ارائه تعاملی دفاع از پروپوزال کارشناسی ارشد ارگونومی: طراحی اگزواسکلتون غیرفعال پشتیبان پیش‌بند سربی برای جراحی درون‌عروقی">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230B7471'/%3E%3Cpath d='M3.5 12 7.75 7.5 12 12 7.75 16.5zM12 12l4.25-4.5L20.5 12l-4.25 4.5z' fill='none' stroke='%23F0A202' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<!-- فونت‌ها: اگر B Nazanin روی سیستم نصب باشد همان استفاده می‌شود؛ در غیر این صورت Noto Naskh Arabic از گوگل و در نهایت Tahoma -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   ۱. تم و متغیرها — برای تغییر رنگ، فونت و انحنا فقط این بخش را عوض کنید
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --teal-900:#063B3B; --teal-700:#0A5F5E; --teal-600:#0B7471; --teal-500:#0F8F8A;
+  --teal-400:#3FAAA4; --teal-300:#7CC9C3; --teal-200:#B5E1DD; --teal-100:#D9F0EE; --teal-50:#EEF8F7;
+  --amber-800:#7A4700; --amber-700:#9A5B00; --amber-600:#C27A00; --amber-500:#F0A202;
+  --amber-300:#F8CF6A; --amber-200:#FBE09A; --amber-100:#FDEFC8; --amber-50:#FFF8E6;
+  --ink:#0F2526; --ink-2:#33494A; --muted:#5E7374; --line:#D6E3E2; --line-2:#E7EFEE;
+  --bg:#E3ECEB; --paper:#FBFDFC; --surface:#FFFFFF; --danger:#B42318;
+  /* رنگ فازهای الماس دوگانه: الماس نخست فیروزه‌ای، الماس دوم کهربایی */
+  --ph1:var(--teal-500); --ph1-soft:var(--teal-50);
+  --ph2:var(--teal-700); --ph2-soft:var(--teal-100);
+  --ph3:var(--amber-500); --ph3-soft:var(--amber-50);
+  --ph4:var(--amber-700); --ph4-soft:var(--amber-100);
+  --ph0:#6B8384; --ph0-soft:#EEF2F2;
+  --ph5:var(--amber-600); --ph5-soft:var(--amber-100);
+  --radius:22px; --radius-sm:14px;
+  --shadow:0 1px 2px rgba(6,59,59,.06),0 10px 28px -8px rgba(6,59,59,.14);
+  --shadow-lg:0 2px 6px rgba(6,59,59,.08),0 28px 56px -12px rgba(6,59,59,.24);
+  --font-head:"Vazirmatn","B Nazanin","BNazanin",Tahoma,sans-serif;
+  --font-body:"B Nazanin","BNazanin","Nazanin","Noto Naskh Arabic",Tahoma,serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --dur:480ms;
+}
+
+/* ═══ ۲. پایه ═══ */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:radial-gradient(120% 90% at 85% 10%,#EEF5F4 0,var(--bg) 60%);
+  color:var(--ink);font-family:var(--font-body);font-size:26px;line-height:1.75;
+  overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+button{font:inherit;color:inherit}
+h1,h2,h3,p,ul,ol,figure,blockquote{margin:0}
+ul,ol{padding:0;list-style:none}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ico{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.125em}
+.ltr{direction:ltr;text-align:right;unicode-bidi:isolate}
+
+/* ═══ ۳. صحنه ۱۶:۹ با مقیاس‌دهی خودکار (۱۶۰۰×۹۰۰) ═══ */
+#viewport{position:fixed;inset:0;overflow:hidden}
+#stage{
+  position:absolute;left:50%;top:50%;width:1600px;height:900px;
+  transform:translate(-50%,-50%) scale(var(--scale,1));transform-origin:center center;
+  background:var(--paper);box-shadow:var(--shadow-lg);overflow:hidden;
+}
+
+/* ═══ ۴. اسلاید و پس‌زمینه ساختاری ═══ */
+.slide{
+  position:absolute;inset:0;display:none;flex-direction:column;
+  padding:56px 96px 0;background:var(--paper);overflow:hidden;isolation:isolate;
+}
+.slide.active{display:flex}
+.slide::before{ /* شبکه نقطه‌ای ظریف شبیه کاغذ نقشه‌کشی */
+  content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(11,116,113,.13) 1.1px,transparent 1.6px);
+  background-size:30px 30px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 80% at 8% 92%,#000 0,transparent 70%);
+          mask-image:radial-gradient(ellipse 70% 80% at 8% 92%,#000 0,transparent 70%);
+}
+.slide::after{
+  content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:radial-gradient(60% 55% at 100% 0,rgba(15,143,138,.07),transparent 70%);
+}
+.decor{position:absolute;z-index:-1;pointer-events:none;color:var(--teal-600);opacity:.11}
+.decor-a{left:-30px;bottom:56px;width:520px}
+.decor-b{left:26px;top:30px;height:820px;width:auto}
+.decor-c{left:0;top:0;width:440px}
+.decor .pf{fill:var(--paper)}
+
+.slide-head{display:flex;flex-direction:column;align-items:flex-start;gap:12px;flex:none}
+.kicker{
+  display:inline-flex;align-items:center;gap:10px;padding:7px 18px 7px 14px;border-radius:999px;
+  background:var(--teal-50);border:1px solid var(--teal-100);color:var(--teal-700);
+  font:600 19px/1.5 var(--font-head);
+}
+.kicker .ico{font-size:22px;color:var(--teal-600)}
+.kicker-num{color:var(--amber-700);font-weight:800}
+.kicker-sep{opacity:.45}
+.kicker-count{color:var(--muted);font-weight:500}
+.h-title{font:800 48px/1.4 var(--font-head);color:var(--ink);letter-spacing:0}
+.slide-body{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:26px;padding:20px 0 26px}
+.slide-foot{
+  position:relative;flex:none;height:62px;display:flex;align-items:center;justify-content:space-between;gap:24px;
+  border-top:1px solid var(--line-2);color:var(--muted);font:500 17px/1.4 var(--font-head);
+}
+.foot-dots{display:flex;gap:7px;align-items:center}
+.foot-dots i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block;transition:background .3s,transform .3s}
+.foot-dots i.past{background:var(--teal-300)}
+.foot-dots i.on{background:var(--amber-500);transform:scale(1.35)}
+.foot-num{font-variant-numeric:tabular-nums;color:var(--ink-2);font-weight:700}
+
+/* انیمیشن ورود عناصر (کوتاه و نرم) */
+@keyframes rv{from{opacity:0;transform:translate(var(--dx,0px),16px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,162,2,.55)}100%{box-shadow:0 0 0 22px rgba(240,162,2,0)}}
+.slide.active .rv{animation:rv var(--dur) var(--ease) backwards;animation-delay:calc(var(--i,0) * 55ms + 40ms)}
+.slide.no-reveal .rv,.slide.no-reveal .g-bar{animation:none!important}
+
+/* ═══ ۵. متن‌های عمومی ═══ */
+.lead{font-size:28px;color:var(--ink-2);max-width:1250px}
+.box-title{font:700 24px/1.5 var(--font-head);color:var(--teal-700);display:flex;align-items:center;gap:10px}
+.sub-label{font:700 20px/1.5 var(--font-head);color:var(--muted)}
+.footnote,.lead-note,.chip-note{display:flex;align-items:center;gap:12px;font-size:22px;color:var(--ink-2)}
+.footnote .ico,.lead-note .ico,.chip-note .ico{font-size:26px;color:var(--teal-600)}
+.chip-note{align-self:flex-start;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:999px;padding:8px 22px}
+.phase-chip{display:inline-flex;align-items:center;border-radius:999px;padding:2px 14px;font:700 17px/1.6 var(--font-head)}
+
+/* رنگ‌دهی فازها */
+.ph0{--pc:var(--ph0);--ps:var(--ph0-soft)} .ph1{--pc:var(--ph1);--ps:var(--ph1-soft)}
+.ph2{--pc:var(--ph2);--ps:var(--ph2-soft)} .ph3{--pc:var(--ph3);--ps:var(--ph3-soft)}
+.ph4{--pc:var(--ph4);--ps:var(--ph4-soft)} .ph5{--pc:var(--ph5);--ps:var(--ph5-soft)}
+
+/* ═══ ۶. جلد ═══ */
+.slide-cover{padding:0 96px}
+.cover-grid{flex:1;display:grid;grid-template-columns:1fr 420px;gap:40px;align-items:center}
+.cover-text{display:flex;flex-direction:column;align-items:flex-start;gap:20px}
+.cover-org{display:flex;align-items:center;gap:12px;font:600 20px/1.5 var(--font-head);color:var(--muted)}
+.cover-org .ico{font-size:26px;color:var(--teal-600)}
+.dot-sep{width:5px;height:5px;border-radius:50%;background:var(--amber-500)}
+.cover-kicker{background:var(--amber-50);border:1px solid var(--amber-200);color:var(--amber-800);border-radius:999px;padding:6px 20px;font:700 19px/1.5 var(--font-head)}
+.cover-title{display:flex;flex-direction:column;gap:2px;font:800 48px/1.42 var(--font-head);color:var(--ink)}
+.cover-title .tl2{color:var(--teal-600)}
+.cover-title .tl3{font-size:34px;color:var(--ink-2);position:relative;align-self:flex-start;padding-bottom:4px;
+  background:linear-gradient(transparent 70%,var(--amber-200) 70%) no-repeat;}
+.cover-en{font:500 19px/1.55 "Vazirmatn",Tahoma,sans-serif;color:var(--muted);max-width:900px;direction:ltr;text-align:right;unicode-bidi:isolate}
+.people{display:grid;grid-template-columns:repeat(3,auto);gap:16px 44px;margin-top:6px;padding-top:20px;border-top:1px solid var(--line)}
+.p-role{font:500 17px/1.5 var(--font-head);color:var(--muted)}
+.p-name{font:700 25px/1.5 var(--font-head);color:var(--ink)}
+.kw{display:flex;flex-wrap:wrap;gap:8px}
+.kw-chip{font:500 16px/1.5 var(--font-head);color:var(--teal-700);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 14px}
+.cover-art{align-self:stretch;display:flex;align-items:center;justify-content:center}
+.hero{width:100%;height:auto;max-height:820px}
+.hero .hs-cons{stroke:var(--teal-600);stroke-opacity:.16;fill:none}
+.hero .hs-body{stroke:var(--teal-600);stroke-opacity:.38;fill:none;stroke-width:2}
+.hero .hs-spine rect{fill:var(--paper);stroke:var(--teal-600);stroke-width:2}
+.hero .hs-exo{stroke:var(--teal-700);fill:none;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.hero .hs-belt{fill:var(--paper);stroke:var(--teal-700);stroke-width:4}
+.hero .hs-joint circle{fill:var(--paper);stroke:var(--amber-600);stroke-width:3}
+.hero .hs-joint .core{fill:var(--amber-600);stroke:none}
+.hero .hs-apron{stroke:var(--amber-600);stroke-width:2;stroke-opacity:.8}
+.hero .stop-a{stop-color:var(--amber-500);stop-opacity:.30}
+.hero .stop-b{stop-color:var(--amber-500);stop-opacity:.06}
+.hero .hs-load{stroke:var(--amber-600);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hero .hs-path{stroke:var(--teal-600);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.hero .hs-dim{stroke:var(--teal-600);stroke-opacity:.5;stroke-width:1.5;fill:none}
+.hero .hs-head{fill:var(--paper);stroke:var(--teal-600);stroke-opacity:.6;stroke-width:2}
+.hero .hs-halo{fill:var(--teal-50)}
+.cover-hint{position:absolute;bottom:26px;left:96px;font:500 16px/1.5 var(--font-head);color:var(--muted);display:flex;align-items:center;gap:8px}
+.cover-hint kbd,.help kbd{font:600 14px/1 var(--font-head);border:1px solid var(--line);border-bottom-width:2px;border-radius:7px;padding:4px 8px;background:var(--surface);color:var(--ink-2)}
+
+/* ═══ ۷. منو و کاشی‌ها ═══ */
+.menu-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex:none}
+.menu-sub{font-size:23px;color:var(--muted);margin-top:2px}
+.menu-legend{display:flex;gap:12px;font:600 17px/1.5 var(--font-head)}
+.menu-legend>span,.tile-state>span{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 14px}
+.lg-next,.st-next{background:var(--amber-100);color:var(--amber-800)}
+.lg-done,.st-done{background:var(--teal-50);color:var(--teal-700)}
+.tiles{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:22px;padding:26px 0 24px}
+.tile{
+  position:relative;display:grid;grid-template-columns:62px 1fr;grid-template-rows:auto 1fr auto;column-gap:18px;
+  padding:20px 24px 16px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);
+  box-shadow:var(--shadow);cursor:pointer;outline:none;transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s;
+}
+.tile:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--teal-300)}
+.tile:focus-visible{border-color:var(--teal-500);box-shadow:0 0 0 4px var(--teal-100),var(--shadow-lg)}
+.tile-ico{grid-row:1/3;width:62px;height:62px;border-radius:18px;background:var(--teal-50);color:var(--teal-600);display:grid;place-items:center;font-size:32px;transition:background .3s,color .3s}
+.tile-num{position:absolute;top:16px;left:22px;font:800 18px/1 var(--font-head);color:var(--line)}
+.tile-title{font:800 30px/1.35 var(--font-head);color:var(--ink);align-self:end}
+.tile-sub{font-size:20px;line-height:1.55;color:var(--muted);align-self:start}
+.tile-meta{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line);font:500 16px/1.5 var(--font-head);color:var(--muted)}
+.tile-state{display:flex;gap:6px;font:600 15px/1.4 var(--font-head)}
+.tile-state>span{display:none}
+.tile.is-done .st-done{display:inline-flex}
+.tile.is-next .st-next{display:inline-flex}
+.tile.is-next .st-done{display:none}
+.tile.is-next{border-color:var(--amber-300)}
+.tile.is-next .tile-ico{background:var(--amber-100);color:var(--amber-700)}
+.tile.is-done .tile-ico{background:var(--teal-100)}
+.tile.pulse{animation:pulse .9s var(--ease)}
+
+/* لایه زوم (کاشی ← تمام صفحه) */
+#zoom-layer{position:fixed;z-index:60;pointer-events:none;background:var(--paper);overflow:hidden;will-change:clip-path,opacity}
+#zoom-layer .zf{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(16px * var(--sc,1));will-change:transform,opacity}
+#zoom-layer .zf-ico{width:calc(132px * var(--sc,1));height:calc(132px * var(--sc,1));padding:calc(30px * var(--sc,1));border-radius:calc(36px * var(--sc,1));background:var(--teal-50);color:var(--teal-600);stroke-width:1.5}
+#zoom-layer .zf-num{font:800 calc(26px * var(--sc,1))/1 var(--font-head);color:var(--amber-700)}
+#zoom-layer .zf-title{font:800 calc(72px * var(--sc,1))/1.3 var(--font-head);color:var(--ink)}
+
+/* ═══ ۸. چیدمان‌ها ═══ */
+/* کارت‌های عددی */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.stat{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.stat::before{content:"";position:absolute;inset-inline:0;top:0;height:5px;background:var(--teal-500)}
+.stat.hl::before{background:var(--amber-500)}
+.stat-pre{font:600 18px/1.4 var(--font-head);color:var(--muted);min-height:25px}
+.stat-val{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.stat-num{font:800 74px/1.1 var(--font-head);color:var(--teal-600)}
+.stat.hl .stat-num{color:var(--amber-700)}
+.stat-unit{font:700 22px/1.3 var(--font-head);color:var(--ink-2)}
+.stat-label{font-size:23px;line-height:1.6;color:var(--ink);flex:1}
+.stat-src{font:500 15px/1.4 "Vazirmatn",Tahoma,sans-serif;color:var(--muted);direction:ltr;text-align:right;unicode-bidi:isolate}
+
+/* اصل TOP و شکاف‌ها */
+.split{display:grid;grid-template-columns:600px 1fr;gap:40px;align-items:stretch}
+.top-box,.gaps{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.top-levels{display:flex;flex-direction:column;gap:4px}
+.top-level{display:grid;grid-template-columns:54px 1fr 34px;align-items:center;gap:16px;padding:12px 16px;border-radius:16px;background:var(--line-2)}
+.top-level.hl{background:var(--amber-50);border:1.5px solid var(--amber-300)}
+.top-code{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font:800 24px/1 "Vazirmatn",sans-serif;color:var(--muted);text-align:center}
+.top-level.hl .top-code{background:var(--amber-500);border-color:var(--amber-500);color:#fff}
+.top-name{font:700 23px/1.45 var(--font-head);color:var(--ink)}
+.top-note{font-size:21px;line-height:1.55;color:var(--ink-2)}
+.top-mark{font-size:28px;color:var(--muted);display:grid;place-items:center}
+.top-level.hl .top-mark{color:var(--teal-600)}
+.top-arrow{display:flex;justify-content:center;color:var(--teal-300);font-size:24px;line-height:1}
+.gap-list{display:flex;flex-direction:column;gap:18px;counter-reset:g}
+.gap-list li{display:grid;grid-template-columns:52px 1fr;gap:18px;align-items:start;font-size:25px;line-height:1.65}
+.gap-n{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--teal-500);color:var(--teal-700);font:800 24px/1 var(--font-head);background:var(--teal-50)}
+
+/* ستون‌ها */
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.col-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px 28px 24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.col-ico{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:var(--teal-50);color:var(--teal-600);font-size:32px}
+.col-title{font:800 28px/1.4 var(--font-head);color:var(--ink)}
+.col-text{font-size:24px;line-height:1.7;color:var(--ink-2)}
+.quote{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:18px;row-gap:2px;padding:18px 28px;border-radius:var(--radius);background:var(--amber-50);border:1px solid var(--amber-200)}
+.quote .q-ico{grid-row:1/3;font-size:40px;color:var(--amber-600)}
+.quote blockquote{font-size:28px;font-weight:700;color:var(--amber-800)}
+.q-src{font:500 16px/1.4 "Vazirmatn",Tahoma,sans-serif;color:var(--amber-700);direction:ltr;text-align:right;unicode-bidi:isolate}
+
+/* اهداف */
+.goal-main{display:flex;align-items:center;gap:24px;background:linear-gradient(120deg,var(--teal-700),var(--teal-600));color:#fff;border-radius:var(--radius);padding:22px 30px;box-shadow:var(--shadow)}
+.gm-ico{width:66px;height:66px;flex:none;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);font-size:36px;color:var(--amber-300)}
+.gm-label{font:600 18px/1.5 var(--font-head);color:var(--teal-100)}
+.gm-text{font:800 30px/1.5 var(--font-head)}
+.goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:-12px}
+.goal{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--pc);border-radius:var(--radius-sm);padding:16px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.goal-top{display:flex;align-items:center;gap:10px}
+.goal-n{font:800 22px/1 var(--font-head);color:var(--pc)}
+.goal .phase-chip{background:var(--ps);color:var(--ink-2)}
+.goal-text{font-size:22px;line-height:1.65;color:var(--ink)}
+.applied{display:flex;align-items:flex-start;gap:14px 26px;flex-wrap:wrap;font-size:21px;color:var(--ink-2);padding:14px 22px;border-radius:var(--radius-sm);background:var(--line-2)}
+.applied-label{font:700 19px/1.6 var(--font-head);color:var(--teal-700)}
+.applied-item{display:flex;align-items:flex-start;gap:8px;flex:1;min-width:420px}
+.applied-item .ico{color:var(--teal-500);margin-top:.35em}
+
+/* سؤالات */
+.q-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.q-card{background:var(--surface);border:1px solid var(--line);border-inline-start:6px solid var(--pc);border-radius:var(--radius-sm);padding:20px 26px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.q-head{display:flex;align-items:center;gap:12px}
+.q-n{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--ps);color:var(--ink);font:800 19px/1 var(--font-head)}
+.q-phase{font:700 22px/1.4 var(--font-head);color:var(--ink)}
+.q-en{font:500 16px/1.4 "Vazirmatn",sans-serif;color:var(--muted);direction:ltr;unicode-bidi:isolate}
+.q-text{font-size:25px;line-height:1.7;color:var(--ink-2)}
+
+/* خط زمانی (از راست به چپ = قدیم به جدید) */
+.tl{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);height:470px}
+.tl-line{position:absolute;inset-inline:0;top:50%;height:4px;margin-top:-2px;border-radius:4px;background:linear-gradient(to left,var(--teal-200),var(--teal-600))}
+.tl-item{position:relative}
+.tl-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;background:var(--surface);border:3px solid var(--teal-500);border-radius:999px;padding:3px 14px;font:800 20px/1.5 var(--font-head);color:var(--teal-700);white-space:nowrap}
+.tl-item.hl .tl-dot{border-color:var(--amber-500);color:var(--amber-800);background:var(--amber-50)}
+.tl-stem{position:absolute;left:50%;width:2px;height:22px;margin-left:-1px;background:var(--teal-200)}
+.tl-item.up .tl-stem{bottom:calc(50% + 20px)}
+.tl-item.down .tl-stem{top:calc(50% + 20px)}
+.tl-card{position:absolute;left:50%;transform:translateX(-50%);width:calc(200% - 22px);max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 16px;box-shadow:var(--shadow)}
+.tl-item.up .tl-card{bottom:calc(50% + 42px)}
+.tl-item.down .tl-card{top:calc(50% + 42px)}
+.tl-item.first .tl-card{left:auto;right:6px;transform:none;width:calc(150% - 18px)}
+.tl-item.last .tl-card{left:6px;transform:none;width:calc(150% - 18px)}
+.tl-item.hl .tl-card{border-color:var(--amber-300);background:var(--amber-50)}
+.tl-who{font:600 15px/1.5 "Vazirmatn",Tahoma,sans-serif;color:var(--teal-700);direction:ltr;text-align:right;unicode-bidi:isolate}
+.tl-text{font-size:20.5px;line-height:1.6;color:var(--ink)}
+.takeaway{display:flex;align-items:center;gap:16px;padding:14px 24px;border-radius:var(--radius-sm);background:var(--teal-700);color:#fff;font-size:24px;line-height:1.6}
+.takeaway .ico{font-size:30px;color:var(--amber-300)}
+
+/* الماس دوگانه */
+.dd{display:flex;flex-direction:column;gap:12px}
+.dd-badges{display:flex;flex-wrap:wrap;gap:10px}
+.dd-badge{display:inline-flex;align-items:center;gap:8px;font:600 18px/1.5 var(--font-head);color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 16px}
+.dd-badge .ico{color:var(--teal-600)}
+.dd-caps{display:grid;grid-template-columns:1fr 1fr;gap:0;font:700 20px/1.5 var(--font-head);text-align:center}
+.dd-caps>div:first-child{color:var(--teal-700)}
+.dd-caps>div:last-child{color:var(--amber-700)}
+.dd-fig{position:relative;height:300px}
+.dd-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.dd-svg .f1{fill:var(--teal-50)} .dd-svg .f2{fill:var(--teal-100)}
+.dd-svg .f3{fill:var(--amber-50)} .dd-svg .f4{fill:var(--amber-100)}
+.dd-svg .o1{fill:none;stroke:var(--teal-600);stroke-width:2.5;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.dd-svg .o2{fill:none;stroke:var(--amber-600);stroke-width:2.5;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.dd-svg .mid{stroke:var(--muted);stroke-opacity:.35;stroke-width:1.5;stroke-dasharray:4 6;vector-effect:non-scaling-stroke}
+.dd-labels{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr)}
+.dd-lab{align-self:center;display:flex;flex-direction:column;align-items:center;text-align:center;width:180px;gap:0}
+.dd-lab.div{justify-self:end;margin-inline-end:10px}
+.dd-lab.con{justify-self:start;margin-inline-start:10px}
+.dd-fa{font:800 32px/1.35 var(--font-head);color:var(--ink)}
+.dd-en{font:600 16px/1.4 "Vazirmatn",sans-serif;color:var(--muted);direction:ltr;unicode-bidi:isolate}
+.dd-mode{font:600 15px/1.6 var(--font-head);color:var(--pc);margin-top:2px}
+.dd-outs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.dd-out{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--pc);border-radius:var(--radius-sm);padding:10px 14px;font-size:20px;line-height:1.55;color:var(--ink);box-shadow:var(--shadow)}
+
+/* فلوچارت */
+.flow{display:flex;flex-direction:column;gap:4px}
+.flow-row{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:stretch}
+.flow-phase{border-radius:var(--radius-sm);background:var(--pc);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px}
+.flow-row.ph3 .flow-phase{color:var(--ink)}
+.fp-name{font:800 26px/1.4 var(--font-head)}
+.fp-en{font:600 15px/1.4 "Vazirmatn",sans-serif;opacity:.85;direction:ltr;unicode-bidi:isolate}
+.flow-steps{display:flex;align-items:stretch;gap:6px}
+.flow-steps>.step,.flow-par{flex:1;min-width:0}
+.flow-par{display:flex;flex-direction:column;gap:8px}
+.step{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--pc);border-radius:var(--radius-sm);padding:10px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center}
+.flow-par .step{flex:1}
+.step-t{font:700 21px/1.45 var(--font-head);color:var(--ink)}
+.step-s{font-size:18.5px;line-height:1.55;color:var(--ink-2)}
+.flow-arrow{display:grid;place-items:center;color:var(--pc);font-size:28px;flex:none}
+.flow-link{display:flex;justify-content:flex-start;padding-inline-start:60px;color:var(--teal-300);font-size:26px;line-height:1}
+
+/* اجماع و وزن‌دهی */
+.cons{display:grid;grid-template-columns:1fr 560px;gap:32px;align-items:stretch}
+.cons-left,.cons-right{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.scale9{display:grid;grid-template-columns:repeat(9,1fr);gap:6px}
+.scale9 .sc{height:56px;border-radius:12px;display:grid;place-items:center;font:800 24px/1 var(--font-head)}
+.sc.b1{background:var(--line-2);color:var(--muted)}
+.sc.b2{background:var(--amber-100);color:var(--amber-800)}
+.sc.b3{background:var(--teal-600);color:#fff}
+.scale-bands{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;font:600 18px/1.4 var(--font-head);color:var(--ink-2)}
+.rules{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.rule{display:grid;grid-template-columns:44px 130px 1fr;align-items:center;gap:14px;padding:10px 14px;border-radius:14px;background:var(--line-2)}
+.rule-ico{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:var(--surface)}
+.rule.keep .rule-ico{color:var(--teal-600)} .rule.drop .rule-ico{color:var(--danger)} .rule.none .rule-ico{color:var(--muted)}
+.rule-name{font:800 22px/1.4 var(--font-head)}
+.rule-text{font-size:21px;line-height:1.55;color:var(--ink-2)}
+.wsteps{display:flex;flex-direction:column;gap:10px}
+.wsteps li{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;font-size:21.5px;line-height:1.6}
+.ws-n{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--teal-50);color:var(--teal-700);font:800 18px/1 var(--font-head)}
+.formula{margin-top:auto;border-radius:16px;background:var(--teal-700);color:#fff;padding:14px 20px;display:flex;flex-direction:column;gap:4px;text-align:center}
+.f-main{font:700 30px/1.4 "Vazirmatn",Tahoma,sans-serif;direction:ltr;unicode-bidi:isolate;letter-spacing:.5px}
+.f-note{font-size:18px;color:var(--teal-100)}
+
+/* کارت‌ها */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.card-head{display:flex;align-items:center;gap:14px}
+.card-ico{width:48px;height:48px;flex:none;border-radius:14px;display:grid;place-items:center;background:var(--teal-50);color:var(--teal-600);font-size:26px}
+.card.amber .card-ico{background:var(--amber-100);color:var(--amber-700)}
+.card-title{font:800 24px/1.4 var(--font-head)}
+.formula-inline{align-self:flex-start;font:700 22px/1.5 "Vazirmatn",Tahoma,sans-serif;direction:ltr;unicode-bidi:isolate;background:var(--teal-50);color:var(--teal-700);border-radius:10px;padding:4px 14px}
+.card-lines{display:flex;flex-direction:column;gap:4px}
+.card-lines li{position:relative;padding-inline-start:20px;font-size:21px;line-height:1.6;color:var(--ink-2)}
+.card-lines li::before{content:"";position:absolute;inset-inline-start:2px;top:.75em;width:8px;height:8px;border-radius:50%;background:var(--teal-400)}
+.card.amber .card-lines li::before{background:var(--amber-500)}
+
+/* گانت */
+.gantt{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 24px 16px;box-shadow:var(--shadow)}
+.g-row{display:grid;grid-template-columns:330px repeat(var(--m),1fr);align-items:center;min-height:54px}
+.g-row>*{grid-row:1}
+.g-row+.g-row{border-top:1px solid var(--line-2)}
+.g-head{min-height:44px}
+.g-month{font:700 18px/1.4 var(--font-head);color:var(--muted);text-align:center}
+.g-label{grid-column:1;display:flex;align-items:center;gap:12px;font:600 21px/1.4 var(--font-head);color:var(--ink);padding-inline-end:12px}
+.g-dot{width:14px;height:14px;border-radius:5px;background:var(--pc);flex:none;display:inline-block}
+.g-cell{align-self:stretch;border-inline-start:1px dashed var(--line)}
+.g-bar{height:24px;border-radius:999px;background:var(--pc);margin:0 4px;transform-origin:right center;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
+.slide.active .g-bar{animation:grow .6s var(--ease) backwards;animation-delay:calc(var(--i,0) * 60ms + 160ms)}
+.legend{display:flex;gap:28px;flex-wrap:wrap;font:600 18px/1.5 var(--font-head);color:var(--ink-2)}
+.legend .lg{display:inline-flex;align-items:center;gap:8px}
+
+/* نمودار ون */
+.venn-wrap{display:grid;grid-template-columns:680px 1fr;gap:40px;align-items:center}
+.venn{position:relative;width:680px;height:440px}
+.venn>svg{position:absolute;inset:0;width:100%;height:100%}
+.vc-a{fill:var(--teal-50)} .vc-b{fill:var(--teal-100);fill-opacity:.7} .vc-x{fill:var(--amber-200)}
+.vc-ol{fill:none;stroke:var(--teal-600);stroke-width:2;stroke-opacity:.6}
+.vl{position:absolute;top:50%;transform:translate(-50%,-50%);width:170px;text-align:center;font:700 21px/1.55 var(--font-head);color:var(--teal-700)}
+.vl-a{left:79.4%} .vl-b{left:20.6%}
+.vl-x{left:50%;width:200px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--amber-800);font-weight:800;font-size:24px}
+.vl-x .ico{font-size:34px;color:var(--amber-600)}
+.innov{display:flex;flex-direction:column;gap:14px}
+.innov-item{display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow)}
+.in-n{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--amber-100);color:var(--amber-800);font:800 22px/1 var(--font-head)}
+.in-level{font:800 23px/1.4 var(--font-head);color:var(--ink)}
+.in-text{font-size:22px;line-height:1.6;color:var(--ink-2)}
+
+/* خروجی‌ها و پایان */
+.out-grid{display:flex;flex-direction:column;gap:12px}
+.out-row,.users-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.out-card{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow)}
+.out-ico{width:56px;height:56px;flex:none;border-radius:16px;display:grid;place-items:center;background:var(--teal-600);color:#fff;font-size:28px}
+.out-text{font:700 21px/1.5 var(--font-head);color:var(--ink)}
+.user-card{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-radius:var(--radius-sm);background:var(--line-2)}
+.user-ico{width:44px;height:44px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--surface);color:var(--teal-600);font-size:24px}
+.user-group{font:700 20px/1.5 var(--font-head);color:var(--teal-700)}
+.user-text{font-size:19px;line-height:1.55;color:var(--ink-2)}
+.thanks{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 30px;border-radius:var(--radius);background:linear-gradient(120deg,var(--teal-700),var(--teal-600));color:#fff}
+.thanks-main{font:800 36px/1.4 var(--font-head)}
+.thanks-qa{font:700 22px/1.4 var(--font-head);color:var(--ink);background:var(--amber-500);border-radius:999px;padding:8px 24px}
+
+/* فهرست ساده (برای اسلایدهایی که با JSON افزوده می‌شوند) */
+.bullets{display:flex;flex-direction:column;gap:18px;max-width:1300px}
+.bullets li{position:relative;padding-inline-start:36px;font-size:30px;line-height:1.65}
+.bullets li::before{content:"";position:absolute;inset-inline-start:4px;top:.62em;width:14px;height:14px;border-radius:4px;background:var(--teal-500);transform:rotate(45deg)}
+
+/* ═══ ۹. رابط کاربری: نوار ابزار، پیشرفت، تایمر، یادداشت، راهنما ═══ */
+#progress{position:fixed;inset-inline:0;bottom:0;height:6px;background:rgba(11,116,113,.14);z-index:40}
+#progress .pg-band{position:absolute;inset-block:0;background:rgba(240,162,2,.28);transition:inset-inline-start .45s var(--ease),width .45s var(--ease)}
+#progress .pg-fill{position:absolute;inset-block:0;inset-inline-start:0;background:linear-gradient(to left,var(--teal-500),var(--teal-600));transition:width .45s var(--ease)}
+#progress .pg-fill::after{content:"";position:absolute;inset-inline-end:-3px;top:-3px;width:12px;height:12px;border-radius:50%;background:var(--amber-500);box-shadow:0 0 0 3px rgba(240,162,2,.25)}
+#progress .pg-tick{position:absolute;inset-block:0;width:2px;background:var(--paper);opacity:.9}
+
+#toolbar{
+  position:fixed;top:14px;inset-inline-end:14px;z-index:50;display:flex;align-items:center;gap:2px;
+  padding:5px;border-radius:999px;background:rgba(255,255,255,.94);border:1px solid var(--line);box-shadow:var(--shadow-lg);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:opacity .35s,transform .35s var(--ease);
+}
+body.idle:not(.editing) #toolbar{opacity:0;transform:translateY(-10px);pointer-events:none}
+body.idle:not(.editing) #stage{cursor:none}
+.tb-btn{position:relative;width:40px;height:40px;border:0;background:transparent;border-radius:999px;display:grid;place-items:center;font-size:21px;color:var(--ink-2);cursor:pointer;transition:background .2s,color .2s}
+.tb-btn:hover{background:var(--teal-50);color:var(--teal-700)}
+.tb-btn:focus-visible{outline:2px solid var(--teal-500);outline-offset:1px}
+.tb-btn[aria-pressed="true"]{background:var(--teal-600);color:#fff}
+.tb-sep{width:1px;height:24px;background:var(--line);margin:0 5px}
+[data-tip]::after{
+  content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:50%;transform:translate(-50%,-4px);
+  white-space:nowrap;background:var(--ink);color:#fff;font:500 14px/1.4 var(--font-head);padding:6px 10px;border-radius:8px;
+  opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:5;
+}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+#editbar{
+  position:fixed;top:14px;inset-inline-start:14px;z-index:50;display:none;align-items:center;gap:10px;flex-wrap:wrap;max-width:calc(100vw - 720px);
+  padding:7px 8px 7px 14px;border-radius:16px;background:var(--amber-50);border:1px solid var(--amber-300);box-shadow:var(--shadow-lg);
+  font:500 15px/1.4 var(--font-head);color:var(--amber-800);
+}
+body.editing #editbar{display:flex}
+#editbar .eb-msg{display:flex;align-items:center;gap:8px;font-weight:700}
+#editbar .eb-status{color:var(--teal-700);min-width:90px}
+.eb-btn{border:1px solid var(--amber-300);background:var(--surface);color:var(--ink-2);border-radius:10px;padding:5px 10px;font:600 14px/1.4 var(--font-head);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.eb-btn:hover{border-color:var(--teal-400);color:var(--teal-700)}
+.eb-btn.primary{background:var(--teal-600);border-color:var(--teal-600);color:#fff}
+
+/* حالت ویرایش */
+body.editing [data-path]{outline:1.5px dashed transparent;outline-offset:4px;border-radius:6px;cursor:text;transition:outline-color .2s,background-color .2s}
+body.editing .slide [data-path]{outline-color:rgba(11,116,113,.22)}
+body.editing [data-path]:hover{outline-color:var(--teal-400)}
+body.editing [data-path]:focus{outline:2px solid var(--amber-500);background-color:rgba(240,162,2,.07)}
+body.editing [data-path]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.6}
+body.editing .tile{cursor:default}
+body.editing .cover-hint{display:none}
+[data-kind="time"].invalid{outline-color:var(--danger)!important}
+
+#timer{
+  position:fixed;top:14px;inset-inline-end:14px;z-index:45;display:flex;align-items:center;gap:10px;
+  padding:7px 8px 7px 12px;border-radius:18px;background:rgba(255,255,255,.95);border:1px solid var(--line);box-shadow:var(--shadow-lg);
+  font-family:var(--font-head);transition:top .35s var(--ease),opacity .3s;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+#timer[hidden]{display:none}
+body:not(.idle) #timer,body.editing #timer{top:68px}
+.tm-ring{position:relative;width:46px;height:46px;flex:none}
+.tm-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.tm-track{fill:none;stroke:var(--line-2);stroke-width:12}
+.tm-prog{fill:none;stroke:var(--teal-500);stroke-width:12;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:0;transition:stroke-dashoffset .5s linear,stroke .3s}
+.tm-text{display:flex;flex-direction:column;min-width:150px}
+.tm-time{font:800 25px/1.15 var(--font-head);color:var(--ink);font-variant-numeric:tabular-nums}
+#timer.warn .tm-prog{stroke:var(--amber-500)} #timer.warn .tm-time{color:var(--amber-700)}
+#timer.over .tm-prog{stroke:var(--danger)} #timer.over .tm-time{color:var(--danger)}
+.tm-pace{font:600 12.5px/1.45 var(--font-head);color:var(--muted)}
+.tm-pace.ontrack{color:var(--teal-700)} .tm-pace.behind{color:var(--amber-700)} .tm-pace.ahead{color:var(--teal-600)}
+.tm-ctrl{display:flex;gap:0}
+.tm-ctrl .tb-btn{width:30px;height:30px;font-size:16px}
+
+#notes{
+  position:fixed;inset-inline:0;bottom:0;height:34vh;z-index:44;display:flex;flex-direction:column;gap:10px;
+  padding:14px 28px 18px;background:#0F2526;color:#E8F2F1;border-top:3px solid var(--amber-500);
+  transform:translateY(105%);visibility:hidden;transition:transform .4s var(--ease),visibility 0s linear .4s;
+  font-family:var(--font-head);
+}
+#notes.open{transform:none;visibility:visible;transition:transform .4s var(--ease),visibility 0s}
+.nt-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.nt-title{display:flex;align-items:center;gap:12px;font:700 19px/1.4 var(--font-head)}
+.nt-num{color:var(--amber-300);font-variant-numeric:tabular-nums}
+.nt-meta{display:flex;gap:8px;flex-wrap:wrap}
+.nt-chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 12px;background:rgba(255,255,255,.08);font:500 14.5px/1.5 var(--font-head);color:#CFE3E1}
+.nt-chip b{color:#fff}
+.nt-chip.hot{background:rgba(240,162,2,.18);color:var(--amber-200)}
+.nt-actions{display:flex;gap:4px}
+.nt-actions .tb-btn{color:#CFE3E1}
+.nt-actions .tb-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.nt-body{flex:1;overflow:auto;font:400 21px/1.85 var(--font-body);color:#F1F7F6;white-space:pre-line;padding-inline-end:6px}
+.nt-next{font:500 15px/1.5 var(--font-head);color:#9FBDBA}
+body.editing #notes [data-path]{outline-color:rgba(255,255,255,.25)}
+body.editing #notes [data-path]:focus{background-color:rgba(240,162,2,.12)}
+
+#help{position:fixed;inset:0;z-index:70;display:none;place-items:center;background:rgba(6,30,30,.45);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#help.open{display:grid}
+.help{width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;background:var(--surface);border-radius:24px;box-shadow:var(--shadow-lg);padding:26px 30px;font:500 16px/1.7 var(--font-head);color:var(--ink-2)}
+.help h2{font:800 24px/1.4 var(--font-head);color:var(--ink);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.help table{width:100%;border-collapse:collapse}
+.help td{padding:7px 4px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.help td:first-child{white-space:nowrap;width:42%}
+.help .help-foot{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14.5px;color:var(--muted)}
+
+#toast{
+  position:fixed;left:50%;bottom:30px;z-index:80;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  background:var(--ink);color:#fff;font:600 16px/1.5 var(--font-head);padding:10px 20px;border-radius:14px;box-shadow:var(--shadow-lg);
+  transition:opacity .3s,transform .3s var(--ease);max-width:calc(100vw - 32px);text-align:center;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+noscript{position:fixed;inset:0;display:grid;place-items:center;background:var(--paper);font:600 22px/1.8 Tahoma,sans-serif;padding:24px;text-align:center}
+
+/* ═══ ۱۰. حالت واکنش‌گرا برای موبایل و صفحه‌های عمودی ═══ */
+@media screen{
+  body.fluid{overflow-y:auto;overflow-x:hidden;font-size:17px}
+  body.fluid #viewport{position:relative;inset:auto;overflow:visible}
+  body.fluid #stage{position:relative;left:auto;top:auto;transform:none;width:100%;height:auto;min-height:100vh;min-height:100dvh;box-shadow:none;overflow:visible}
+  body.fluid .slide{position:relative;inset:auto;min-height:100vh;min-height:100dvh;padding:64px 16px 84px}
+  body.fluid .slide-cover{padding:64px 16px 84px}
+  body.fluid .h-title{font-size:25px}
+  body.fluid .kicker{font-size:13.5px;padding:5px 12px}
+  body.fluid .slide-body{gap:16px;padding:14px 0}
+  body.fluid .slide-foot{height:auto;padding:10px 0;font-size:12px;flex-wrap:wrap}
+  body.fluid .decor{display:none}
+  body.fluid .cover-grid{grid-template-columns:1fr;gap:20px}
+  body.fluid .cover-art{order:-1;max-height:220px}
+  body.fluid .hero{max-height:220px}
+  body.fluid .cover-title{font-size:26px}
+  body.fluid .cover-title .tl3{font-size:20px}
+  body.fluid .cover-en{font-size:13px}
+  body.fluid .people{grid-template-columns:1fr;gap:8px}
+  body.fluid .p-name{font-size:18px}
+  body.fluid .cover-hint{display:none}
+  body.fluid .menu-head{flex-direction:column;align-items:flex-start}
+  body.fluid .menu-sub{font-size:16px}
+  body.fluid .tiles{grid-template-columns:1fr;grid-auto-rows:auto;gap:12px}
+  body.fluid .tile{grid-template-columns:48px 1fr;padding:14px 16px}
+  body.fluid .tile-ico{width:48px;height:48px;font-size:24px}
+  body.fluid .tile-title{font-size:20px}
+  body.fluid .tile-sub{font-size:14.5px}
+  body.fluid .lead{font-size:18px}
+  body.fluid .stats,body.fluid .cols,body.fluid .goal-grid,body.fluid .q-grid,body.fluid .cards,
+  body.fluid .split,body.fluid .cons,body.fluid .venn-wrap,body.fluid .out-row,body.fluid .users-row,
+  body.fluid .dd-outs{grid-template-columns:1fr}
+  body.fluid .stat-num{font-size:46px}
+  body.fluid .stat-label,body.fluid .col-text,body.fluid .goal-text,body.fluid .q-text,body.fluid .gap-list li,
+  body.fluid .top-note,body.fluid .card-lines li,body.fluid .in-text,body.fluid .rule-text,body.fluid .wsteps li{font-size:16px}
+  body.fluid .col-title,body.fluid .gm-text{font-size:19px}
+  body.fluid .applied-item{min-width:0}
+  body.fluid .quote blockquote{font-size:18px}
+  body.fluid .tl{display:flex;flex-direction:column;height:auto;gap:10px;padding-inline-start:18px;border-inline-start:3px solid var(--teal-200)}
+  body.fluid .tl-line,body.fluid .tl-stem{display:none}
+  body.fluid .tl-dot,body.fluid .tl-card{position:static;transform:none;width:auto;max-width:none}
+  body.fluid .tl-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+  body.fluid .tl-text{font-size:15.5px}
+  body.fluid .dd-fig{display:none}
+  body.fluid .dd-caps{display:none}
+  body.fluid .dd-out{font-size:15px}
+  body.fluid .flow-row{grid-template-columns:1fr}
+  body.fluid .flow-steps{flex-direction:column}
+  body.fluid .flow-arrow{transform:rotate(-90deg)}
+  body.fluid .rule{grid-template-columns:36px 1fr}
+  body.fluid .rule-text{grid-column:1/-1}
+  body.fluid .gantt{overflow-x:auto}
+  body.fluid .g-row{grid-template-columns:150px repeat(var(--m),48px);font-size:13px}
+  body.fluid .g-label{font-size:13px}
+  body.fluid .venn{width:100%;height:auto;aspect-ratio:680/440}
+  body.fluid .vl{font-size:13px;width:24%}
+  body.fluid .vl-x{font-size:14px;width:30%}
+  body.fluid .thanks{flex-direction:column;align-items:flex-start}
+  body.fluid .thanks-main{font-size:24px}
+  body.fluid #toolbar{top:auto;bottom:12px;inset-inline:8px;justify-content:flex-start;overflow-x:auto;border-radius:18px}
+  body.fluid [data-tip]::after{display:none}
+  body.fluid #timer,body.fluid:not(.idle) #timer{top:8px;inset-inline-end:8px;transform:scale(.85);transform-origin:left top}
+  body.fluid #editbar{max-width:calc(100vw - 28px);top:10px}
+  body.fluid #notes{height:46vh}
+}
+
+/* ═══ ۱۱. احترام به کاهش حرکت ═══ */
+@media (prefers-reduced-motion:reduce){
+  .slide.active .rv,.slide.active .g-bar,.tile.pulse{animation:none!important}
+  *,*::before,*::after{transition-duration:1ms!important;scroll-behavior:auto!important}
+}
+
+/* ═══ ۱۲. چاپ و PDF: هر اسلاید در یک صفحه ۱۶:۹ ═══ */
+@media print{
+  @page{size:1600px 900px;margin:0}
+  html,body{height:auto;overflow:visible!important;background:#fff}
+  #toolbar,#editbar,#timer,#notes,#progress,#help,#toast,#zoom-layer,.cover-hint,noscript{display:none!important}
+  #viewport{position:static;overflow:visible}
+  #stage{position:static;transform:none!important;width:1600px;height:auto;box-shadow:none;overflow:visible}
+  .slide{display:flex!important;position:relative;inset:auto;width:1600px;height:900px;break-after:page;page-break-after:always;break-inside:avoid}
+  .slide:last-child{break-after:auto;page-break-after:auto}
+  .slide .rv,.slide .g-bar{animation:none!important;opacity:1!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body.editing [data-path]{outline:none!important;background:none!important}
+  .tile:hover{transform:none}
+}
+</style>
+</head>
+<body>
+<div id="viewport"><main id="stage" aria-label="ارائه"></main></div>
+<div id="progress" aria-hidden="true"></div>
+<nav id="toolbar" aria-label="ابزارهای ارائه"></nav>
+<div id="editbar" role="region" aria-label="نوار ویرایش"></div>
+<aside id="timer" aria-label="تایمر ارائه"></aside>
+<section id="notes" aria-label="یادداشت سخنران" aria-hidden="true"></section>
+<div id="help" role="dialog" aria-modal="true" aria-label="راهنمای کلیدها"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="sr" class="sr-only" aria-live="polite"></div>
+<input id="file-json" type="file" accept=".json,application/json" hidden>
+<noscript>برای نمایش این ارائه، جاوااسکریپت مرورگر را فعال کنید.</noscript>
+
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════════
+   ۱. داده‌های ارائه — همه متن‌های اسلایدها اینجاست
+   (در حالت ویرایش هم می‌توانید مستقیم روی اسلاید تایپ کنید)
+   time = زمان پیشنهادی هر اسلاید به ثانیه
+   ═══════════════════════════════════════════════════════════════ */
+const DATA = /*DATA:START*/{
+  "meta": {
+    "deckTitle": "اگزواسکلتون غیرفعال پشتیبان پیش‌بند سربی",
+    "durationMin": 20
+  },
+  "cover": {
+    "university": "دانشگاه علوم پزشکی شهید بهشتی",
+    "faculty": "دانشکده بهداشت و ایمنی",
+    "kicker": "دفاع از پروپوزال پایان‌نامه کارشناسی ارشد ارگونومی",
+    "titleLines": [
+      "طراحی اگزواسکلتون غیرفعال ارگونومیک",
+      "پشتیبان پیش‌بند سربی برای جراحی درون‌عروقی",
+      "مبتنی بر مدل الماس دوگانه"
+    ],
+    "titleEn": "Design of an Ergonomic Lead Apron-Supporting Passive Exoskeleton for Endovascular Surgery Based on The Double Diamond Model",
+    "people": [
+      { "role": "دانشجو", "name": "ارسلان ابومحسن‌پور" },
+      { "role": "استاد راهنما", "name": "دکتر عبدالله واحدی" },
+      { "role": "استاد مشاور", "name": "دکتر مهناز صارمی" }
+    ],
+    "keywords": ["پیش‌بند سربی", "حفاظت در برابر پرتو", "جراحی درون‌عروقی", "اگزواسکلتون", "دستگاه پوشیدنی", "ارگونومی"],
+    "notes": "معرفی عنوان پایان‌نامه، استاد راهنما (دکتر واحدی) و استاد مشاور (دکتر صارمی).\nجمله کلیدی: هدف، طراحی مفهومی روشمند یک اگزواسکلتون غیرفعال است که وزن پیش‌بند سربی را از دوش و ستون فقرات جراح درون‌عروقی منتقل کند، بدون آنکه آزادی حرکت او را مختل کند.",
+    "time": 30
+  },
+  "menu": {
+    "title": "نقشه ارائه",
+    "subtitle": "نُه بخش؛ روی هر کاشی کلیک کنید تا وارد آن بخش شوید",
+    "nextLabel": "بعدی",
+    "doneLabel": "ارائه‌شده",
+    "notes": "ساختار ارائه در نُه بخش، از بیان مسئله تا جمع‌بندی.\nکاشی بعدی با رنگ کهربایی مشخص است و با کلید بعدی یا Space باز می‌شود؛ در پایان هر بخش، ارائه به همین منو بازمی‌گردد.",
+    "time": 30
+  },
+  "sections": [
+    {
+      "id": "problem", "icon": "weight", "title": "بیان مسئله", "subtitle": "بار پنهان پیش‌بند سربی و شکاف‌های موجود",
+      "slides": [
+        {
+          "layout": "stats",
+          "title": "بار پنهان پیش‌بند سربی",
+          "lead": "پیش‌بند سربی در کاهش مواجهه با پرتو مؤثر است، اما بار فیزیکی شدیدی به سیستم اسکلتی-عضلانی، به‌ویژه ستون فقرات، تحمیل می‌کند.",
+          "stats": [
+            { "pre": "معمولاً", "value": "۳–۸", "unit": "کیلوگرم", "label": "وزن پیش‌بند سربی، بسته به اندازه و نوع طراحی", "src": "Monaco et al. 2020; Hout & Ryu 2025" },
+            { "pre": "بیش از", "value": "۲۰۰۰", "unit": "کیلوپاسکال", "label": "فشار در فضای دیسک بین‌مهره‌ای با پیش‌بند ۶٫۸ کیلوگرمی", "src": "Hout & Ryu 2025" },
+            { "pre": "نسبت شانس تجمیعی", "value": "۳٫۸۳", "unit": "", "label": "بروز اختلالات اسکلتی-عضلانی در کاربران پیش‌بند؛ ۳۱ مطالعه، ۸۲۸۰ نفر", "src": "Meta-analysis · Hout & Ryu 2025", "hl": true },
+            { "pre": "بیش از", "value": "۸۰٪", "unit": "", "label": "جراحانی که در دوره حرفه‌ای دچار اختلالات اسکلتی-عضلانی مرتبط با کار می‌شوند", "src": "Schlussel & Maykel 2019" }
+          ],
+          "foot": "امروزه حدود ۳۰ میلیون نفر از کارکنان سلامت در جهان در معرض پرتوهای یونیزان‌اند و بسیاری از آن‌ها تمام روز کاری پیش‌بند سربی می‌پوشند.",
+          "notes": "جراحی درون‌عروقی به تصویربرداری مداوم وابسته است؛ پس پوشیدن پیش‌بند سربی اجتناب‌ناپذیر است. پیش‌بند استاندارد با معادل سربی ۰٫۵ میلی‌متر بیش از ۹۵٪ تابش برخوردی را جذب می‌کند.\nوزن آن عمدتاً به‌صورت متقارن روی شانه‌ها حمل می‌شود و عضلات حتی در وضعیت ایستا تحت تنش‌اند.\nفراتحلیل هوت و ریو (۲۰۲۵): نسبت شانس ۳٫۸۳؛ یعنی شانس ابتلا بیش از دو برابر جمعیت مرجع است.\nالزامات قانونی پوشیدن این لباس‌ها از اواخر دهه ۱۹۲۰ تغییرات ناچیزی داشته است.",
+          "time": 75
+        },
+        {
+          "layout": "topgaps",
+          "title": "چرا راه‌حل‌های فعلی کافی نیستند؟",
+          "topTitle": "اصل TOP: ترتیب مداخلات در ایمنی و بهداشت حرفه‌ای",
+          "levels": [
+            { "code": "T", "name": "مداخله فنی", "note": "حذف پرتو ایکس در اغلب موارد ممکن نیست" },
+            { "code": "O", "name": "مداخله سازمانی", "note": "کاهش زمان جراحی‌های حیاتی ممکن نیست" },
+            { "code": "P", "name": "مداخله فردی", "note": "اگزواسکلتون غیرفعال: بازتوزیع و انتقال بار از نواحی آسیب‌پذیر", "hl": true }
+          ],
+          "gapsTitle": "سه شکاف اصلی در ادبیات",
+          "gaps": [
+            "اگزواسکلتون‌های موجود برای تنه خمیده طراحی شده‌اند، نه حمل بار عمودی توزیع‌شده روی شانه‌ها",
+            "هیچ اگزواسکلتونی اختصاصاً برای تعامل با پیش‌بند سربی در اتاق آنژیوگرافی طراحی و مستند نشده است",
+            "پارامترهای طراحی مبتنی بر نیازسنجی واقعی جراحان درون‌عروقی در ادبیات وجود ندارد"
+          ],
+          "notes": "مواد سبک‌تر مانند باریوم، بیسموت و آنتیموان وزن را تا حدی کم می‌کنند، اما تعادل بهینه میان سطح حفاظت و وزن ایجاد نمی‌کنند.\nآموزش ارگونومیک هم کافی نبوده است: حتی پس از آموزش، تنها ۶۰٪ جراحان اصول را در عمل پیاده می‌کنند.\nطبق اصل TOP چون مداخله فنی و سازمانی در اغلب موارد ممکن نیست، مداخله فردی پیشرفته ضروری می‌شود؛ اگزواسکلتون غیرفعال دقیقاً در این سطح قرار می‌گیرد.\nشکاف سوم مستقیماً با خروجی فاز تعریف (تفهیم‌نامه طراحی) پاسخ داده می‌شود.",
+          "time": 75
+        }
+      ]
+    },
+    {
+      "id": "necessity", "icon": "pulse", "title": "ضرورت", "subtitle": "سرمایه انسانی، ایمنی بیمار و هزینه‌ها",
+      "slides": [
+        {
+          "layout": "columns",
+          "title": "ضرورت اجرای طرح",
+          "cols": [
+            { "icon": "user", "title": "سرمایه انسانی", "text": "تربیت جراح درون‌عروقی سال‌ها زمان و هزینه کلان می‌طلبد؛ اختلالات مزمن به غیبت طولانی و بازنشستگی پیش از موعد می‌انجامد." },
+            { "icon": "shield", "title": "ایمنی بیمار", "text": "خستگی و درد، تمرکز و مهارت حرکتی ظریف را مختل و ریسک خطای جراحی را زیاد می‌کند؛ پیش‌بند سربی حواس‌پرتی جراح را دو برابر می‌کند." },
+            { "icon": "coins", "title": "هزینه‌های درمان", "text": "کاهش اختلالات اسکلتی-عضلانی، هزینه غیبت‌های شغلی و لغو جراحی‌ها و رویه‌های مداخله‌ای را کاهش می‌دهد." }
+          ],
+          "quote": "«به‌آرامی دارد مرا از پا درمی‌آورد» — یکی از جراحان عروق",
+          "quoteSrc": "Paracha et al. 2024 · Qualitative study",
+          "notes": "ماهیت این آسیب‌ها مزمن و تجمعی است و اغلب تا زمان بروز آسیب جدی نادیده گرفته می‌شوند.\nاصطلاح «بیماری دیسک مداخله‌گر» برای شیوع بالای فتق دیسک در پزشکان کاربر پیش‌بند سربی در ادبیات تثبیت شده است.\nنظرسنجی SCAI (۲۰۲۳): ۶۶٪ اپراتورها درد اسکلتی-عضلانی را به پیش‌بند سربی نسبت داده‌اند و نزدیک به یک‌پنجم به دلیل آسیب، مرخصی گرفته‌اند.",
+          "time": 60
+        }
+      ]
+    },
+    {
+      "id": "objectives", "icon": "target", "title": "اهداف", "subtitle": "هدف کلی، چهار هدف اختصاصی و اهداف کاربردی",
+      "slides": [
+        {
+          "layout": "goals",
+          "title": "اهداف پژوهش",
+          "mainLabel": "هدف کلی",
+          "main": "طراحی اگزواسکلتون غیرفعال ارگونومیک پشتیبان پیش‌بند سربی برای جراحان درون‌عروقی، مبتنی بر مدل الماس دوگانه",
+          "specificLabel": "اهداف اختصاصی؛ هر هدف در یک فاز الماس دوگانه",
+          "specific": [
+            { "phase": "اکتشاف", "text": "مرور یکپارچه منابع و بررسی ساختارمند پتنت‌ها برای استخراج فهرست اولیه پارامترهای طراحی" },
+            { "phase": "تعریف", "text": "تعیین اجماع خبرگان و وزن‌دهی پارامترها برای تدوین تفهیم‌نامه طراحی" },
+            { "phase": "توسعه", "text": "تولید کانسپت‌های اولیه و انتخاب مستدل کانسپت برتر توسط پنل خبرگان" },
+            { "phase": "تحویل", "text": "مدل‌سازی سه‌بعدی، ارزیابی اولیه مهندسی (حرکت، تداخل، تنش) و استخراج نقشه‌های ساخت" }
+          ],
+          "appliedLabel": "اهداف کاربردی",
+          "applied": [
+            "چارچوب روش‌شناختی مستند و شفاف برای طراحی اگزواسکلتون‌های غیرفعال در محیط‌های بالینی",
+            "مدل سه‌بعدی پارامتریک و نقشه‌های ساخت مبتنی بر اجماع خبرگان، مرجع ساخت نمونه اولیه و ارزیابی بالینی"
+          ],
+          "notes": "هر هدف اختصاصی دقیقاً در یکی از چهار فاز الماس دوگانه جای می‌گیرد و خروجی هر فاز، ورودی فاز بعد است.\nاهداف کاربردی: چارچوب روش‌شناختی قابل استفاده برای طراحی سایر اگزواسکلتون‌های بالینی، و مدل و نقشه‌ها به‌عنوان مرجع تیم‌های طراحی، سازندگان و پژوهشگران.",
+          "time": 75
+        }
+      ]
+    },
+    {
+      "id": "questions", "icon": "help", "title": "سؤالات", "subtitle": "یک سؤال برای هر فاز الماس دوگانه",
+      "slides": [
+        {
+          "layout": "questions",
+          "title": "سؤالات پژوهش",
+          "lead": "مطالعه توسعه‌ای-کاربردی است و آزمون فرضیه آماری ندارد؛ بنابراین به‌جای فرضیه، چهار سؤال به تفکیک فازها دارد.",
+          "items": [
+            { "phase": "فاز اکتشاف", "en": "Discover", "text": "شواهد علمی و پتنت‌های مرتبط، کدام پارامترهای طراحی را برای اگزواسکلتون غیرفعال پشتیبان پیش‌بند سربی پیشنهاد می‌کنند؟" },
+            { "phase": "فاز تعریف", "en": "Define", "text": "از دیدگاه پنل خبرگان، کدام پارامترهای طراحی از بالاترین اولویت اجماعی برخوردارند؟" },
+            { "phase": "فاز توسعه", "en": "Develop", "text": "کدام کانسپت بر اساس ماتریس تصمیم‌گیری با مشارکت خبرگان، بهترین تعادل را میان پارامترهای وزن‌دار برقرار می‌کند؟" },
+            { "phase": "فاز تحویل", "en": "Deliver", "text": "مدل سه‌بعدی کانسپت منتخب در مطالعه حرکتی، بررسی تداخل و تحلیل مقدماتی تنش چه عملکردی نشان می‌دهد؟" }
+          ],
+          "notes": "به دلیل ماهیت توسعه‌ای-کاربردی و نبود آزمون فرضیه آماری، این مطالعه فرضیه ندارد.\nهر سؤال متناظر با یک فاز و یک هدف اختصاصی است؛ پاسخ هر سؤال، ورودی سؤال بعدی است.",
+          "time": 60
+        }
+      ]
+    },
+    {
+      "id": "literature", "icon": "book", "title": "مرور متون", "subtitle": "دو محور شواهد از ۲۰۱۹ تا ۲۰۲۶",
+      "slides": [
+        {
+          "layout": "timeline",
+          "title": "محور ۱: پیش‌بند سربی و اختلالات اسکلتی-عضلانی",
+          "items": [
+            { "year": "۲۰۱۹", "who": "Tetteh et al.", "text": "مرور دامنه‌ای: شواهد ناهمسو و ناکافی؛ نیاز به مطالعات آزمایشگاهی کنترل‌شده" },
+            { "year": "۲۰۲۰", "who": "Monaco et al.", "text": "مرور ۱۲ مطالعه مقطعی: اجماع علّی وجود ندارد؛ کیفیت شواهد متوسط" },
+            { "year": "۲۰۲۱", "who": "Davila et al.; Norasi et al.", "text": "حسگر IMU در ۴۷ عمل: حواس‌پرتی دو برابر؛ گردن و تنه پرخطرترین نواحی" },
+            { "year": "۲۰۲۲", "who": "Al-Makhamreh et al.; Akebi et al.", "text": "مقطعی: بیش از ۶۲٪ کمردرد مکرر؛ نسبت شانس ۷٫۸۷ در استفاده همیشگی" },
+            { "year": "۲۰۲۴", "who": "Paracha et al.", "text": "کیفی: عادات فردی و خودآموخته به‌جای مداخله ساختاریافته" },
+            { "year": "۲۰۲۵", "who": "Hout & Ryu; Hartung et al.", "text": "فراتحلیل: نسبت شانس ۳٫۸۳؛ شکایت کمر ۸۲٪ و گردن ۷۸٪", "hl": true },
+            { "year": "۲۰۲۶", "who": "Meredith et al.", "text": "Rampart Guardian: حذف پیش‌بند با حفاظت محیطی؛ اما ثابت و پرهزینه" }
+          ],
+          "takeaway": "ارتباط مواجهه با پیش‌بند سربی و اختلالات کمر، گردن و شانه تردید چندانی باقی نمی‌گذارد؛ اما راهکارهای فعلی ناکافی‌اند.",
+          "notes": "سیر شواهد: از مرورهای دامنه‌ای با نتایج ناهمسو، به مطالعات مقطعی با تحلیل چندمتغیره و نخستین فراتحلیل کمّی رسیده‌ایم.\nکیفیت کلی شواهد پایین است (طراحی عمدتاً مقطعی و خوداظهاری)، اما همگرایی یافته‌ها در کمر، گردن و کمربند شانه‌ای روشن است.\nهارتونگ (۴۶۱ پزشک): سابقه بیش از ۲۰ سال استفاده از پیش‌بند، احتمال محدودیت شانه و بازو را ۲٫۳ برابر می‌کند.\nRampart Guardian دوز جراح را به ۰٫۳ میلی‌رم رساند؛ اما محدودیت تحرک، هزینه سرمایه‌گذاری و انطباق با انواع مداخلات، جای راهکار پوشیدنی و مقرون‌به‌صرفه را خالی نگه می‌دارد.",
+          "time": 90
+        },
+        {
+          "layout": "timeline",
+          "title": "محور ۲: اگزواسکلتون در خدمت کادر درمان",
+          "items": [
+            { "year": "۲۰۲۰", "who": "Cha et al.", "text": "گروه تمرکز ۱۴ نفره: SUS برابر ۸۱٫۳؛ پذیرش وابسته به استریلیتی و سهولت پوشیدن" },
+            { "year": "۲۰۲۲", "who": "Zheng et al.", "text": "مرور انتقادی: کمبود اگزواسکلتون اختصاصی درمان؛ لزوم طراحی وظیفه‌محور" },
+            { "year": "۲۰۲۴", "who": "Choi et al.", "text": "شانه با جبران گرانش فنر-سیم: کاهش فعالیت دلتوئید و لرزش بازو" },
+            { "year": "۲۰۲۴", "who": "Hijmans et al.", "text": "گردن-تنه با تیر کربنی: پوشش بیش از ۸۹٪ دامنه حرکتی موردنیاز جراحی باز" },
+            { "year": "۲۰۲۵", "who": "Gao et al.", "text": "مرور ۹ مطالعه (۱۲۶ نفر): اثر وابسته به وظیفه؛ نبود پروتکل ارزیابی استاندارد" },
+            { "year": "۲۰۲۶", "who": "Kim et al. · NekSpine", "text": "۴۸ عمل واقعی: کاهش ناراحتی گردن و پوسچرهای پرخطر؛ ۹۱٫۷٪ تمایل به استفاده مجدد", "hl": true }
+          ],
+          "takeaway": "اگزواسکلتون‌های غیرفعال بار ستون فقرات، گردن و شانه را کم می‌کنند، اما اثرشان وظیفه‌محور است؛ هیچ‌کدام برای بار پیش‌بند سربی طراحی نشده‌اند.",
+          "notes": "چا و همکاران: دستیاران و پرستارانی که وضعیت ایستای طولانی دارند بیشترین سود را می‌برند.\nچوی: مکانیزم غیرفعال جبران گرانش، بدون موتور یا باتری، بار شانه را در وضعیت ایستای جراحی بازتوزیع می‌کند.\nهیجمانز: مدل‌سازی تحلیلی پیش از ساخت نمونه فیزیکی معتبر است؛ محدودیت آن همان چالش سازگاری بیومکانیکی است.\nکیم (NekSpine): نزدیک‌ترین نمونه از نظر بستر اجرا، اما برای جبران وزن سر در جراحی باز؛ بار ذهنی ادراک‌شده به دلیل منحنی یادگیری کمی افزایش یافت.",
+          "time": 90
+        }
+      ]
+    },
+    {
+      "id": "method", "icon": "diamond", "title": "روش", "subtitle": "مدل الماس دوگانه در چهار فاز",
+      "slides": [
+        {
+          "layout": "diamond",
+          "title": "نوع پژوهش و چارچوب الماس دوگانه",
+          "badges": ["مطالعه توسعه‌ای-کاربردی", "پژوهش طراحی و توسعه (DDR) نوع اول، محصول‌محور (Richey & Klein)"],
+          "diamonds": ["الماس نخست: از شواهد تا پارامترهای وزن‌دار", "الماس دوم: از کانسپت تا نمونه دیجیتال"],
+          "phases": [
+            { "fa": "اکتشاف", "en": "Discover", "mode": "واگرا", "out": "فهرست اولیه پارامترها و بانک اصول راه‌حل" },
+            { "fa": "تعریف", "en": "Define", "mode": "همگرا", "out": "پارامترهای مورد اجماع و وزن‌دار: تفهیم‌نامه طراحی" },
+            { "fa": "توسعه", "en": "Develop", "mode": "واگرا", "out": "کانسپت برتر با ماتریس پیو وزن‌دار" },
+            { "fa": "تحویل", "en": "Deliver", "mode": "همگرا", "out": "مدل سه‌بعدی پارامتریک و نقشه‌های ساخت" }
+          ],
+          "notes": "این پژوهش از نوع «پژوهش طراحی و توسعه» نوع اول یا محصول‌محور است: به‌جای آزمون فرضیه یا کشف رابطه علّی، یک مصنوع را به‌صورت نظام‌مند و مستند تولید می‌کند.\nداده‌ها ترکیبی‌اند: کیفی (مرور منابع)، اجماع‌محور (دلفی تعدیل‌شده) و کمّی (ماتریس تصمیم‌گیری چندمعیاره).\nمدل الماس دوگانه با تعادل میان تفکر واگرا و همگرا، به حل خلاقانه مسائل پیچیده کمک می‌کند؛ خروجی هر فاز ورودی مستقیم فاز بعد است.",
+          "time": 90
+        },
+        {
+          "layout": "flow",
+          "title": "الماس نخست: اکتشاف و تعریف",
+          "rows": [
+            { "phase": "اکتشاف", "en": "Discover", "ph": 1, "steps": [
+              [
+                { "title": "مرور یکپارچه متون", "sub": "پنج مرحله با رویکرد Whittemore & Knafl در پنج پایگاه داده علمی" },
+                { "title": "بررسی ساختارمند پتنت‌ها", "sub": "رهنمود WIPO و گزارش‌دهی RIPL در Google Patents، Espacenet و PATENTSCOPE" }
+              ],
+              { "title": "جدول یکپارچه پارامترها", "sub": "سینماتیک، دینامیک، ارگونومی، تنظیم‌پذیری، ایمنی + بانک اصول راه‌حل" }
+            ] },
+            { "phase": "تعریف", "en": "Define", "ph": 2, "steps": [
+              { "title": "دلفی تعدیل‌شده · دور اول", "sub": "امتیاز اهمیت روی مقیاس ۹ درجه‌ای + پرسش باز" },
+              { "title": "دور دوم", "sub": "بازامتیازدهی با بازخورد کنترل‌شده + توزیع ۱۰۰ امتیاز" },
+              { "title": "تفهیم‌نامه طراحی", "sub": "پارامترهای مورد اجماع، هر یک با وزن نهایی" }
+            ] }
+          ],
+          "chipIcon": "users",
+          "chip": "پنل خبرگان: ۱۵ نفر (۵ جراح درون‌عروقی، ۵ مهندس، ۵ متخصص ارگونومی)؛ دامنه قابل‌پذیرش ۱۲ تا ۱۸؛ حداقل ۹ نفر",
+          "notes": "مرور یکپارچه، یافته‌های مطالعات تجربی، نظری، شبیه‌سازی و موردی را ترکیب می‌کند. پتنت‌ها راه‌حل‌هایی را نشان می‌دهند که اغلب هرگز مقاله نمی‌شوند؛ اما فقط برای تکمیل فهرست پارامترها و اصول راه‌حل به کار می‌روند، نه قضاوت درباره اثربخشی.\nدلفی در دو دور ازپیش‌تعیین‌شده اجرا و پس از دور دوم متوقف می‌شود.\nاندازه پنل محاسبه نمی‌شود بلکه بر پایه شواهد تعیین می‌شود: ۱۵ نفر در دامنه بین چارکی مرور بولکدید (۱۱ تا ۳۱، میانه ۱۷) و همخوان با نزدیک‌ترین مطالعه موضوعی (کوپر، ۱۴ خبره).\nمعیار ورود جراحان: دست‌کم ۵ سال تجربه مداخلات تحت فلوروسکوپی با استفاده معمول از پیش‌بند سربی.",
+          "time": 105
+        },
+        {
+          "layout": "flow",
+          "title": "الماس دوم: توسعه و تحویل",
+          "rows": [
+            { "phase": "توسعه", "en": "Develop", "ph": 3, "steps": [
+              { "title": "تجزیه عملکردی", "sub": "دریافت بار، مسیر انتقال، اتصال به بدن، آزادی حرکت" },
+              { "title": "جدول ریخت‌شناسی", "sub": "ترکیب راه‌حل‌های سازگار ← کانسپت‌های کددار با اسکچ" },
+              { "title": "غربال پیو · دو اجرا", "sub": "«+»، «−» یا «S» نسبت به طرح مرجع؛ حذف کانسپت‌های مغلوب" },
+              { "title": "ماتریس پیو وزن‌دار", "sub": "ارزیابی پنل خبرگان روی مقیاس ارزش ۵ سطحی" }
+            ] },
+            { "phase": "تحویل", "en": "Deliver", "ph": 4, "steps": [
+              { "title": "مدل‌سازی پارامتریک", "sub": "SolidWorks · آنتروپومتری ایرانی، صدک ۵ زنان تا ۹۵ مردان" },
+              { "title": "ارزیابی اولیه مهندسی", "sub": "مطالعه حرکتی · تشخیص تداخل · تحلیل مقدماتی تنش" },
+              { "title": "خروجی‌های فنی", "sub": "رندر فوتورئالیستی · نمای انفجاری · نقشه‌های دوبعدی ساخت" }
+            ] }
+          ],
+          "chipIcon": "shield",
+          "chip": "کنترل سوگیری: کانسپت‌ها با کد تصادفی، ترتیب تصادفی و سبک ترسیم یکسان به خبرگان ارائه می‌شوند",
+          "notes": "تعداد کانسپت‌ها از پیش تعیین نمی‌شود و تابع ترکیب‌های سازگار جدول ریخت‌شناسی است.\nغربال پیو دو اجرا دارد: ابتدا با ساده‌ترین راه‌حل به‌عنوان مرجع، سپس با کانسپت برتر اجرای اول؛ حداکثر چهار کانسپت به ماتریس وزن‌دار می‌رسند.\nمدل پایه بر اساس صدک ۵۰ مردان ایرانی ساخته می‌شود و دامنه تنظیم، صدک ۵ زنان تا ۹۵ مردان را پوشش می‌دهد.\nتحلیل خستگی، بارگذاری دینامیک و تعامل بیومکانیکی انسان-اگزواسکلتون خارج از دامنه این پژوهش است.",
+          "time": 105
+        }
+      ]
+    },
+    {
+      "id": "analysis", "icon": "chart", "title": "تحلیل", "subtitle": "اجماع، وزن‌دهی و انتخاب کانسپت",
+      "slides": [
+        {
+          "layout": "consensus",
+          "title": "تحلیل دلفی: اجماع و وزن‌دهی",
+          "scaleTitle": "مقیاس ۹ درجه‌ای اهمیت (RAND/UCLA، GRADE، COMET)",
+          "bands": ["۱ تا ۳: کم‌اهمیت", "۴ تا ۶: مهم اما نه حیاتی", "۷ تا ۹: حیاتی"],
+          "rules": [
+            { "kind": "keep", "name": "حفظ", "text": "دست‌کم ۷۰٪ پاسخ‌ها در ۷ تا ۹ و حداکثر ۱۵٪ در ۱ تا ۳" },
+            { "kind": "drop", "name": "حذف", "text": "دست‌کم ۷۰٪ پاسخ‌ها در ۱ تا ۳ و حداکثر ۱۵٪ در ۷ تا ۹" },
+            { "kind": "none", "name": "فاقد اجماع", "text": "وارد وزن‌دهی نمی‌شود و جداگانه گزارش می‌شود" }
+          ],
+          "weightTitle": "وزن‌دهی: روش توزیع امتیاز سلسله‌مراتبی",
+          "wsteps": [
+            "هر خبره ۱۰۰ امتیاز را میان گروه‌های معنایی توزیع می‌کند",
+            "سپس در هر گروه، ۱۰۰ امتیاز میان پارامترهای همان گروه",
+            "وزن کلی پارامتر = وزن گروه × وزن درون‌گروهی",
+            "میانگین درون هر حوزه، سپس میانگین سه حوزه"
+          ],
+          "formula": "Wᵢ = ⅓ · (W₁ + W₂ + W₃)",
+          "formulaNote": "اندیس ۱ جراحی، ۲ مهندسی و ۳ ارگونومی؛ مجموع وزن‌ها برابر ۱",
+          "notes": "امتیاز ۹ درجه‌ای برای اهمیت و اجماع است، نه وزن؛ چون پارامترهای حفظ‌شده همه در ۷ تا ۹ متمرکزند و نرمال‌سازی آن‌ها وزن‌هایی تقریباً یکسان می‌دهد. پس وزن نسبی با روش توزیع امتیاز تعیین می‌شود.\nپارامترهای جدیدی که دست‌کم ۲۰٪ پاسخ‌دهندگان در دور اول پیشنهاد کنند، به دور دوم افزوده می‌شوند.\nمیانگین دومرحله‌ای (ابتدا درون هر حوزه، سپس میان سه حوزه) مانع غلبه یک حوزه در صورت افت نامتوازن اعضا می‌شود. میانه و دامنه بین چارکی فقط برای توصیف پراکندگی گزارش می‌شوند.",
+          "time": 75
+        },
+        {
+          "layout": "cards",
+          "title": "تحلیل انتخاب کانسپت و ارزیابی مهندسی",
+          "cards": [
+            { "icon": "filter", "title": "غربال پیو", "formula": "Net = (+) − (−)", "lines": [
+              "کانسپت بدون «+» و با دست‌کم یک «−» مغلوب است و حذف می‌شود",
+              "حذف کانسپت مغلوب بر نتیجه انتخاب نهایی اثری ندارد"
+            ] },
+            { "icon": "sliders", "title": "امتیاز وزنی کانسپت", "formula": "Score = Σ Wᵢ · Sᵢ", "lines": [
+              "Sᵢ: میانگین میانه امتیاز سه حوزه روی مقیاس ۱ تا ۵",
+              "اختلاف دو کانسپت برتر کمتر از ۰٫۴ ← تحلیل حساسیت تک‌عاملی با تغییر ±۲۰٪ وزن‌ها"
+            ] },
+            { "icon": "cube", "title": "ارزیابی اولیه مهندسی", "tone": "amber", "lines": [
+              "تداخل قطعات: معیار پذیرش، صفر تداخل پس از اصلاحات",
+              "تنش فون میسز در برابر حد تسلیم با ضریب ایمنی ازپیش‌تعیین‌شده",
+              "زیر بحرانی‌ترین بار ایستا: سنگین‌ترین پیش‌بند سربی"
+            ] },
+            { "icon": "check", "title": "بررسی انطباق با پارامترها", "tone": "amber", "lines": [
+              "برآورده · نسبتاً برآورده · غیرقابل‌ارزیابی در سطح دیجیتال",
+              "هر وضعیت همراه با شاهد: ابعاد مدل، مطالعه حرکتی، تداخل یا تنش"
+            ] }
+          ],
+          "notes": "کانسپت مغلوب در ارزیابی وزنی با هیچ بردار وزنی نمی‌تواند امتیازی بالاتر از طرح مرجع کسب کند؛ پس حذف آن پیش از وزن‌دهی بر نتیجه اثری ندارد.\nامتیاز هر حوزه، میانه امتیاز خبرگان آن حوزه است (مقیاس ترتیبی و گروه‌های کوچک) و امتیاز تجمیعی، میانگین سه حوزه است.\nتحلیل تنش با روش اجزای محدود استاتیک خطی در SolidWorks Simulation انجام می‌شود و بیشینه تنش، بیشینه جابه‌جایی و ضریب ایمنی قطعات باربر را گزارش می‌کند.",
+          "time": 75
+        }
+      ]
+    },
+    {
+      "id": "schedule", "icon": "calendar", "title": "زمان‌بندی", "subtitle": "برنامه هشت‌ماهه از تصویب تا دفاع",
+      "slides": [
+        {
+          "layout": "gantt",
+          "title": "برنامه زمان‌بندی: هشت ماه از تصویب تا دفاع",
+          "months": ["ماه ۱", "ماه ۲", "ماه ۳", "ماه ۴", "ماه ۵", "ماه ۶", "ماه ۷", "ماه ۸"],
+          "rows": [
+            { "label": "فاز ۱ · اکتشاف", "ph": 1, "start": 1, "end": 2 },
+            { "label": "فاز ۲ · تعریف (دلفی)", "ph": 2, "start": 3, "end": 5 },
+            { "label": "فاز ۳ · توسعه", "ph": 3, "start": 5, "end": 7 },
+            { "label": "فاز ۴ · تحویل", "ph": 4, "start": 7, "end": 8 },
+            { "label": "نگارش فصول پایان‌نامه", "ph": 0, "start": 2, "end": 8 },
+            { "label": "تدوین و ارسال مقاله مستخرج", "ph": 0, "start": 6, "end": 8 },
+            { "label": "همانندجویی، داوری و دفاع نهایی", "ph": 5, "start": 8, "end": 8 }
+          ],
+          "legend": [
+            { "ph": 1, "label": "الماس نخست" },
+            { "ph": 3, "label": "الماس دوم" },
+            { "ph": 0, "label": "گزارش‌دهی" },
+            { "ph": 5, "label": "دفاع" }
+          ],
+          "notes": "ماه ۱: جستجوی نظام‌مند پایگاه‌ها و جستجوی پتنت‌ها. ماه ۲: ارزیابی کیفیت، استخراج داده و تدوین جدول یکپارچه پارامترها.\nماه ۳: دعوت خبرگان و اجرای دور اول دلفی. ماه ۴: تحلیل دور اول و اجرای دور دوم. ماه ۵: تعیین اجماع، محاسبه وزن‌ها و تفهیم‌نامه طراحی؛ شروع جدول ریخت‌شناسی.\nماه ۶: غربال پیو و ارزیابی وزن‌دار. ماه ۷: انتخاب کانسپت برتر و شروع مدل‌سازی. ماه ۸: ارزیابی‌های مهندسی، رندر و نقشه‌ها، همانندجویی و دفاع.",
+          "time": 45
+        }
+      ]
+    },
+    {
+      "id": "conclusion", "icon": "flag", "title": "جمع‌بندی", "subtitle": "نوآوری، خروجی‌ها و بهره‌برداران",
+      "slides": [
+        {
+          "layout": "venn",
+          "title": "شکاف پژوهشی و نوآوری",
+          "a": "شواهد بار ارگونومیک پیش‌بند سربی",
+          "b": "شواهد اثربخشی اگزواسکلتون‌های غیرفعال",
+          "center": "پژوهش حاضر",
+          "innovTitle": "نوآوری در سه سطح",
+          "innov": [
+            { "level": "موضوع", "text": "انتقال بار پیش‌بند سربی، نه وزن ذاتی بدن یا سر" },
+            { "level": "جمعیت هدف", "text": "جراحان درون‌عروقی و پروفایل پوسچرال منحصربه‌فرد آن‌ها" },
+            { "level": "روش‌شناسی", "text": "مدل الماس دوگانه: گذار نظام‌مند و انسان‌محور از شواهد به کانسپت" }
+          ],
+          "notes": "هر دو جریان شواهد به‌طور مستقل به بلوغ نسبی رسیده‌اند، اما در محل تقاطعشان، یعنی مداخله فردی برای انتقال بار پیش‌بند سربی در جراحان درون‌عروقی، هیچ مطالعه‌ای یافت نشد.\nاگزواسکلتون‌های شانه‌محور تجاری برای وظایف بالای سر طراحی شده‌اند و با پروفایل پوسچرال جراحی درون‌عروقی (ایستادن طولانی و نسبتاً ثابت، دامنه حرکتی محدود دست‌ها، تمرکز بر مانیتور) همخوانی ندارند.",
+          "time": 60
+        },
+        {
+          "layout": "outputs",
+          "title": "خروجی‌ها و بهره‌برداران",
+          "outTitle": "خروجی‌های مورد انتظار",
+          "outputs": [
+            { "icon": "file", "text": "تفهیم‌نامه طراحی مبتنی بر اجماع خبرگان" },
+            { "icon": "cube", "text": "مدل سه‌بعدی پارامتریک با ارزیابی اولیه مهندسی" },
+            { "icon": "ruler", "text": "نقشه‌های دوبعدی ساخت مطابق استانداردهای نقشه‌کشی صنعتی" }
+          ],
+          "usersTitle": "بهره‌برداران",
+          "users": [
+            { "icon": "factory", "group": "صنعت و فناوری", "text": "شرکت‌های دانش‌بنیان، تولیدکنندگان تجهیزات پزشکی و مراکز رشد" },
+            { "icon": "school", "group": "آموزش و پژوهش", "text": "گروه‌های ارگونومی، مهندسی پزشکی، مکانیک و طراحی صنعتی" },
+            { "icon": "users", "group": "کاربران نهایی", "text": "جراحان عروق و درون‌عروقی و سایر کاربران پیش‌بند سربی" }
+          ],
+          "thanks": "سپاس از توجه شما",
+          "qa": "پرسش و پاسخ",
+          "notes": "خروجی نهایی یک پکیج کامل طراحی دیجیتال است که زمینه ساخت نمونه اولیه و ارزیابی بالینی در مطالعات آتی را فراهم می‌کند.\nملاحظات اخلاقی: هیچ مداخله‌ای روی بیمار یا بدن انسان نیست؛ مشارکت فقط پاسخ خبرگان به پرسش‌نامه الکترونیکی است. رضایت آگاهانه پیش از نمایش پرسش‌ها، ناشناس ماندن با کد، حق انصراف و ارسال خلاصه نتایج به خبرگان.\nمحدوده: تحلیل خستگی، بارگذاری دینامیک و تعامل بیومکانیکی انسان-اگزواسکلتون خارج از دامنه این پژوهش است.",
+          "time": 60
+        }
+      ]
+    }
+  ]
+}/*DATA:END*/;
+
+/* ═══ ۲. نسخه خام صفحه برای «ذخیره به‌صورت HTML» (پیش از هر تغییری در DOM گرفته می‌شود) ═══ */
+const SOURCE_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+/* ═══ ۳. ابزارهای کمکی ═══ */
+const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+const fa = v => String(v).replace(/\d/g, d => FA_DIGITS[d]);
+const toLatinDigits = s => String(s).replace(/[۰-۹]/g, d => FA_DIGITS.indexOf(d)).replace(/[٠-٩]/g, d => d.charCodeAt(0) - 0x660);
+const pad2 = n => String(n).padStart(2, '0');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const sum = arr => arr.reduce((a, b) => a + b, 0);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function fmtTime(sec) {
+  sec = Math.max(0, Math.round(sec));
+  return fa(Math.floor(sec / 60) + ':' + pad2(sec % 60));
+}
+function parseTime(str) {
+  const m = toLatinDigits(str).replace(/[٫.]/g, ':').trim().match(/^(\d{1,3})(?::(\d{1,2}))?$/);
+  if (!m) return null;
+  const s = m[2] == null ? 0 : +m[2];
+  return s < 60 ? (+m[1]) * 60 + s : null;
+}
+function hashStr(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+function getPath(obj, path) {
+  return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
+}
+function setPath(obj, path, val) {
+  const keys = path.split('.');
+  const last = keys.pop();
+  const parent = keys.reduce((o, k) => (o == null ? undefined : o[k]), obj);
+  if (parent && typeof parent === 'object') parent[last] = val;
+}
+function clock() {
+  const d = new Date();
+  return fa(pad2(d.getHours()) + ':' + pad2(d.getMinutes()));
+}
+
+/* ═══ ۴. آیکون‌های خطی (۲۴×۲۴، ضخامت یکسان) ═══ */
+const ICONS = {
+  weight: '<circle cx="12" cy="5.2" r="2.4"/><path d="M7.2 9h9.6l2.6 11H4.6z"/><path d="M9.5 14.5h5"/>',
+  pulse: '<path d="M3 12h4l2.5-6.5 4 13 2.5-6.5H21"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.3c-.7.4-1.2.9-1.2 1.7v.6"/><path d="M12 17.2h.01"/>',
+  book: '<path d="M12 6.6C10 5.1 7 4.6 3.5 5v13.2c3.5-.4 6.5.1 8.5 1.6 2-1.5 5-2 8.5-1.6V5c-3.5-.4-6.5.1-8.5 1.6z"/><path d="M12 6.6v13.2"/>',
+  diamond: '<path d="M1.8 12 6.9 6.6 12 12l-5.1 5.4z"/><path d="M12 12l5.1-5.4 5.1 5.4-5.1 5.4z"/>',
+  chart: '<path d="M3.5 20.5h17"/><path d="M6.5 17V11"/><path d="M11.5 17V5.5"/><path d="M16.5 17v-8"/>',
+  calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M7.5 14h4M7.5 17h7"/>',
+  flag: '<path d="M5.5 21V3.8"/><path d="M5.5 4.2h11.5l-2.2 4.3 2.2 4.3H5.5"/>',
+  user: '<circle cx="12" cy="8" r="3.8"/><path d="M4.5 20.5c.6-3.9 3.8-6.3 7.5-6.3s6.9 2.4 7.5 6.3"/>',
+  users: '<circle cx="9" cy="8.2" r="3.3"/><path d="M2.8 20c.5-3.5 3.1-5.6 6.2-5.6s5.7 2.1 6.2 5.6"/><path d="M15.8 5a3.3 3.3 0 0 1 0 6.4M17.6 14.6c2 .6 3.3 2.6 3.6 5.4"/>',
+  shield: '<path d="M12 3 5 5.8v5.4c0 4.4 3 8.2 7 9.8 4-1.6 7-5.4 7-9.8V5.8z"/><path d="m9 12.2 2.1 2.1 4-4.2"/>',
+  coins: '<ellipse cx="9.5" cy="7" rx="6" ry="2.8"/><path d="M3.5 7v4.6c0 1.6 2.7 2.8 6 2.8s6-1.2 6-2.8V7"/><path d="M8.5 16.6c.9.8 2.9 1.4 5.5 1.4 3.3 0 6-1.2 6-2.8v-4.6c0-1.2-1.6-2.3-3.9-2.7"/>',
+  cube: '<path d="M12 2.8 3.8 7.2v9.6l8.2 4.4 8.2-4.4V7.2z"/><path d="M3.8 7.2 12 11.6l8.2-4.4M12 11.6v9.6"/>',
+  file: '<path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3v4.5h4.5M8.8 12.5h6.4M8.8 16.2h4.4"/>',
+  ruler: '<path d="M3.5 16.8 16.8 3.5l3.7 3.7L7.2 20.5z"/><path d="m7.4 12.9 2 2M10.2 10.1l1.4 1.4M13 7.3l2 2"/>',
+  factory: '<path d="M3 20.5V10.2l5 3.1v-3.1l5 3.1V6.5h3.2l1-3h1.6l1 3H21v14z"/><path d="M7 17h2M12 17h2M17 17h1"/>',
+  school: '<path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.6v4.6c3.2 2.3 7.8 2.3 11 0v-4.6"/><path d="M21.5 9.5v5"/>',
+  check: '<path d="m5 12.6 4.4 4.4L19 7.4"/>',
+  x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  circleDash: '<circle cx="12" cy="12" r="7.5" stroke-dasharray="2.6 2.8"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.6"/><path d="M12 7.6h.01"/>',
+  filter: '<path d="M3.5 5h17l-6.6 7.6v6.1l-3.8 1.8v-7.9z"/>',
+  sliders: '<path d="M4 6.5h9M17 6.5h3M4 12h3M11 12h9M4 17.5h11M19 17.5h1"/><circle cx="15" cy="6.5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17.5" r="2"/>',
+  quote: '<path d="M10 7.5H6.5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2H9v.6a3 3 0 0 1-3 3"/><path d="M19.5 7.5H16a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2.5v.6a3 3 0 0 1-3 3"/>',
+  arrowL: '<path d="M19 12H5.5M11 6.2 5.2 12l5.8 5.8"/>',
+  arrowDown: '<path d="M12 5v13.5M6.2 13 12 18.8 17.8 13"/>',
+  grid: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/>',
+  chevL: '<path d="m14.5 6-6 6 6 6"/>',
+  chevR: '<path d="m9.5 6 6 6-6 6"/>',
+  pencil: '<path d="M4 20h4.2L19.4 8.8a2.1 2.1 0 0 0 0-3l-1.2-1.2a2.1 2.1 0 0 0-3 0L4 15.8z"/><path d="m13.5 6.5 4 4"/>',
+  download: '<path d="M12 3.5v11.5M7 10.2l5 5 5-5"/><path d="M4.5 19.5h15"/>',
+  upload: '<path d="M12 15V3.5M7 8.5l5-5 5 5"/><path d="M4.5 19.5h15"/>',
+  braces: '<path d="M8 4c-2 0-3 1-3 3v2.3c0 1.4-.8 2.3-2 2.7 1.2.4 2 1.3 2 2.7V17c0 2 1 3 3 3"/><path d="M16 4c2 0 3 1 3 3v2.3c0 1.4.8 2.3 2 2.7-1.2.4-2 1.3-2 2.7V17c0 2-1 3-3 3"/><path d="M12 8.5v7M9.5 13l2.5 2.5 2.5-2.5"/>',
+  reset: '<path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4.5v4.8h4.8"/>',
+  printer: '<path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v6.5H7z"/>',
+  expand: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  shrink: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
+  notes: '<rect x="4.5" y="3" width="15" height="18" rx="2.2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4.5"/>',
+  timer: '<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.8l2.4 1.6M9.5 2.8h5M12 2.8V6"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5z"/>',
+  pause: '<path d="M8.5 5.5v13M15.5 5.5v13"/>',
+  external: '<path d="M14 4h6v6M20 4l-8.5 8.5"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  eyeOff: '<path d="M3.5 3.5l17 17"/><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c5 0 8.5 4.4 9.5 6-.5.8-1.6 2.3-3.2 3.6M6.6 7.6C4.6 9 3.2 10.9 2.5 12c1 1.6 4.5 6 9.5 6 1.6 0 3-.4 4.3-1.1"/>',
+  dot: '<circle cx="12" cy="12" r="3"/>'
+};
+function icon(name, cls = '') {
+  return `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name] || ICONS.dot}</svg>`;
+}
+
+/* ═══ ۵. وضعیت برنامه و ذخیره‌سازی محلی ═══ */
+const STORE_KEY = 'exo-deck:' + hashStr(JSON.stringify(DATA));   // هر نسخه فایل، جای ذخیره جداگانه دارد
+const UI_KEY = 'exo-deck:ui';
+const PH = '+ متن';
+
+function validDeck(d) {
+  return !!(d && typeof d === 'object' && Array.isArray(d.sections) && d.sections.length &&
+    d.sections.every(s => s && typeof s === 'object' && Array.isArray(s.slides) && s.slides.length &&
+      s.slides.every(x => x && typeof x === 'object')));
+}
+function normalize(d) {
+  d.meta = Object.assign({}, DATA.meta, d.meta || {});
+  if (!d.cover || typeof d.cover !== 'object') d.cover = clone(DATA.cover);
+  if (!d.menu || typeof d.menu !== 'object') d.menu = clone(DATA.menu);
+  return d;
+}
+function storageGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+function storageSet(key, val) { try { localStorage.setItem(key, val); return true; } catch (e) { return false; } }
+function storageDel(key) { try { localStorage.removeItem(key); } catch (e) { /* نادیده */ } }
+
+function loadLocal() {
+  const raw = storageGet(STORE_KEY);
+  if (!raw) return null;
+  try {
+    const o = JSON.parse(raw);
+    return validDeck(o && o.data) ? normalize(o.data) : null;
+  } catch (e) { return null; }
+}
+const localData = loadLocal();
+let state = localData || clone(DATA);
+const restored = !!localData;
+
+const ui = Object.assign({ timerVisible: true, arrows: 'rtl' }, (() => {
+  try { return JSON.parse(storageGet(UI_KEY) || '{}') || {}; } catch (e) { return {}; }
+})());
+const saveUi = () => storageSet(UI_KEY, JSON.stringify(ui));
+
+let saveTimer = null;
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  setStatus('در حال ذخیره…');
+  saveTimer = setTimeout(saveLocal, 400);
+}
+function saveLocal() {
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  const ok = storageSet(STORE_KEY, JSON.stringify({ v: 1, savedAt: new Date().toISOString(), data: state }));
+  if (ok) setStatus('ذخیره شد، ساعت ' + clock());
+  else {
+    setStatus('ذخیره محلی ممکن نیست');
+    toast('مرورگر اجازه ذخیره محلی نداد؛ از «ذخیره به‌صورت HTML» یا «خروجی JSON» استفاده کنید.');
+  }
+}
+
+/* ═══ ۶. ساخت قالب‌ها: هر متن با data-path به یک فیلد DATA وصل است ═══ */
+function T(path, tag = 'span', cls = '', extra = '') {
+  const v = getPath(state, path);
+  const multi = /\.notes$/.test(path) ? ' data-multiline' : '';
+  return `<${tag} class="${cls}" data-path="${esc(path)}" data-ph="${PH}"${multi} ${extra}>${esc(v == null ? '' : v)}</${tag}>`;
+}
+const stage = $('#stage');
+let order = [];          // ترتیب خطی همه اسلایدها
+let slideEls = {};       // کلید ← عنصر اسلاید
+
+const parseKey = key => {
+  const m = /^s(\d+)-(\d+)$/.exec(key || '');
+  return m ? { si: +m[1], k: +m[2] } : null;
+};
+function slideData(key) {
+  if (key === 'cover') return state.cover;
+  if (key === 'menu') return state.menu;
+  const p = parseKey(key);
+  return p && state.sections[p.si] ? state.sections[p.si].slides[p.k] : null;
+}
+function dataPathOf(key) {
+  const p = parseKey(key);
+  return p ? `sections.${p.si}.slides.${p.k}` : key;
+}
+function titleOf(key) {
+  const d = slideData(key);
+  if (!d) return '';
+  if (key === 'cover') return (d.titleLines || []).join(' ');
+  return d.title || '';
+}
+function buildOrder() {
+  order = ['cover', 'menu'];
+  state.sections.forEach((s, si) => s.slides.forEach((_, k) => order.push(`s${si}-${k}`)));
+}
+function sectionTime(si) {
+  return sum(state.sections[si].slides.map(s => +s.time || 0));
+}
+
+/* پس‌زمینه‌های ظریف اسکلتی/مفصلی */
+const DECOR = {
+  a: `<svg class="decor decor-a" viewBox="0 0 520 360" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <circle cx="120" cy="240" r="92" stroke-dasharray="3 9"/><circle cx="120" cy="240" r="140" stroke-dasharray="1 10"/>
+    <path d="M120 240 300 140 452 222" stroke-width="5"/>
+    <circle cx="120" cy="240" r="17" class="pf"/><circle cx="120" cy="240" r="4" fill="currentColor"/>
+    <circle cx="300" cy="140" r="17" class="pf"/><circle cx="300" cy="140" r="4" fill="currentColor"/>
+    <circle cx="452" cy="222" r="12" class="pf"/>
+    <path d="M92 240h56M120 212v56"/><path d="M40 330h440" stroke-dasharray="2 7"/>
+    <path d="M120 312v28M452 312v28M120 326h332"/><path d="m130 321-10 5 10 5M442 321l10 5-10 5"/>
+    <path d="M300 140v-70M286 70h28"/></g></svg>`,
+  b: `<svg class="decor decor-b" viewBox="0 0 170 820" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    ${Array.from({ length: 18 }, (_, i) => `<rect x="52" y="${34 + i * 42}" width="52" height="28" rx="10"/><path d="M60 ${66 + i * 42}h36" stroke-dasharray="3 4"/>`).join('')}
+    <path d="M140 60v700" stroke-width="5"/><circle cx="140" cy="200" r="15" class="pf"/><circle cx="140" cy="200" r="4" fill="currentColor"/>
+    <circle cx="140" cy="560" r="15" class="pf"/><circle cx="140" cy="560" r="4" fill="currentColor"/>
+    <path d="M18 200h20M18 560h20M28 200v360" /></g></svg>`,
+  c: `<svg class="decor decor-c" viewBox="0 0 440 440" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <circle cx="0" cy="0" r="300" stroke-dasharray="2 9"/><circle cx="0" cy="0" r="230"/>
+    ${Array.from({ length: 10 }, (_, i) => { const a = (i * 10) * Math.PI / 180; return `<path d="M${(230 * Math.cos(a)).toFixed(1)} ${(230 * Math.sin(a)).toFixed(1)}L${(250 * Math.cos(a)).toFixed(1)} ${(250 * Math.sin(a)).toFixed(1)}"/>`; }).join('')}
+    <path d="M0 0 170 155" stroke-width="5"/><circle cx="170" cy="155" r="16" class="pf"/><circle cx="170" cy="155" r="4" fill="currentColor"/>
+    <path d="M170 155 300 185" stroke-width="5"/><circle cx="300" cy="185" r="11" class="pf"/></g></svg>`
+};
+
+/* تصویر جلد: پیکر انسانی، پیش‌بند سربی و قاب اگزواسکلتون با مسیر انتقال بار */
+const HERO_SVG = `<svg class="hero" viewBox="0 0 520 760" role="img" aria-label="طرح شماتیک اگزواسکلتون پشتیبان پیش‌بند سربی">
+  <defs><linearGradient id="hg-apron" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="stop-a"/><stop offset="1" class="stop-b"/></linearGradient></defs>
+  <circle class="hs-halo" cx="260" cy="350" r="215"/>
+  <g class="hs-cons"><circle cx="260" cy="350" r="250" stroke-dasharray="3 9"/><circle cx="260" cy="350" r="168"/><path d="M10 350h500M260 70v650" stroke-dasharray="2 8"/></g>
+  <circle class="hs-head" cx="260" cy="108" r="42"/>
+  <path class="hs-body" d="M232 150v22M288 150v22M140 228c0-30 30-50 68-56h104c38 6 68 26 68 56l-14 250c-3 40-20 70-40 90l-6 150M140 228l14 250c3 40 20 70 40 90l6 150"/>
+  <path class="hs-apron" fill="url(#hg-apron)" d="M182 206c52 22 104 22 156 0l20 400c-66 26-130 26-196 0z"/>
+  <g class="hs-spine">${Array.from({ length: 15 }, (_, i) => `<rect x="247" y="${186 + i * 22}" width="26" height="14" rx="5"/>`).join('')}</g>
+  <path class="hs-exo" d="M152 226c28-20 64-32 108-34 44 2 80 14 108 34"/>
+  <path class="hs-exo" d="M152 226c8 110 14 220 24 330M368 226c-8 110-14 220-24 330"/>
+  <rect class="hs-belt" x="150" y="540" width="220" height="36" rx="18"/>
+  <g class="hs-joint"><circle cx="152" cy="226" r="14"/><circle class="core" cx="152" cy="226" r="4.5"/><circle cx="368" cy="226" r="14"/><circle class="core" cx="368" cy="226" r="4.5"/>
+    <circle cx="176" cy="558" r="13"/><circle class="core" cx="176" cy="558" r="4.5"/><circle cx="344" cy="558" r="13"/><circle class="core" cx="344" cy="558" r="4.5"/></g>
+  <g class="hs-load"><path d="M222 300v60M213 349l9 11 9-11"/><path d="M298 300v60M289 349l9 11 9-11"/></g>
+  <g class="hs-path"><path d="M176 600v84M167 673l9 11 9-11"/><path d="M344 600v84M335 673l9 11 9-11"/></g>
+  <g class="hs-dim"><path d="M462 226v332M450 226h24M450 558h24"/><path d="m456 240 6-12 6 12M456 544l6 12 6-12"/></g>
+</svg>`;
+
+function footer(si, num, total) {
+  const dots = state.sections.map((_, i) => `<i class="${si === i ? 'on' : (si != null && i < si ? 'past' : '')}"></i>`).join('');
+  return `<footer class="slide-foot">${T('meta.deckTitle', 'span', 'foot-title')}<span class="foot-dots" aria-hidden="true">${dots}</span><span class="foot-num">${fa(num)} / ${fa(total)}</span></footer>`;
+}
+function slideHead(sec, si, k, P) {
+  const n = sec.slides.length;
+  return `<header class="slide-head">
+    <div class="kicker rv" style="--i:0">${icon(sec.icon)}<span class="kicker-num">${fa(pad2(si + 1))}</span>${T(`sections.${si}.title`)}<span class="kicker-sep">·</span><span class="kicker-count">اسلاید ${fa(k + 1)} از ${fa(n)}</span></div>
+    ${T(P + '.title', 'h2', 'h-title rv', 'style="--i:1"')}
+  </header>`;
+}
+
+/* ═══ ۷. چیدمان‌های اسلاید ═══ */
+const L = {};
+L.stats = (d, P) => `
+  ${T(P + '.lead', 'p', 'lead rv', 'style="--i:2"')}
+  <div class="stats">${(d.stats || []).map((s, j) => `
+    <div class="stat ${s.hl ? 'hl' : ''} rv" style="--i:${3 + j}">
+      ${T(`${P}.stats.${j}.pre`, 'div', 'stat-pre')}
+      <div class="stat-val">${T(`${P}.stats.${j}.value`, 'span', 'stat-num')}${T(`${P}.stats.${j}.unit`, 'span', 'stat-unit')}</div>
+      ${T(`${P}.stats.${j}.label`, 'div', 'stat-label')}
+      ${T(`${P}.stats.${j}.src`, 'div', 'stat-src', 'dir="ltr"')}
+    </div>`).join('')}
+  </div>
+  <div class="footnote rv" style="--i:8">${icon('info')}${T(P + '.foot')}</div>`;
+
+L.topgaps = (d, P) => `
+  <div class="split">
+    <div class="top-box rv" style="--i:2">
+      ${T(P + '.topTitle', 'div', 'box-title')}
+      <div class="top-levels">${(d.levels || []).map((lv, j, a) => `
+        <div class="top-level ${lv.hl ? 'hl' : ''}">
+          ${T(`${P}.levels.${j}.code`, 'span', 'top-code', 'dir="ltr"')}
+          <div>${T(`${P}.levels.${j}.name`, 'div', 'top-name')}${T(`${P}.levels.${j}.note`, 'div', 'top-note')}</div>
+          <span class="top-mark">${icon(lv.hl ? 'check' : 'x')}</span>
+        </div>${j < a.length - 1 ? `<div class="top-arrow">${icon('arrowDown')}</div>` : ''}`).join('')}
+      </div>
+    </div>
+    <div class="gaps rv" style="--i:3">
+      ${T(P + '.gapsTitle', 'div', 'box-title')}
+      <ol class="gap-list">${(d.gaps || []).map((g, j) => `<li class="rv" style="--i:${4 + j}"><span class="gap-n">${fa(j + 1)}</span>${T(`${P}.gaps.${j}`)}</li>`).join('')}</ol>
+    </div>
+  </div>`;
+
+L.columns = (d, P) => `
+  <div class="cols">${(d.cols || []).map((c, j) => `
+    <div class="col-card rv" style="--i:${2 + j}">
+      <div class="col-ico">${icon(c.icon)}</div>
+      ${T(`${P}.cols.${j}.title`, 'h3', 'col-title')}
+      ${T(`${P}.cols.${j}.text`, 'p', 'col-text')}
+    </div>`).join('')}
+  </div>
+  <figure class="quote rv" style="--i:6">${icon('quote', 'q-ico')}<blockquote>${T(P + '.quote')}</blockquote>${T(P + '.quoteSrc', 'figcaption', 'q-src', 'dir="ltr"')}</figure>`;
+
+L.goals = (d, P) => `
+  <div class="goal-main rv" style="--i:2"><div class="gm-ico">${icon('target')}</div><div>${T(P + '.mainLabel', 'div', 'gm-label')}${T(P + '.main', 'div', 'gm-text')}</div></div>
+  ${T(P + '.specificLabel', 'div', 'sub-label rv', 'style="--i:3"')}
+  <div class="goal-grid">${(d.specific || []).map((g, j) => `
+    <div class="goal ph${g.ph || j + 1} rv" style="--i:${4 + j}">
+      <div class="goal-top"><span class="goal-n">${fa(j + 1)}</span>${T(`${P}.specific.${j}.phase`, 'span', 'phase-chip')}</div>
+      ${T(`${P}.specific.${j}.text`, 'p', 'goal-text')}
+    </div>`).join('')}
+  </div>
+  <div class="applied rv" style="--i:8">${T(P + '.appliedLabel', 'span', 'applied-label')}${(d.applied || []).map((a, j) => `<span class="applied-item">${icon('check')}${T(`${P}.applied.${j}`)}</span>`).join('')}</div>`;
+
+L.questions = (d, P) => `
+  <div class="lead-note rv" style="--i:2">${icon('info')}${T(P + '.lead')}</div>
+  <div class="q-grid">${(d.items || []).map((q, j) => `
+    <div class="q-card ph${q.ph || j + 1} rv" style="--i:${3 + j}">
+      <div class="q-head"><span class="q-n">${fa(j + 1)}</span>${T(`${P}.items.${j}.phase`, 'span', 'q-phase')}${T(`${P}.items.${j}.en`, 'span', 'q-en', 'dir="ltr"')}</div>
+      ${T(`${P}.items.${j}.text`, 'p', 'q-text')}
+    </div>`).join('')}
+  </div>`;
+
+L.timeline = (d, P) => {
+  const items = d.items || [];
+  return `
+  <div class="tl" style="--n:${items.length}">
+    <div class="tl-line"></div>
+    ${items.map((it, j) => `
+    <div class="tl-item ${j % 2 ? 'down' : 'up'}${j === 0 ? ' first' : ''}${j === items.length - 1 ? ' last' : ''}${it.hl ? ' hl' : ''} rv" style="--i:${2 + j}">
+      <div class="tl-card">${T(`${P}.items.${j}.who`, 'div', 'tl-who', 'dir="ltr"')}${T(`${P}.items.${j}.text`, 'div', 'tl-text')}</div>
+      <div class="tl-stem"></div>
+      ${T(`${P}.items.${j}.year`, 'div', 'tl-dot')}
+    </div>`).join('')}
+  </div>
+  <div class="takeaway rv" style="--i:${3 + items.length}">${icon('flag')}${T(P + '.takeaway')}</div>`;
+};
+
+L.diamond = (d, P) => {
+  const ph = d.phases || [];
+  return `
+  <div class="dd">
+    <div class="dd-badges rv" style="--i:2">${(d.badges || []).map((b, j) => `<span class="dd-badge">${icon(j ? 'cube' : 'target')}${T(`${P}.badges.${j}`)}</span>`).join('')}</div>
+    <div class="dd-caps rv" style="--i:3">${T(P + '.diamonds.0', 'div')}${T(P + '.diamonds.1', 'div')}</div>
+    <div class="dd-fig rv" style="--i:4">
+      <svg class="dd-svg" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
+        <polygon class="f1" points="400,50 300,0 300,100"/><polygon class="f2" points="300,0 200,50 300,100"/>
+        <polygon class="f3" points="200,50 100,0 100,100"/><polygon class="f4" points="100,0 0,50 100,100"/>
+        <line class="mid" x1="300" y1="0" x2="300" y2="100"/><line class="mid" x1="100" y1="0" x2="100" y2="100"/>
+        <polygon class="o1" points="400,50 300,0 200,50 300,100"/><polygon class="o2" points="200,50 100,0 0,50 100,100"/>
+      </svg>
+      <div class="dd-labels">${ph.map((p, j) => `
+        <div class="dd-lab ${j % 2 ? 'con' : 'div'} ph${j + 1}">${T(`${P}.phases.${j}.fa`, 'div', 'dd-fa')}${T(`${P}.phases.${j}.en`, 'div', 'dd-en', 'dir="ltr"')}${T(`${P}.phases.${j}.mode`, 'div', 'dd-mode')}</div>`).join('')}
+      </div>
+    </div>
+    <div class="dd-outs">${ph.map((p, j) => `<div class="dd-out ph${j + 1} rv" style="--i:${5 + j}">${T(`${P}.phases.${j}.out`)}</div>`).join('')}</div>
+  </div>`;
+};
+
+const stepBox = path => `<div class="step">${T(path + '.title', 'div', 'step-t')}${T(path + '.sub', 'div', 'step-s')}</div>`;
+L.flow = (d, P) => `
+  <div class="flow">${(d.rows || []).map((row, r) => `
+    ${r ? `<div class="flow-link rv" style="--i:${2 + r * 2}">${icon('arrowDown')}</div>` : ''}
+    <div class="flow-row ph${row.ph || r + 1} rv" style="--i:${3 + r * 2}">
+      <div class="flow-phase">${T(`${P}.rows.${r}.phase`, 'div', 'fp-name')}${T(`${P}.rows.${r}.en`, 'div', 'fp-en', 'dir="ltr"')}</div>
+      <div class="flow-steps">${(row.steps || []).map((st, j) => `${j ? `<span class="flow-arrow">${icon('arrowL')}</span>` : ''}${Array.isArray(st)
+        ? `<div class="flow-par">${st.map((_, q) => stepBox(`${P}.rows.${r}.steps.${j}.${q}`)).join('')}</div>`
+        : stepBox(`${P}.rows.${r}.steps.${j}`)}`).join('')}
+      </div>
+    </div>`).join('')}
+  </div>
+  ${d.chip != null ? `<div class="chip-note rv" style="--i:8">${icon(d.chipIcon || 'info')}${T(P + '.chip')}</div>` : ''}`;
+
+L.consensus = (d, P) => `
+  <div class="cons">
+    <div class="cons-left rv" style="--i:2">
+      ${T(P + '.scaleTitle', 'div', 'box-title')}
+      <div class="scale9" aria-hidden="true">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<span class="sc b${n <= 3 ? 1 : n <= 6 ? 2 : 3}">${fa(n)}</span>`).join('')}</div>
+      <div class="scale-bands">${(d.bands || []).map((b, j) => T(`${P}.bands.${j}`, 'div', 'band')).join('')}</div>
+      <div class="rules">${(d.rules || []).map((r, j) => `
+        <div class="rule ${esc(r.kind)}">
+          <span class="rule-ico">${icon(r.kind === 'keep' ? 'check' : r.kind === 'drop' ? 'x' : 'circleDash')}</span>
+          ${T(`${P}.rules.${j}.name`, 'span', 'rule-name')}
+          ${T(`${P}.rules.${j}.text`, 'span', 'rule-text')}
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="cons-right rv" style="--i:3">
+      ${T(P + '.weightTitle', 'div', 'box-title')}
+      <ol class="wsteps">${(d.wsteps || []).map((w, j) => `<li><span class="ws-n">${fa(j + 1)}</span>${T(`${P}.wsteps.${j}`)}</li>`).join('')}</ol>
+      <div class="formula">${T(P + '.formula', 'div', 'f-main', 'dir="ltr"')}${T(P + '.formulaNote', 'div', 'f-note')}</div>
+    </div>
+  </div>`;
+
+L.cards = (d, P) => `
+  <div class="cards">${(d.cards || []).map((c, j) => `
+    <div class="card ${c.tone === 'amber' ? 'amber' : ''} rv" style="--i:${2 + j}">
+      <div class="card-head"><span class="card-ico">${icon(c.icon)}</span>${T(`${P}.cards.${j}.title`, 'h3', 'card-title')}</div>
+      ${c.formula != null ? T(`${P}.cards.${j}.formula`, 'div', 'formula-inline', 'dir="ltr"') : ''}
+      <ul class="card-lines">${(c.lines || []).map((l, q) => `<li>${T(`${P}.cards.${j}.lines.${q}`)}</li>`).join('')}</ul>
+    </div>`).join('')}
+  </div>`;
+
+L.gantt = (d, P) => {
+  const months = d.months || [];
+  const m = months.length || 1;
+  return `
+  <div class="gantt rv" style="--i:2;--m:${m}">
+    <div class="g-row g-head"><div class="g-label"></div>${months.map((_, j) => T(`${P}.months.${j}`, 'div', 'g-month', `style="grid-column:${j + 2}"`)).join('')}</div>
+    ${(d.rows || []).map((r, j) => {
+      const s = clamp(+r.start || 1, 1, m), e = clamp(+r.end || s, s, m);
+      return `<div class="g-row">
+        <div class="g-label"><span class="g-dot ph${r.ph != null ? r.ph : 0}"></span>${T(`${P}.rows.${j}.label`)}</div>
+        ${months.map((_, q) => `<div class="g-cell" style="grid-column:${q + 2}"></div>`).join('')}
+        <div class="g-bar ph${r.ph != null ? r.ph : 0}" style="grid-column:${s + 1} / ${e + 2};--i:${3 + j}"></div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="legend rv" style="--i:12">${(d.legend || []).map((l, j) => `<span class="lg"><i class="g-dot ph${l.ph}"></i>${T(`${P}.legend.${j}.label`)}</span>`).join('')}</div>`;
+};
+
+L.venn = (d, P, key) => `
+  <div class="venn-wrap">
+    <div class="venn rv" style="--i:2">
+      <svg viewBox="0 0 680 440" aria-hidden="true">
+        <defs><clipPath id="vclip-${key}"><circle cx="430" cy="220" r="200"/></clipPath></defs>
+        <circle class="vc-a" cx="430" cy="220" r="200"/><circle class="vc-b" cx="250" cy="220" r="200"/>
+        <circle class="vc-x" cx="250" cy="220" r="200" clip-path="url(#vclip-${key})"/>
+        <circle class="vc-ol" cx="430" cy="220" r="200"/><circle class="vc-ol" cx="250" cy="220" r="200"/>
+      </svg>
+      ${T(P + '.a', 'div', 'vl vl-a')}${T(P + '.b', 'div', 'vl vl-b')}
+      <div class="vl vl-x">${icon('target')}${T(P + '.center')}</div>
+    </div>
+    <div class="innov">
+      ${T(P + '.innovTitle', 'div', 'box-title rv', 'style="--i:3"')}
+      ${(d.innov || []).map((n, j) => `<div class="innov-item rv" style="--i:${4 + j}"><span class="in-n">${fa(j + 1)}</span><div>${T(`${P}.innov.${j}.level`, 'div', 'in-level')}${T(`${P}.innov.${j}.text`, 'div', 'in-text')}</div></div>`).join('')}
+    </div>
+  </div>`;
+
+L.outputs = (d, P) => `
+  <div class="out-grid">
+    ${T(P + '.outTitle', 'div', 'sub-label rv', 'style="--i:2"')}
+    <div class="out-row">${(d.outputs || []).map((o, j) => `<div class="out-card rv" style="--i:${3 + j}"><span class="out-ico">${icon(o.icon)}</span>${T(`${P}.outputs.${j}.text`, 'div', 'out-text')}</div>`).join('')}</div>
+    ${T(P + '.usersTitle', 'div', 'sub-label rv', 'style="--i:6"')}
+    <div class="users-row">${(d.users || []).map((u, j) => `<div class="user-card rv" style="--i:${7 + j}"><span class="user-ico">${icon(u.icon)}</span><div>${T(`${P}.users.${j}.group`, 'div', 'user-group')}${T(`${P}.users.${j}.text`, 'div', 'user-text')}</div></div>`).join('')}</div>
+  </div>
+  <div class="thanks rv" style="--i:10">${T(P + '.thanks', 'div', 'thanks-main')}${T(P + '.qa', 'div', 'thanks-qa')}</div>`;
+
+L.bullets = (d, P) => `<ul class="bullets">${(d.bullets || []).map((b, j) => `<li class="rv" style="--i:${2 + j}">${T(`${P}.bullets.${j}`)}</li>`).join('')}</ul>`;
+
+/* ═══ ۸. ساخت کل ارائه ═══ */
+function renderCover(total) {
+  const c = state.cover;
+  return `<section class="slide slide-cover" data-key="cover" role="group" aria-roledescription="اسلاید" aria-label="جلد">
+    ${DECOR.c}
+    <div class="cover-grid">
+      <div class="cover-text">
+        <div class="cover-org rv" style="--i:0">${icon('school')}${T('cover.university')}<span class="dot-sep"></span>${T('cover.faculty')}</div>
+        ${T('cover.kicker', 'div', 'cover-kicker rv', 'style="--i:1"')}
+        <h1 class="cover-title rv" style="--i:2">${(c.titleLines || []).map((l, j) => T(`cover.titleLines.${j}`, 'span', `tl${j + 1}`)).join('')}</h1>
+        ${T('cover.titleEn', 'p', 'cover-en rv', 'dir="ltr" style="--i:3"')}
+        <div class="people rv" style="--i:4">${(c.people || []).map((p, j) => `<div class="person">${T(`cover.people.${j}.role`, 'div', 'p-role')}${T(`cover.people.${j}.name`, 'div', 'p-name')}</div>`).join('')}</div>
+        <div class="kw rv" style="--i:5">${(c.keywords || []).map((k, j) => T(`cover.keywords.${j}`, 'span', 'kw-chip')).join('')}</div>
+      </div>
+      <div class="cover-art rv" style="--i:3">${HERO_SVG}</div>
+    </div>
+    <div class="cover-hint" aria-hidden="true"></div>
+  </section>`;
+}
+function renderMenu(total) {
+  return `<section class="slide slide-menu" data-key="menu" role="group" aria-roledescription="اسلاید" aria-label="منو">
+    ${DECOR.a}
+    <header class="menu-head">
+      <div>${T('menu.title', 'h2', 'h-title rv', 'style="--i:0"')}${T('menu.subtitle', 'p', 'menu-sub rv', 'style="--i:1"')}</div>
+      <div class="menu-legend rv" style="--i:1"><span class="lg-next">${T('menu.nextLabel')}</span><span class="lg-done">${icon('check')}${T('menu.doneLabel')}</span></div>
+    </header>
+    <div class="tiles">${state.sections.map((s, si) => `
+      <article class="tile rv" style="--i:${2 + si}" data-si="${si}" role="button" tabindex="0" aria-label="${esc(s.title)}">
+        <div class="tile-ico">${icon(s.icon)}</div>
+        <div class="tile-num" aria-hidden="true">${fa(pad2(si + 1))}</div>
+        ${T(`sections.${si}.title`, 'h3', 'tile-title')}
+        ${T(`sections.${si}.subtitle`, 'p', 'tile-sub')}
+        <div class="tile-meta"><span class="tile-count" data-si="${si}"></span><span class="tile-state"><span class="st-next">${T('menu.nextLabel')}</span><span class="st-done">${icon('check')}${T('menu.doneLabel')}</span></span></div>
+      </article>`).join('')}
+    </div>
+    ${footer(null, 2, total)}
+  </section>`;
+}
+function renderSlide(sec, si, sl, k, num, total) {
+  const key = `s${si}-${k}`;
+  const P = `sections.${si}.slides.${k}`;
+  const layout = L[sl.layout] ? sl.layout : 'bullets';
+  const deco = DECOR[['a', 'b', 'c'][num % 3]];
+  return `<section class="slide layout-${layout}" data-key="${key}" role="group" aria-roledescription="اسلاید" aria-label="${esc(sl.title || '')}">
+    ${deco}
+    ${slideHead(sec, si, k, P)}
+    <div class="slide-body">${L[layout](sl, P, key)}</div>
+    ${footer(si, num, total)}
+  </section>`;
+}
+function buildDeck() {
+  buildOrder();
+  const total = order.length;
+  let html = renderCover(total) + renderMenu(total);
+  state.sections.forEach((sec, si) => sec.slides.forEach((sl, k) => {
+    html += renderSlide(sec, si, sl, k, order.indexOf(`s${si}-${k}`) + 1, total);
+  }));
+  stage.innerHTML = html;
+  slideEls = {};
+  $$('.slide', stage).forEach(el => { slideEls[el.dataset.key] = el; });
+  updateTileCounts();
+  updateCoverHint();
+  buildProgress();
+  applyEditable(stage);
+}
+function updateTileCounts() {
+  $$('.tile-count', stage).forEach(el => {
+    const si = +el.dataset.si;
+    el.textContent = `${fa(state.sections[si].slides.length)} اسلاید، ${fmtTime(sectionTime(si))} دقیقه`;
+  });
+}
+
+/* ═══ ۹. ناوبری و زوم ═══ */
+const nav = { key: 'cover', cursor: 0, visited: new Set(), busy: false };
+let scale = 1;
+let fluid = false;
+
+function show(key, opts = {}) {
+  const el = slideEls[key];
+  if (!el) return;
+  const prevEl = slideEls[nav.key];
+  if (prevEl && prevEl !== el) prevEl.classList.remove('active');
+  el.style.setProperty('--dx', opts.dir > 0 ? (ui.arrows === 'rtl' ? '-34px' : '34px') : opts.dir < 0 ? (ui.arrows === 'rtl' ? '34px' : '-34px') : '0px');
+  el.classList.toggle('no-reveal', !!opts.noReveal);
+  if (prevEl === el) { el.classList.remove('active'); void el.offsetWidth; }
+  el.classList.add('active');
+  nav.key = key;
+  const p = parseKey(key);
+  if (p) { nav.visited.add(p.si); nav.cursor = p.si; }
+  if (fluid) window.scrollTo(0, 0);
+  if (opts.user && key !== 'cover' && !timer.started) startTimer();
+  updateMenuState();
+  updateProgress();
+  renderNotes();
+  updatePace();
+  updatePresenter();
+  announce();
+  try { history.replaceState(null, '', '#' + key); } catch (e) { /* file:// در برخی مرورگرها */ }
+}
+
+function next() {
+  if (nav.busy) return;
+  const key = nav.key;
+  if (key === 'cover') return show('menu', { dir: 1, user: true });
+  if (key === 'menu') {
+    if (nav.cursor < state.sections.length) return zoomIn(nav.cursor, 0);
+    return toast('پایان ارائه — سپاس از توجه شما');
+  }
+  const { si, k } = parseKey(key);
+  if (k < state.sections[si].slides.length - 1) return show(`s${si}-${k + 1}`, { dir: 1, user: true });
+  return zoomOut(si, si + 1);          // پایان بخش ← زوم معکوس به منو
+}
+function prev() {
+  if (nav.busy) return;
+  const key = nav.key;
+  if (key === 'cover') return;
+  if (key === 'menu') {
+    if (nav.visited.size && nav.cursor > 0) {
+      const si = nav.cursor - 1;
+      return zoomIn(si, state.sections[si].slides.length - 1);
+    }
+    return show('cover', { dir: -1, user: true });
+  }
+  const { si, k } = parseKey(key);
+  if (k > 0) return show(`s${si}-${k - 1}`, { dir: -1, user: true });
+  return zoomOut(si, si);
+}
+function goMenu() {
+  if (nav.busy) return;
+  const p = parseKey(nav.key);
+  if (p) return zoomOut(p.si, p.si);
+  if (nav.key === 'cover') show('menu', { dir: 1, user: true });
+}
+function goTo(key) {
+  if (nav.busy || !slideEls[key]) return;
+  show(key, { user: true });
+}
+
+function stageRect() {
+  if (fluid) return { left: 0, top: 0, right: innerWidth, bottom: innerHeight, width: innerWidth, height: innerHeight };
+  return stage.getBoundingClientRect();
+}
+function makeOverlay(si) {
+  const sec = state.sections[si];
+  const s = stageRect();
+  const ov = document.createElement('div');
+  ov.id = 'zoom-layer';
+  ov.setAttribute('aria-hidden', 'true');
+  ov.innerHTML = `<div class="zf">${icon(sec.icon, 'zf-ico')}<div class="zf-num">${fa(pad2(si + 1))}</div><div class="zf-title">${esc(sec.title)}</div></div>`;
+  Object.assign(ov.style, { left: s.left + 'px', top: s.top + 'px', width: s.width + 'px', height: s.height + 'px' });
+  ov.style.setProperty('--sc', fluid ? Math.min(innerWidth / 1100, 1) : scale);
+  document.body.appendChild(ov);
+  return { ov, s, face: $('.zf', ov) };
+}
+function zoomGeometry(tile, s) {
+  const r = tile.getBoundingClientRect();
+  const rad = 22 * (fluid ? 1 : scale);
+  const inset = `inset(${Math.max(0, r.top - s.top)}px ${Math.max(0, s.right - r.right)}px ${Math.max(0, s.bottom - r.bottom)}px ${Math.max(0, r.left - s.left)}px round ${rad}px)`;
+  const dx = (r.left + r.width / 2) - (s.left + s.width / 2);
+  const dy = (r.top + r.height / 2) - (s.top + s.height / 2);
+  return { inset, face: `translate(${dx}px, ${dy}px) scale(.42)` };
+}
+const FULL = 'inset(0px 0px 0px 0px round 0px)';
+
+async function zoomIn(si, k = 0) {
+  const key = `s${si}-${k}`;
+  if (nav.busy || !slideEls[key]) return;
+  const tile = $(`.tile[data-si="${si}"]`, slideEls.menu);
+  if (nav.key !== 'menu' || !tile || reduceMotion.matches || !Element.prototype.animate) {
+    return show(key, { user: true });
+  }
+  nav.busy = true;
+  const { ov, s, face } = makeOverlay(si);
+  try {
+    const g = zoomGeometry(tile, s);
+    const ease = 'cubic-bezier(.2,.7,.2,1)';
+    const a1 = ov.animate([{ clipPath: g.inset, opacity: 0 }, { clipPath: g.inset, opacity: 1, offset: .12 }, { clipPath: FULL, opacity: 1 }], { duration: 440, easing: ease, fill: 'forwards' });
+    const a2 = face.animate([{ transform: g.face, opacity: 0 }, { opacity: 1, offset: .35 }, { transform: 'none', opacity: 1 }], { duration: 440, easing: ease, fill: 'forwards' });
+    await Promise.all([a1.finished, a2.finished]);
+    show(key, { user: true });
+    await ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-out', fill: 'forwards' }).finished;
+  } catch (e) {
+    show(key, { user: true });
+  } finally {
+    ov.remove();
+    nav.busy = false;
+  }
+}
+async function zoomOut(si, nextCursor) {
+  if (nav.busy) return;
+  const done = () => {
+    nav.cursor = clamp(nextCursor, 0, state.sections.length);
+    updateMenuState();
+    updateProgress();
+    updatePace();
+    renderNotes();
+    updatePresenter();
+  };
+  if (reduceMotion.matches || !Element.prototype.animate) {
+    show('menu', { user: true });
+    done();
+    return;
+  }
+  nav.busy = true;
+  const { ov, s, face } = makeOverlay(si);
+  try {
+    ov.style.clipPath = FULL;
+    await ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 110, easing: 'ease-out', fill: 'forwards' }).finished;
+    show('menu', { noReveal: true, user: true });
+    done();
+    const tile = $(`.tile[data-si="${si}"]`, slideEls.menu);
+    if (tile) {
+      const g = zoomGeometry(tile, s);
+      const ease = 'cubic-bezier(.4,0,.2,1)';
+      const a1 = ov.animate([{ clipPath: FULL }, { clipPath: g.inset }], { duration: 360, easing: ease, fill: 'forwards' });
+      const a2 = face.animate([{ transform: 'none', opacity: 1 }, { transform: g.face, opacity: .4 }], { duration: 360, easing: ease, fill: 'forwards' });
+      await Promise.all([a1.finished, a2.finished]);
+      await ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 130, easing: 'ease-in', fill: 'forwards' }).finished;
+      tile.classList.remove('pulse');
+      void tile.offsetWidth;
+      tile.classList.add('pulse');
+      setTimeout(() => tile.classList.remove('pulse'), 950);
+    }
+  } catch (e) {
+    if (nav.key !== 'menu') { show('menu', { user: true }); done(); }
+  } finally {
+    ov.remove();
+    nav.busy = false;
+  }
+}
+
+function updateMenuState() {
+  if (!slideEls.menu) return;
+  $$('.tile', slideEls.menu).forEach(t => {
+    const si = +t.dataset.si;
+    t.classList.toggle('is-done', nav.visited.has(si));
+    t.classList.toggle('is-next', si === nav.cursor && nav.cursor < state.sections.length);
+  });
+}
+function updateCoverHint() {
+  const h = $('.cover-hint', stage);
+  if (h) h.innerHTML = `برای شروع <kbd>Space</kbd> یا <kbd>${ui.arrows === 'rtl' ? '←' : '→'}</kbd> را بزنید · راهنما <kbd>?</kbd>`;
+}
+
+/* نوار پیشرفت و نشانگر بخش */
+const progress = $('#progress');
+function progressIndex() {
+  if (nav.key === 'menu') {
+    if (!nav.visited.size) return 1;
+    if (nav.cursor >= state.sections.length) return order.length - 1;
+    return Math.max(1, order.indexOf(`s${nav.cursor}-0`) - 1);
+  }
+  return Math.max(0, order.indexOf(nav.key));
+}
+function buildProgress() {
+  const N = order.length - 1;
+  progress.innerHTML = `<div class="pg-band"></div><div class="pg-fill"></div>` +
+    state.sections.map((_, si) => `<div class="pg-tick" style="inset-inline-start:${(order.indexOf(`s${si}-0`) - .5) / N * 100}%"></div>`).join('');
+}
+function updateProgress() {
+  const N = order.length - 1;
+  $('.pg-fill', progress).style.width = (progressIndex() / N * 100) + '%';
+  const band = $('.pg-band', progress);
+  const p = parseKey(nav.key);
+  const si = p ? p.si : (nav.key === 'menu' && nav.cursor < state.sections.length ? nav.cursor : -1);
+  if (si < 0) { band.style.width = '0'; return; }
+  const a = order.indexOf(`s${si}-0`) - .5;
+  const b = order.indexOf(`s${si}-${state.sections[si].slides.length - 1}`) + .5;
+  band.style.insetInlineStart = (a / N * 100) + '%';
+  band.style.width = ((Math.min(b, N) - a) / N * 100) + '%';
+}
+function announce() {
+  const i = order.indexOf(nav.key);
+  $('#sr').textContent = `اسلاید ${fa(i + 1)} از ${fa(order.length)}: ${titleOf(nav.key)}`;
+}
+
+/* ═══ ۱۰. مقیاس‌دهی و حالت واکنش‌گرا ═══ */
+function fit() {
+  const w = innerWidth, h = innerHeight;
+  const wasFluid = fluid;
+  fluid = w < 700 || (w < 1000 && w / h < 1.15);
+  document.body.classList.toggle('fluid', fluid);
+  scale = fluid ? 1 : Math.min(w / 1600, h / 900);
+  stage.style.setProperty('--scale', scale);
+  if (wasFluid !== fluid && fluid) window.scrollTo(0, 0);
+}
+let fitRaf = 0;
+addEventListener('resize', () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(fit); });
+
+/* ═══ ۱۱. تایمر ۲۰ دقیقه‌ای و سنجش سرعت ارائه ═══ */
+const timer = { elapsed: 0, running: false, started: false, last: 0 };
+const timerEl = $('#timer');
+function timerTotal() { return (+state.meta.durationMin || 20) * 60; }
+function buildTimer() {
+  timerEl.innerHTML = `
+    <div class="tm-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="tm-track" cx="60" cy="60" r="50"/><circle class="tm-prog" cx="60" cy="60" r="50" pathLength="100"/></svg></div>
+    <div class="tm-text"><div class="tm-time" aria-live="off"></div><div class="tm-pace"></div></div>
+    <div class="tm-ctrl">
+      <button class="tb-btn" data-act="timerToggle" aria-label="شروع یا توقف تایمر"></button>
+      <button class="tb-btn" data-act="timerReset" aria-label="صفر کردن تایمر">${icon('reset')}</button>
+      <button class="tb-btn" data-act="timer" aria-label="مخفی کردن تایمر (T)">${icon('eyeOff')}</button>
+    </div>`;
+  timerEl.hidden = !ui.timerVisible;
+  renderTimer();
+}
+function tick() {
+  if (timer.running) {
+    const now = performance.now();
+    timer.elapsed += (now - timer.last) / 1000;
+    timer.last = now;
+  }
+  renderTimer();
+}
+function startTimer() {
+  if (timer.running) return;
+  timer.running = true;
+  timer.started = true;
+  timer.last = performance.now();
+  renderTimer();
+}
+function pauseTimer() {
+  tick();
+  timer.running = false;
+  renderTimer();
+}
+function resetTimer() {
+  timer.running = false;
+  timer.started = false;
+  timer.elapsed = 0;
+  renderTimer();
+}
+let lastTimerText = '';
+function renderTimer() {
+  const total = timerTotal();
+  const remain = total - timer.elapsed;
+  const over = remain < 0;
+  const text = (over ? '+' : '') + fmtTime(Math.abs(over ? Math.floor(-remain) : Math.ceil(remain)));
+  const t = $('.tm-time', timerEl);
+  if (!t) return;
+  if (text !== lastTimerText) { t.textContent = text; lastTimerText = text; }
+  $('.tm-prog', timerEl).style.strokeDashoffset = String(100 * clamp(timer.elapsed / total, 0, 1));
+  timerEl.classList.toggle('warn', !over && remain <= 300);
+  timerEl.classList.toggle('over', over);
+  const btn = $('[data-act="timerToggle"]', timerEl);
+  const want = timer.running ? 'pause' : 'play';
+  if (btn.dataset.state !== want) {
+    btn.dataset.state = want;
+    btn.innerHTML = icon(want);
+    btn.setAttribute('aria-label', timer.running ? 'توقف تایمر' : 'شروع تایمر');
+  }
+  updatePace();
+  updatePresenterTimer(text);
+}
+function planWindow() {
+  const times = order.map(k => +((slideData(k) || {}).time) || 0);
+  if (nav.key === 'menu' && nav.visited.size) {
+    const j = nav.cursor < state.sections.length ? order.indexOf(`s${nav.cursor}-0`) : order.length;
+    const start = sum(times.slice(0, j));
+    return [start, start];
+  }
+  const i = Math.max(0, order.indexOf(nav.key));
+  const start = sum(times.slice(0, i));
+  return [start, start + times[i]];
+}
+let lastPace = '';
+function updatePace() {
+  const el = $('.tm-pace', timerEl);
+  if (!el) return;
+  let text = 'باقی‌مانده · شروع با اسلاید بعد', cls = '';
+  if (timer.started) {
+    const [a, b] = planWindow();
+    const e = timer.elapsed;
+    if (e > b + 10) { text = fmtTime(e - b) + ' عقب‌تر از برنامه'; cls = 'behind'; }
+    else if (e < a - 10) { text = fmtTime(a - e) + ' جلوتر از برنامه'; cls = 'ahead'; }
+    else { text = 'مطابق برنامه'; cls = 'ontrack'; }
+    if (timer.elapsed > timerTotal()) { text = 'زمان اضافه، ' + text; }
+  }
+  if (text + cls !== lastPace) {
+    el.textContent = text;
+    el.className = 'tm-pace ' + cls;
+    lastPace = text + cls;
+  }
+}
+setInterval(tick, 250);
+
+/* ═══ ۱۲. یادداشت سخنران (N) و پنجره سخنران (P) ═══ */
+const notesEl = $('#notes');
+function nextKeyOf(key) {
+  if (key === 'cover') return 'menu';
+  if (key === 'menu') return nav.cursor < state.sections.length ? `s${nav.cursor}-0` : null;
+  const p = parseKey(key);
+  if (!p) return null;
+  return p.k < state.sections[p.si].slides.length - 1 ? `s${p.si}-${p.k + 1}` : 'menu';
+}
+function nextLabel() {
+  const nk = nextKeyOf(nav.key);
+  if (!nk) return 'پایان ارائه';
+  if (nk === 'menu' && nav.key !== 'cover') {
+    const p = parseKey(nav.key);
+    const ns = p ? state.sections[p.si + 1] : null;
+    return 'بازگشت به منو' + (ns ? ' ← بخش بعد: ' + ns.title : '');
+  }
+  return titleOf(nk);
+}
+function renderNotes() {
+  const key = nav.key;
+  const d = slideData(key) || {};
+  const P = dataPathOf(key);
+  const i = order.indexOf(key);
+  const [a, b] = planWindow();
+  const totalPlan = sum(order.map(k => +((slideData(k) || {}).time) || 0));
+  notesEl.innerHTML = `
+    <div class="nt-head">
+      <div class="nt-title"><span class="nt-num">${fa(i + 1)} / ${fa(order.length)}</span><span>${esc(titleOf(key))}</span></div>
+      <div class="nt-meta">
+        <span class="nt-chip hot">${icon('timer')} زمان پیشنهادی: <b data-path="${P}.time" data-kind="time" data-ph="۰:۰۰">${fmtTime(+d.time || 0)}</b></span>
+        <span class="nt-chip">برنامه: ${fmtTime(a)} تا ${fmtTime(b)}</span>
+        <span class="nt-chip">مجموع زمان‌ها: ${fmtTime(totalPlan)}</span>
+      </div>
+      <div class="nt-actions">
+        <button class="tb-btn" data-act="presenter" aria-label="پنجره جدای سخنران (P)" data-tip="پنجره جدا (P)">${icon('external')}</button>
+        <button class="tb-btn" data-act="notes" aria-label="بستن یادداشت (N)" data-tip="بستن (N)">${icon('x')}</button>
+      </div>
+    </div>
+    ${T(P + '.notes', 'div', 'nt-body')}
+    <div class="nt-next">بعدی: ${esc(nextLabel())}</div>`;
+  applyEditable(notesEl);
+}
+function toggleNotes(force) {
+  const open = force != null ? force : !notesEl.classList.contains('open');
+  notesEl.classList.toggle('open', open);
+  notesEl.setAttribute('aria-hidden', String(!open));
+  document.body.classList.toggle('notes-open', open);
+  setPressed('notes', open);
+}
+
+let pres = null;
+function openPresenter() {
+  if (pres && !pres.closed) { pres.focus(); return; }
+  pres = window.open('', 'exo-presenter', 'popup,width=860,height=620');
+  if (!pres) { toast('مرورگر پنجره جدید را مسدود کرد؛ اجازه پاپ‌آپ را بدهید.'); return; }
+  const doc = pres.document;
+  doc.documentElement.lang = 'fa';
+  doc.documentElement.dir = 'rtl';
+  doc.title = 'یادداشت سخنران';
+  doc.head.innerHTML = `<meta charset="utf-8"><style>
+    body{margin:0;padding:22px 28px;background:#0F2526;color:#E8F2F1;font:400 20px/1.9 ${getComputedStyle(document.documentElement).getPropertyValue('--font-body')};}
+    header{display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:Vazirmatn,Tahoma,sans-serif}
+    #p-num{color:#F8CF6A;font-weight:700}#p-timer{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+    h1{font:800 26px/1.5 Vazirmatn,Tahoma,sans-serif;margin:10px 0 4px}#p-meta{font:500 15px/1.6 Vazirmatn,Tahoma,sans-serif;color:#9FBDBA}
+    #p-notes{white-space:pre-line;margin-top:14px;font-size:22px}#p-next{margin-top:18px;padding-top:12px;border-top:1px solid #2b4546;font:500 16px/1.6 Vazirmatn,Tahoma,sans-serif;color:#9FBDBA}
+    footer{margin-top:16px;font:400 13px/1.6 Vazirmatn,Tahoma,sans-serif;color:#6f8f8d}</style>`;
+  doc.body.innerHTML = `<header><div id="p-num"></div><div id="p-timer"></div></header><h1 id="p-title"></h1><div id="p-meta"></div><div id="p-notes"></div><div id="p-next"></div><footer>کلیدهای ناوبری در این پنجره هم کار می‌کنند.</footer>`;
+  pres.addEventListener('keydown', onKey);
+  updatePresenter();
+  updatePresenterTimer(lastTimerText);
+}
+function updatePresenter() {
+  if (!pres || pres.closed) return;
+  const doc = pres.document;
+  const d = slideData(nav.key) || {};
+  const i = order.indexOf(nav.key);
+  const [a, b] = planWindow();
+  const set = (id, txt) => { const el = doc.getElementById(id); if (el) el.textContent = txt; };
+  set('p-num', `اسلاید ${fa(i + 1)} از ${fa(order.length)}`);
+  set('p-title', titleOf(nav.key));
+  set('p-meta', `زمان پیشنهادی ${fmtTime(+d.time || 0)}، برنامه ${fmtTime(a)} تا ${fmtTime(b)}`);
+  set('p-notes', d.notes || '');
+  set('p-next', 'بعدی: ' + nextLabel());
+}
+function updatePresenterTimer(text) {
+  if (!pres || pres.closed) return;
+  const el = pres.document.getElementById('p-timer');
+  if (el && el.textContent !== text) el.textContent = text;
+}
+
+/* ═══ ۱۳. حالت ویرایش و همگام‌سازی متن‌ها ═══ */
+let editing = false;
+const PLAINTEXT_OK = (() => {
+  try { const d = document.createElement('div'); d.contentEditable = 'plaintext-only'; return d.contentEditable === 'plaintext-only'; }
+  catch (e) { return false; }
+})();
+function applyEditable(root) {
+  $$('[data-path]', root).forEach(el => {
+    if (editing) {
+      el.contentEditable = PLAINTEXT_OK ? 'plaintext-only' : 'true';
+      el.spellcheck = false;
+    } else if (el.hasAttribute('contenteditable')) {
+      el.removeAttribute('contenteditable');
+    }
+  });
+}
+function setEditing(on) {
+  editing = on;
+  document.body.classList.toggle('editing', on);
+  applyEditable(document);
+  setPressed('edit', on);
+  if (!on) {
+    if (document.activeElement && document.activeElement.closest && document.activeElement.closest('[data-path]')) document.activeElement.blur();
+    if (saveTimer) saveLocal();
+  }
+  toast(on ? 'حالت ویرایش روشن شد؛ روی هر متن کلیک کنید.' : 'حالت ویرایش خاموش شد.');
+}
+function readText(el) {
+  let v = (el.innerText || '').replace(/ /g, ' ');
+  v = el.hasAttribute('data-multiline') ? v.replace(/\n{3,}/g, '\n\n') : v.replace(/\s*\n\s*/g, ' ');
+  return v.replace(/\s+$/, '');
+}
+document.addEventListener('input', e => {
+  const el = e.target && e.target.closest ? e.target.closest('[data-path]') : null;
+  if (!el || !editing) return;
+  const path = el.dataset.path;
+  const val = readText(el);
+  if (el.dataset.kind === 'time') {
+    const sec = parseTime(val);
+    el.classList.toggle('invalid', sec == null);
+    if (sec == null) return;
+    setPath(state, path, sec);
+    updateTileCounts();
+    updatePace();
+  } else {
+    setPath(state, path, val);
+    $$('[data-path]').forEach(o => { if (o !== el && o.dataset.path === path) o.textContent = val; });
+    if (/^sections\.\d+\.title$/.test(path)) {
+      const si = +path.split('.')[1];
+      const t = $(`.tile[data-si="${si}"]`, stage);
+      if (t) t.setAttribute('aria-label', val);
+    }
+  }
+  updatePresenter();
+  scheduleSave();
+});
+document.addEventListener('paste', e => {
+  const ed = e.target && e.target.closest ? e.target.closest('[contenteditable="true"]') : null;
+  if (!ed) return;
+  e.preventDefault();
+  let text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
+  if (!ed.hasAttribute('data-multiline')) text = text.replace(/\s*\n\s*/g, ' ');
+  document.execCommand('insertText', false, text);
+});
+document.addEventListener('drop', e => {
+  if (e.target && e.target.closest && e.target.closest('[contenteditable]')) e.preventDefault();
+});
+document.addEventListener('focusout', e => {
+  const el = e.target && e.target.closest ? e.target.closest('[data-kind="time"]') : null;
+  if (el && editing) {   // نمایش دوباره زمان به قالب استاندارد
+    const v = getPath(state, el.dataset.path);
+    el.textContent = fmtTime(+v || 0);
+    el.classList.remove('invalid');
+    setTimeout(() => { if (!notesEl.contains(document.activeElement)) renderNotes(); }, 0);
+  }
+});
+
+/* ═══ ۱۴. ذخیره فایل: HTML، JSON، ورود و بازنشانی ═══ */
+function download(name, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+function buildHtml() {
+  const M1 = '/*DATA' + ':START*/', M2 = '/*DATA' + ':END*/';
+  const a = SOURCE_HTML.indexOf(M1);
+  const b = SOURCE_HTML.indexOf(M2, a + 1);
+  if (a < 0 || b < 0) throw new Error('نشانگر داده پیدا نشد');
+  const json = JSON.stringify(state, null, 2)
+    .replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  return SOURCE_HTML.slice(0, a + M1.length) + json + SOURCE_HTML.slice(b);
+}
+function saveHtml() {
+  if (saveTimer) saveLocal();
+  try {
+    download('index.html', buildHtml(), 'text/html;charset=utf-8');
+    toast('فایل HTML با محتوای فعلی ذخیره شد.');
+  } catch (e) {
+    toast('ساخت فایل HTML ممکن نشد: ' + e.message);
+  }
+}
+function exportJson() {
+  download('presentation-content.json', JSON.stringify(state, null, 2), 'application/json;charset=utf-8');
+  toast('فایل JSON محتوا ذخیره شد.');
+}
+const fileInput = $('#file-json');
+function importJson() { fileInput.value = ''; fileInput.click(); }
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files && fileInput.files[0];
+  if (!f) return;
+  f.text().then(txt => {
+    let d;
+    try { d = JSON.parse(txt); } catch (e) { toast('فایل JSON معتبر نیست.'); return; }
+    if (!validDeck(d)) { toast('ساختار JSON با ارائه سازگار نیست (sections و slides لازم است).'); return; }
+    state = normalize(d);
+    saveLocal();
+    rebuild('cover');
+    toast('محتوای JSON وارد شد.');
+  }).catch(() => toast('خواندن فایل ممکن نشد.'));
+});
+function resetDeck() {
+  if (!window.confirm('همه تغییرات این فایل پاک شود و محتوای اصلی بازگردد؟')) return;
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  storageDel(STORE_KEY);
+  state = clone(DATA);
+  rebuild(nav.key);
+  setStatus('نسخه اصلی');
+  toast('ارائه به نسخه اصلی بازگشت.');
+}
+function rebuild(key) {
+  buildDeck();
+  if (!slideEls[key]) key = 'cover';
+  nav.visited = new Set([...nav.visited].filter(si => si < state.sections.length));
+  nav.cursor = clamp(nav.cursor, 0, state.sections.length);
+  show(key, { noReveal: false });
+}
+
+/* ═══ ۱۵. نوار ابزار، نوار ویرایش، راهنما و پیام‌ها ═══ */
+const TOOLS = [
+  { act: 'menu', icon: 'grid', tip: 'منو (Esc یا M)' },
+  { act: 'prev', icon: 'chevR', tip: 'قبلی' },
+  { act: 'next', icon: 'chevL', tip: 'بعدی' },
+  '|',
+  { act: 'edit', icon: 'pencil', tip: 'حالت ویرایش (E)', toggle: true },
+  { act: 'saveHtml', icon: 'download', tip: 'ذخیره به‌صورت فایل HTML (Ctrl+S)' },
+  { act: 'exportJson', icon: 'braces', tip: 'خروجی JSON' },
+  { act: 'importJson', icon: 'upload', tip: 'ورود JSON' },
+  { act: 'reset', icon: 'reset', tip: 'بازنشانی به نسخه اصلی' },
+  '|',
+  { act: 'print', icon: 'printer', tip: 'چاپ / PDF' },
+  { act: 'fullscreen', icon: 'expand', tip: 'تمام‌صفحه (F)' },
+  { act: 'notes', icon: 'notes', tip: 'یادداشت سخنران (N)', toggle: true },
+  { act: 'timer', icon: 'timer', tip: 'نمایش/پنهان تایمر (T)', toggle: true },
+  { act: 'help', icon: 'help', tip: 'راهنمای کلیدها (?)' }
+];
+function buildToolbar() {
+  $('#toolbar').innerHTML = TOOLS.map(t => t === '|' ? '<span class="tb-sep" aria-hidden="true"></span>'
+    : `<button class="tb-btn" data-act="${t.act}" data-tip="${t.tip}" aria-label="${t.tip}"${t.toggle ? ' aria-pressed="false"' : ''}>${icon(t.icon)}</button>`).join('');
+  $('#editbar').innerHTML = `
+    <span class="eb-msg">${icon('pencil')} حالت ویرایش: روی هر متن کلیک کنید و بنویسید</span>
+    <span class="eb-status" id="eb-status">${restored ? 'نسخه ذخیره‌شده بازیابی شد' : 'ذخیره خودکار فعال'}</span>
+    <button class="eb-btn" data-act="saveHtml">${icon('download')} ذخیره HTML</button>
+    <button class="eb-btn" data-act="exportJson">${icon('braces')} خروجی JSON</button>
+    <button class="eb-btn" data-act="importJson">${icon('upload')} ورود JSON</button>
+    <button class="eb-btn" data-act="reset">${icon('reset')} بازنشانی</button>
+    <button class="eb-btn primary" data-act="edit">${icon('check')} پایان ویرایش</button>`;
+  setPressed('timer', ui.timerVisible);
+}
+function setPressed(act, on) {
+  const b = $(`#toolbar [data-act="${act}"]`);
+  if (b) b.setAttribute('aria-pressed', String(!!on));
+}
+function setStatus(txt) {
+  const s = $('#eb-status');
+  if (s) s.textContent = txt;
+}
+let toastT = 0;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 2600);
+}
+const helpEl = $('#help');
+function buildHelp() {
+  const nextK = ui.arrows === 'rtl' ? '←' : '→';
+  const prevK = ui.arrows === 'rtl' ? '→' : '←';
+  helpEl.innerHTML = `<div class="help">
+    <h2>راهنمای ارائه <button class="tb-btn" data-act="help" aria-label="بستن راهنما">${icon('x')}</button></h2>
+    <table>
+      <tr><td><kbd>${nextK}</kbd> <kbd>Space</kbd> <kbd>↓</kbd> <kbd>PageDown</kbd></td><td>اسلاید بعد (در پایان هر بخش: زوم معکوس به منو)</td></tr>
+      <tr><td><kbd>${prevK}</kbd> <kbd>Shift+Space</kbd> <kbd>↑</kbd> <kbd>PageUp</kbd></td><td>اسلاید قبل</td></tr>
+      <tr><td><kbd>Esc</kbd> یا <kbd>M</kbd></td><td>بازگشت به منو با زوم معکوس</td></tr>
+      <tr><td><kbd>۱</kbd> تا <kbd>۹</kbd> (در منو)</td><td>ورود مستقیم به بخش</td></tr>
+      <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>جلد / آخرین اسلاید</td></tr>
+      <tr><td><kbd>F</kbd></td><td>تمام‌صفحه (در کروم برای خروج، Esc را نگه دارید)</td></tr>
+      <tr><td><kbd>N</kbd> / <kbd>P</kbd></td><td>یادداشت سخنران / پنجره جدای سخنران</td></tr>
+      <tr><td><kbd>T</kbd></td><td>نمایش یا پنهان کردن تایمر ۲۰ دقیقه‌ای</td></tr>
+      <tr><td><kbd>E</kbd> / <kbd>Ctrl+S</kbd></td><td>حالت ویرایش / ذخیره به‌صورت فایل HTML</td></tr>
+      <tr><td>کشیدن انگشت (موبایل)</td><td>به راست: بعدی · به چپ: قبلی</td></tr>
+    </table>
+    <div class="help-foot"><span>کلیدهای حرفی با صفحه‌کلید فارسی هم کار می‌کنند.</span>
+      <button class="eb-btn" data-act="arrows">جهت کلیدهای چپ/راست: ${ui.arrows === 'rtl' ? 'راست‌به‌چپ (← بعدی)' : 'چپ‌به‌راست (→ بعدی)'}</button></div>
+  </div>`;
+}
+function toggleHelp(force) {
+  const open = force != null ? force : !helpEl.classList.contains('open');
+  helpEl.classList.toggle('open', open);
+  if (open) { const b = $('button', helpEl); if (b) b.focus(); }
+}
+
+function toggleTimer(force) {
+  ui.timerVisible = force != null ? force : timerEl.hidden;
+  timerEl.hidden = !ui.timerVisible;
+  setPressed('timer', ui.timerVisible);
+  saveUi();
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    const req = document.documentElement.requestFullscreen;
+    if (!req) { toast('تمام‌صفحه در این مرورگر پشتیبانی نمی‌شود.'); return; }
+    document.documentElement.requestFullscreen().then(() => {
+      if (navigator.keyboard && navigator.keyboard.lock) navigator.keyboard.lock(['Escape']).catch(() => {});
+    }).catch(() => toast('مرورگر اجازه تمام‌صفحه نداد.'));
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  const b = $('#toolbar [data-act="fullscreen"]');
+  if (b) b.innerHTML = icon(on ? 'shrink' : 'expand');
+  if (!on && navigator.keyboard && navigator.keyboard.unlock) navigator.keyboard.unlock();
+});
+
+const ACTIONS = {
+  menu: goMenu, prev, next,
+  edit: () => setEditing(!editing),
+  saveHtml, exportJson, importJson, reset: resetDeck,
+  print: () => { if (saveTimer) saveLocal(); window.print(); },
+  fullscreen: toggleFullscreen,
+  notes: () => toggleNotes(),
+  timer: () => toggleTimer(),
+  timerToggle: () => (timer.running ? pauseTimer() : startTimer()),
+  timerReset: resetTimer,
+  presenter: openPresenter,
+  help: () => toggleHelp(),
+  arrows: () => { ui.arrows = ui.arrows === 'rtl' ? 'ltr' : 'rtl'; saveUi(); buildHelp(); toggleHelp(true); updateCoverHint(); }
+};
+document.addEventListener('click', e => {
+  const btn = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (btn && ACTIONS[btn.dataset.act]) {
+    ACTIONS[btn.dataset.act]();
+    if (e.detail > 0 && btn.isConnected) btn.blur();     // تا Space بعدی دکمه را دوباره فشار ندهد
+    return;
+  }
+  if (e.target === helpEl) { toggleHelp(false); return; }
+  const tile = e.target.closest ? e.target.closest('.tile') : null;
+  if (tile && nav.key === 'menu') {
+    if (editing && e.target.closest('[data-path]')) return;
+    zoomIn(+tile.dataset.si, 0);
+  }
+});
+stage.addEventListener('keydown', e => {
+  const tile = e.target.closest ? e.target.closest('.tile') : null;
+  if (!tile || e.target !== tile) return;
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); zoomIn(+tile.dataset.si, 0); }
+});
+
+/* ═══ ۱۶. صفحه‌کلید (مستقل از زبان صفحه‌کلید با e.code) ═══ */
+function onKey(e) {
+  if (e.defaultPrevented) return;
+  const tgt = e.target;
+  const ed = tgt && tgt.closest ? tgt.closest('[contenteditable]') : null;
+  if (ed && ed.isContentEditable) {
+    if (e.key === 'Escape') { e.preventDefault(); ed.blur(); }
+    else if (e.key === 'Enter' && !ed.hasAttribute('data-multiline')) { e.preventDefault(); ed.blur(); }
+    else if ((e.ctrlKey || e.metaKey) && e.code === 'KeyS') { e.preventDefault(); saveHtml(); }
+    return;
+  }
+  if (tgt && tgt.closest && tgt.closest('input, textarea, select')) return;
+  if ((e.ctrlKey || e.metaKey) && e.code === 'KeyS') { e.preventDefault(); saveHtml(); return; }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (helpEl.classList.contains('open')) {
+    if (e.key === 'Escape' || e.code === 'Slash' || e.code === 'KeyH') { e.preventDefault(); toggleHelp(false); }
+    return;
+  }
+  const onButton = tgt && tgt.closest && tgt.closest('button, [role="button"]');
+  const nextKey = ui.arrows === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
+  const prevKey = ui.arrows === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
+  let handled = true;
+  switch (e.key) {
+    case nextKey: case 'ArrowDown': case 'PageDown': next(); break;
+    case prevKey: case 'ArrowUp': case 'PageUp': prev(); break;
+    case ' ': case 'Spacebar':
+      if (onButton) { handled = false; break; }
+      e.shiftKey ? prev() : next(); break;
+    case 'Enter':
+      if (onButton) { handled = false; break; }
+      if (nav.key === 'cover' || nav.key === 'menu') next(); else handled = false;
+      break;
+    case 'Escape': goMenu(); break;
+    case 'Home': goTo('cover'); break;
+    case 'End': goTo(order[order.length - 1]); break;
+    default: handled = false;
+  }
+  if (!handled) {
+    handled = true;
+    switch (e.code) {
+      case 'KeyF': toggleFullscreen(); break;
+      case 'KeyN': toggleNotes(); break;
+      case 'KeyP': openPresenter(); break;
+      case 'KeyT': toggleTimer(); break;
+      case 'KeyE': setEditing(!editing); break;
+      case 'KeyM': goMenu(); break;
+      case 'KeyH': case 'Slash': toggleHelp(); break;
+      default: {
+        const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
+        if (m && nav.key === 'menu' && +m[1] <= state.sections.length) zoomIn(+m[1] - 1, 0);
+        else handled = false;
+      }
+    }
+  }
+  if (handled) e.preventDefault();
+}
+document.addEventListener('keydown', onKey);
+
+/* کشیدن انگشت در موبایل (راست‌به‌چپ: کشیدن به راست = بعدی) */
+let touch0 = null;
+const viewportEl = $('#viewport');
+viewportEl.addEventListener('touchstart', e => {
+  if (e.touches.length !== 1) { touch0 = null; return; }
+  const t = e.touches[0];
+  touch0 = { x: t.clientX, y: t.clientY, time: performance.now() };
+}, { passive: true });
+viewportEl.addEventListener('touchend', e => {
+  if (!touch0 || editing) { touch0 = null; return; }
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touch0.x, dy = t.clientY - touch0.y;
+  const quick = performance.now() - touch0.time < 800;
+  touch0 = null;
+  if (quick && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    const forward = ui.arrows === 'rtl' ? dx > 0 : dx < 0;
+    forward ? next() : prev();
+  }
+}, { passive: true });
+
+/* پنهان شدن خودکار نوار ابزار هنگام ارائه */
+let idleT = 0;
+function wake() {
+  document.body.classList.remove('idle');
+  clearTimeout(idleT);
+  idleT = setTimeout(() => document.body.classList.add('idle'), 2600);
+}
+['mousemove', 'mousedown', 'touchstart'].forEach(ev => addEventListener(ev, wake, { passive: true }));
+
+addEventListener('pagehide', () => { if (saveTimer) saveLocal(); });
+addEventListener('beforeprint', () => { if (saveTimer) saveLocal(); });
+
+/* ═══ ۱۷. راه‌اندازی ═══ */
+function init() {
+  fit();
+  buildToolbar();
+  buildHelp();
+  buildTimer();
+  buildDeck();
+  const fromHash = decodeURIComponent((location.hash || '').slice(1));
+  const start = slideEls[fromHash] ? fromHash : 'cover';
+  if (start !== 'cover' && start !== 'menu') {
+    const p = parseKey(start);
+    for (let i = 0; i < p.si; i++) nav.visited.add(i);
+  }
+  show(start, { noReveal: false });
+  wake();
+  if (restored) toast('آخرین تغییرات ذخیره‌شده بازیابی شد.');
+}
+init();
+</script>
+</body>
+</html>
