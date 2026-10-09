@@ -39,7 +39,7 @@
 
 /* ═══ ۲. پایه ═══ */
 *,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;height:100%}
+html,body{margin:0;height:100%;overscroll-behavior-x:none}
 body{
   background:radial-gradient(120% 90% at 85% 10%,#EEF5F4 0,var(--bg) 60%);
   color:var(--ink);font-family:var(--font-body);font-size:26px;line-height:1.75;
@@ -109,7 +109,7 @@ ul,ol{padding:0;list-style:none}
 @keyframes rv{from{opacity:0;transform:translate(var(--dx,0px),16px)}to{opacity:1;transform:none}}
 @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,162,2,.55)}100%{box-shadow:0 0 0 22px rgba(240,162,2,0)}}
-.slide.active .rv{animation:rv var(--dur) var(--ease) backwards;animation-delay:calc(var(--i,0) * 55ms + 40ms)}
+.slide.active .rv{animation:rv var(--dur) var(--ease) backwards;animation-delay:min(calc(var(--i,0) * 45ms + 30ms), 330ms)}
 .slide.no-reveal .rv,.slide.no-reveal .g-bar{animation:none!important}
 
 /* ═══ ۵. متن‌های عمومی ═══ */
@@ -125,6 +125,7 @@ ul,ol{padding:0;list-style:none}
 .ph0{--pc:var(--ph0);--ps:var(--ph0-soft)} .ph1{--pc:var(--ph1);--ps:var(--ph1-soft)}
 .ph2{--pc:var(--ph2);--ps:var(--ph2-soft)} .ph3{--pc:var(--ph3);--ps:var(--ph3-soft)}
 .ph4{--pc:var(--ph4);--ps:var(--ph4-soft)} .ph5{--pc:var(--ph5);--ps:var(--ph5-soft)}
+.ph1{--pt:var(--teal-700)} .ph3{--pt:var(--amber-700)}
 
 /* ═══ ۶. جلد ═══ */
 .slide-cover{padding:0 96px}
@@ -167,7 +168,8 @@ ul,ol{padding:0;list-style:none}
 
 /* ═══ ۷. منو و کاشی‌ها ═══ */
 .menu-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex:none}
-.menu-sub{font-size:23px;color:var(--muted);margin-top:2px}
+.menu-subrow{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:2px}
+.menu-sub{font-size:23px;color:var(--muted)}
 .menu-legend{display:flex;gap:12px;font:600 17px/1.5 var(--font-head)}
 .menu-legend>span,.tile-state>span{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 14px}
 .lg-next,.st-next{background:var(--amber-100);color:var(--amber-800)}
@@ -181,7 +183,7 @@ ul,ol{padding:0;list-style:none}
 .tile:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--teal-300)}
 .tile:focus-visible{border-color:var(--teal-500);box-shadow:0 0 0 4px var(--teal-100),var(--shadow-lg)}
 .tile-ico{grid-row:1/3;width:62px;height:62px;border-radius:18px;background:var(--teal-50);color:var(--teal-600);display:grid;place-items:center;font-size:32px;transition:background .3s,color .3s}
-.tile-num{position:absolute;top:16px;left:22px;font:800 18px/1 var(--font-head);color:var(--line)}
+.tile-num{position:absolute;top:16px;left:22px;font:800 18px/1 var(--font-head);color:var(--muted);opacity:.6}
 .tile-title{font:800 30px/1.35 var(--font-head);color:var(--ink);align-self:end}
 .tile-sub{font-size:20px;line-height:1.55;color:var(--muted);align-self:start}
 .tile-meta{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line);font:500 16px/1.5 var(--font-head);color:var(--muted)}
@@ -196,7 +198,7 @@ ul,ol{padding:0;list-style:none}
 .tile.pulse{animation:pulse .9s var(--ease)}
 
 /* لایه زوم (کاشی ← تمام صفحه) */
-#zoom-layer{position:fixed;z-index:60;pointer-events:none;background:var(--paper);overflow:hidden;will-change:clip-path,opacity}
+#zoom-layer{position:fixed;z-index:35;pointer-events:none;background:var(--paper);overflow:hidden;will-change:clip-path,opacity}
 #zoom-layer .zf{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(16px * var(--sc,1));will-change:transform,opacity}
 #zoom-layer .zf-ico{width:calc(132px * var(--sc,1));height:calc(132px * var(--sc,1));padding:calc(30px * var(--sc,1));border-radius:calc(36px * var(--sc,1));background:var(--teal-50);color:var(--teal-600);stroke-width:1.5}
 #zoom-layer .zf-num{font:800 calc(26px * var(--sc,1))/1 var(--font-head);color:var(--amber-700)}
@@ -211,6 +213,7 @@ ul,ol{padding:0;list-style:none}
 .stat-pre{font:600 18px/1.4 var(--font-head);color:var(--muted);min-height:25px}
 .stat-val{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .stat-num{font:800 74px/1.1 var(--font-head);color:var(--teal-600)}
+.stat-num::before{content:"\61C"}
 .stat.hl .stat-num{color:var(--amber-700)}
 .stat-unit{font:700 22px/1.3 var(--font-head);color:var(--ink-2)}
 .stat-label{font-size:23px;line-height:1.6;color:var(--ink);flex:1}
@@ -223,7 +226,7 @@ ul,ol{padding:0;list-style:none}
 .top-level{display:grid;grid-template-columns:54px 1fr 34px;align-items:center;gap:16px;padding:12px 16px;border-radius:16px;background:var(--line-2)}
 .top-level.hl{background:var(--amber-50);border:1.5px solid var(--amber-300)}
 .top-code{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font:800 24px/1 "Vazirmatn",sans-serif;color:var(--muted);text-align:center}
-.top-level.hl .top-code{background:var(--amber-500);border-color:var(--amber-500);color:#fff}
+.top-level.hl .top-code{background:var(--amber-500);border-color:var(--amber-500);color:var(--ink)}
 .top-name{font:700 23px/1.45 var(--font-head);color:var(--ink)}
 .top-note{font-size:21px;line-height:1.55;color:var(--ink-2)}
 .top-mark{font-size:28px;color:var(--muted);display:grid;place-items:center}
@@ -252,7 +255,7 @@ ul,ol{padding:0;list-style:none}
 .goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:-12px}
 .goal{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--pc);border-radius:var(--radius-sm);padding:16px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
 .goal-top{display:flex;align-items:center;gap:10px}
-.goal-n{font:800 22px/1 var(--font-head);color:var(--pc)}
+.goal-n{font:800 22px/1 var(--font-head);color:var(--pt,var(--pc))}
 .goal .phase-chip{background:var(--ps);color:var(--ink-2)}
 .goal-text{font-size:22px;line-height:1.65;color:var(--ink)}
 .applied{display:flex;align-items:flex-start;gap:14px 26px;flex-wrap:wrap;font-size:21px;color:var(--ink-2);padding:14px 22px;border-radius:var(--radius-sm);background:var(--line-2)}
@@ -310,7 +313,7 @@ ul,ol{padding:0;list-style:none}
 .dd-lab.con{justify-self:start;margin-inline-start:10px}
 .dd-fa{font:800 32px/1.35 var(--font-head);color:var(--ink)}
 .dd-en{font:600 16px/1.4 "Vazirmatn",sans-serif;color:var(--muted);direction:ltr;unicode-bidi:isolate}
-.dd-mode{font:600 15px/1.6 var(--font-head);color:var(--pc);margin-top:2px}
+.dd-mode{font:600 15px/1.6 var(--font-head);color:var(--pt,var(--pc));margin-top:2px}
 .dd-outs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .dd-out{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--pc);border-radius:var(--radius-sm);padding:10px 14px;font-size:20px;line-height:1.55;color:var(--ink);box-shadow:var(--shadow)}
 
@@ -320,7 +323,7 @@ ul,ol{padding:0;list-style:none}
 .flow-phase{border-radius:var(--radius-sm);background:var(--pc);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px}
 .flow-row.ph3 .flow-phase{color:var(--ink)}
 .fp-name{font:800 26px/1.4 var(--font-head)}
-.fp-en{font:600 15px/1.4 "Vazirmatn",sans-serif;opacity:.85;direction:ltr;unicode-bidi:isolate}
+.fp-en{font:600 15px/1.4 "Vazirmatn",sans-serif;direction:ltr;unicode-bidi:isolate}
 .flow-steps{display:flex;align-items:stretch;gap:6px}
 .flow-steps>.step,.flow-par{flex:1;min-width:0}
 .flow-par{display:flex;flex-direction:column;gap:8px}
@@ -351,7 +354,7 @@ ul,ol{padding:0;list-style:none}
 .ws-n{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--teal-50);color:var(--teal-700);font:800 18px/1 var(--font-head)}
 .formula{margin-top:auto;border-radius:16px;background:var(--teal-700);color:#fff;padding:14px 20px;display:flex;flex-direction:column;gap:4px;text-align:center}
 .f-main{font:700 30px/1.4 "Vazirmatn",Tahoma,sans-serif;direction:ltr;unicode-bidi:isolate;letter-spacing:.5px}
-.f-note{font-size:18px;color:var(--teal-100)}
+.f-note{font-size:18px;color:var(--teal-100);text-wrap:balance}
 
 /* کارت‌ها */
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
@@ -377,7 +380,7 @@ ul,ol{padding:0;list-style:none}
 .g-dot{width:14px;height:14px;border-radius:5px;background:var(--pc);flex:none;display:inline-block}
 .g-cell{align-self:stretch;border-inline-start:1px dashed var(--line)}
 .g-bar{height:24px;border-radius:999px;background:var(--pc);margin:0 4px;transform-origin:right center;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08)}
-.slide.active .g-bar{animation:grow .6s var(--ease) backwards;animation-delay:calc(var(--i,0) * 60ms + 160ms)}
+.slide.active .g-bar{animation:grow .52s var(--ease) backwards;animation-delay:min(calc(var(--i,0) * 40ms + 100ms), 360ms)}
 .legend{display:flex;gap:28px;flex-wrap:wrap;font:600 18px/1.5 var(--font-head);color:var(--ink-2)}
 .legend .lg{display:inline-flex;align-items:center;gap:8px}
 
@@ -429,7 +432,8 @@ ul,ol{padding:0;list-style:none}
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:opacity .35s,transform .35s var(--ease);
 }
 body.idle:not(.editing) #toolbar{opacity:0;transform:translateY(-10px);pointer-events:none}
-body.idle:not(.editing) #stage{cursor:none}
+body.idle #toolbar:focus-within{opacity:1;transform:none;pointer-events:auto}
+body.idle:not(.editing) #stage,body.idle:not(.editing) #stage *{cursor:none}
 .tb-btn{position:relative;width:40px;height:40px;border:0;background:transparent;border-radius:999px;display:grid;place-items:center;font-size:21px;color:var(--ink-2);cursor:pointer;transition:background .2s,color .2s}
 .tb-btn:hover{background:var(--teal-50);color:var(--teal-700)}
 .tb-btn:focus-visible{outline:2px solid var(--teal-500);outline-offset:1px}
@@ -441,25 +445,30 @@ body.idle:not(.editing) #stage{cursor:none}
   opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:5;
 }
 [data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+#toolbar .tb-btn:last-of-type::after{left:0;transform:translate(0,-4px)}
+#toolbar .tb-btn:last-of-type:hover::after,#toolbar .tb-btn:last-of-type:focus-visible::after{transform:none}
 
 #editbar{
-  position:fixed;top:14px;inset-inline-start:14px;z-index:50;display:none;align-items:center;gap:10px;flex-wrap:wrap;max-width:calc(100vw - 720px);
-  padding:7px 8px 7px 14px;border-radius:16px;background:var(--amber-50);border:1px solid var(--amber-300);box-shadow:var(--shadow-lg);
-  font:500 15px/1.4 var(--font-head);color:var(--amber-800);
+  position:fixed;top:14px;inset-inline-start:14px;z-index:50;display:none;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;
+  padding:6px 6px 6px 12px;border-radius:16px;background:var(--amber-50);border:1px solid var(--amber-300);box-shadow:var(--shadow-lg);
+  font:500 14px/1.4 var(--font-head);color:var(--amber-800);
 }
 body.editing #editbar{display:flex}
-#editbar .eb-msg{display:flex;align-items:center;gap:8px;font-weight:700}
-#editbar .eb-status{color:var(--teal-700);min-width:90px}
+#editbar .eb-msg{display:flex;align-items:center;gap:6px;font-weight:700}
+#editbar .eb-status{color:var(--teal-700)}
 .eb-btn{border:1px solid var(--amber-300);background:var(--surface);color:var(--ink-2);border-radius:10px;padding:5px 10px;font:600 14px/1.4 var(--font-head);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .eb-btn:hover{border-color:var(--teal-400);color:var(--teal-700)}
 .eb-btn.primary{background:var(--teal-600);border-color:var(--teal-600);color:#fff}
+@media (max-width:1180px){#editbar .eb-status{display:none}}
 
 /* حالت ویرایش */
-body.editing [data-path]{outline:1.5px dashed transparent;outline-offset:4px;border-radius:6px;cursor:text;transition:outline-color .2s,background-color .2s}
+body.editing [data-path]{outline:1.5px dashed transparent;outline-offset:4px;cursor:text;transition:outline-color .2s,background-color .2s}
+body.editing [data-path]:empty{min-width:2.5em;display:inline-block}
 body.editing .slide [data-path]{outline-color:rgba(11,116,113,.22)}
 body.editing [data-path]:hover{outline-color:var(--teal-400)}
 body.editing [data-path]:focus{outline:2px solid var(--amber-500);background-color:rgba(240,162,2,.07)}
 body.editing [data-path]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.6}
+body.editing :is(.takeaway,.goal-main,.formula,.thanks,.flow-phase) [data-path]{outline-color:rgba(255,255,255,.4)}
 body.editing .tile{cursor:default}
 body.editing .cover-hint{display:none}
 [data-kind="time"].invalid{outline-color:var(--danger)!important}
@@ -565,29 +574,43 @@ noscript{position:fixed;inset:0;display:grid;place-items:center;background:var(-
   body.fluid .quote blockquote{font-size:18px}
   body.fluid .tl{display:flex;flex-direction:column;height:auto;gap:10px;padding-inline-start:18px;border-inline-start:3px solid var(--teal-200)}
   body.fluid .tl-line,body.fluid .tl-stem{display:none}
-  body.fluid .tl-dot,body.fluid .tl-card{position:static;transform:none;width:auto;max-width:none}
+  body.fluid .tl-dot,body.fluid .tl-item .tl-card{position:static;transform:none;width:auto;max-width:none;left:auto;right:auto;align-self:stretch}
   body.fluid .tl-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
   body.fluid .tl-text{font-size:15.5px}
-  body.fluid .dd-fig{display:none}
-  body.fluid .dd-caps{display:none}
+  body.fluid .dd-fig{height:170px}
+  body.fluid .dd-caps{font-size:12.5px}
+  body.fluid .dd-lab{width:auto;max-width:96%}
+  body.fluid .dd-lab.div,body.fluid .dd-lab.con{margin-inline:4px}
+  body.fluid .dd-fa{font-size:15px}
+  body.fluid .dd-en,body.fluid .dd-mode{font-size:10.5px}
   body.fluid .dd-out{font-size:15px}
   body.fluid .flow-row{grid-template-columns:1fr}
   body.fluid .flow-steps{flex-direction:column}
   body.fluid .flow-arrow{transform:rotate(-90deg)}
   body.fluid .rule{grid-template-columns:36px 1fr}
   body.fluid .rule-text{grid-column:1/-1}
-  body.fluid .gantt{overflow-x:auto}
-  body.fluid .g-row{grid-template-columns:150px repeat(var(--m),48px);font-size:13px}
-  body.fluid .g-label{font-size:13px}
+  body.fluid .gantt{padding:10px 10px 12px}
+  body.fluid .g-row{grid-template-columns:minmax(88px,30%) repeat(var(--m),minmax(0,1fr));min-height:40px}
+  body.fluid .g-label{font-size:12px;gap:6px}
+  body.fluid .g-month{font-size:10px}
+  body.fluid .g-bar{height:16px;margin:0 2px}
+  body.fluid .legend{font-size:13px;gap:8px 16px}
   body.fluid .venn{width:100%;height:auto;aspect-ratio:680/440}
   body.fluid .vl{font-size:13px;width:24%}
   body.fluid .vl-x{font-size:14px;width:30%}
+  body.fluid .takeaway,body.fluid .footnote,body.fluid .lead-note,body.fluid .chip-note{font-size:15.5px}
+  body.fluid .chip-note{border-radius:var(--radius-sm)}
+  body.fluid .box-title{font-size:16px}
   body.fluid .thanks{flex-direction:column;align-items:flex-start}
   body.fluid .thanks-main{font-size:24px}
-  body.fluid #toolbar{top:auto;bottom:12px;inset-inline:8px;justify-content:flex-start;overflow-x:auto;border-radius:18px}
+  body.fluid #toolbar{top:auto;bottom:12px;inset-inline:8px;justify-content:space-between;overflow-x:auto;border-radius:18px;gap:0}
+  body.fluid #toolbar .tb-sep,body.fluid #toolbar [data-act="prev"],body.fluid #toolbar [data-act="next"]{display:none}
+  body.fluid .tb-btn{width:32px;height:36px;font-size:18px}
+  body.fluid.notes-open #notes{padding-bottom:72px}
   body.fluid [data-tip]::after{display:none}
   body.fluid #timer,body.fluid:not(.idle) #timer{top:8px;inset-inline-end:8px;transform:scale(.85);transform-origin:left top}
-  body.fluid #editbar{max-width:calc(100vw - 28px);top:10px}
+  body.fluid #editbar{inset-inline:8px;top:8px;flex-wrap:wrap;white-space:normal}
+  body.fluid.editing .slide{padding-top:110px}
   body.fluid #notes{height:46vh}
 }
 
@@ -601,14 +624,16 @@ noscript{position:fixed;inset:0;display:grid;place-items:center;background:var(-
 @media print{
   @page{size:1600px 900px;margin:0}
   html,body{height:auto;overflow:visible!important;background:#fff}
-  #toolbar,#editbar,#timer,#notes,#progress,#help,#toast,#zoom-layer,.cover-hint,noscript{display:none!important}
+  #toolbar,#editbar,#timer,#notes,#progress,#help,#toast,#zoom-layer,#sr,.cover-hint,noscript{display:none!important}
   #viewport{position:static;overflow:visible}
   #stage{position:static;transform:none!important;width:1600px;height:auto;box-shadow:none;overflow:visible}
   .slide{display:flex!important;position:relative;inset:auto;width:1600px;height:900px;break-after:page;page-break-after:always;break-inside:avoid}
   .slide:last-child{break-after:auto;page-break-after:auto}
   .slide .rv,.slide .g-bar{animation:none!important;opacity:1!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  body.editing [data-path]{outline:none!important;background:none!important}
+  body.editing [data-path]{outline:none!important}
+  body.editing [data-path]:focus{background-color:transparent!important}
+  body.editing [data-path]:empty::before{content:none!important}
   .tile:hover{transform:none}
 }
 </style>
@@ -1002,6 +1027,8 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const sum = arr => arr.reduce((a, b) => a + b, 0);
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const arr = v => (Array.isArray(v) ? v.filter(x => x != null) : []);           // آرایه امن برای JSON واردشده
+const phc = (v, d) => 'ph' + (/^[0-5]$/.test(String(v)) ? v : d);                // کلاس رنگ فاز (فقط ۰ تا ۵)
 
 function fmtTime(sec) {
   sec = Math.max(0, Math.round(sec));
@@ -1010,8 +1037,8 @@ function fmtTime(sec) {
 function parseTime(str) {
   const m = toLatinDigits(str).replace(/[٫.]/g, ':').trim().match(/^(\d{1,3})(?::(\d{1,2}))?$/);
   if (!m) return null;
-  const s = m[2] == null ? 0 : +m[2];
-  return s < 60 ? (+m[1]) * 60 + s : null;
+  if (m[2] == null) return +m[1] < 10 ? (+m[1]) * 60 : +m[1];   // «۲» = ۲ دقیقه، «۴۵» = ۴۵ ثانیه
+  return +m[2] < 60 ? (+m[1]) * 60 + (+m[2]) : null;
 }
 function hashStr(str) {
   let h = 5381;
@@ -1024,8 +1051,12 @@ function getPath(obj, path) {
 function setPath(obj, path, val) {
   const keys = path.split('.');
   const last = keys.pop();
-  const parent = keys.reduce((o, k) => (o == null ? undefined : o[k]), obj);
-  if (parent && typeof parent === 'object') parent[last] = val;
+  let o = obj;
+  keys.forEach((k, i) => {              // ظرف‌های جاافتاده ساخته می‌شوند تا ویرایش گم نشود
+    if (o[k] == null || typeof o[k] !== 'object') o[k] = /^\d+$/.test(keys[i + 1] != null ? keys[i + 1] : last) ? [] : {};
+    o = o[k];
+  });
+  o[last] = val;
 }
 function clock() {
   const d = new Date();
@@ -1081,7 +1112,8 @@ const ICONS = {
   dot: '<circle cx="12" cy="12" r="3"/>'
 };
 function icon(name, cls = '') {
-  return `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name] || ICONS.dot}</svg>`;
+  const body = Object.prototype.hasOwnProperty.call(ICONS, name) ? ICONS[name] : ICONS.dot;
+  return `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
 }
 
 /* ═══ ۵. وضعیت برنامه و ذخیره‌سازی محلی ═══ */
@@ -1095,6 +1127,10 @@ function validDeck(d) {
       s.slides.every(x => x && typeof x === 'object')));
 }
 function normalize(d) {
+  d.sections.forEach(s => {
+    if (typeof s.title !== 'string') s.title = String(s.title == null ? '' : s.title);
+    s.slides = s.slides.filter(x => x && typeof x === 'object');
+  });
   d.meta = Object.assign({}, DATA.meta, d.meta || {});
   if (!d.cover || typeof d.cover !== 'object') d.cover = clone(DATA.cover);
   if (!d.menu || typeof d.menu !== 'object') d.menu = clone(DATA.menu);
@@ -1234,7 +1270,7 @@ function slideHead(sec, si, k, P) {
 const L = {};
 L.stats = (d, P) => `
   ${T(P + '.lead', 'p', 'lead rv', 'style="--i:2"')}
-  <div class="stats">${(d.stats || []).map((s, j) => `
+  <div class="stats">${arr(d.stats).map((s, j) => `
     <div class="stat ${s.hl ? 'hl' : ''} rv" style="--i:${3 + j}">
       ${T(`${P}.stats.${j}.pre`, 'div', 'stat-pre')}
       <div class="stat-val">${T(`${P}.stats.${j}.value`, 'span', 'stat-num')}${T(`${P}.stats.${j}.unit`, 'span', 'stat-unit')}</div>
@@ -1248,7 +1284,7 @@ L.topgaps = (d, P) => `
   <div class="split">
     <div class="top-box rv" style="--i:2">
       ${T(P + '.topTitle', 'div', 'box-title')}
-      <div class="top-levels">${(d.levels || []).map((lv, j, a) => `
+      <div class="top-levels">${arr(d.levels).map((lv, j, a) => `
         <div class="top-level ${lv.hl ? 'hl' : ''}">
           ${T(`${P}.levels.${j}.code`, 'span', 'top-code', 'dir="ltr"')}
           <div>${T(`${P}.levels.${j}.name`, 'div', 'top-name')}${T(`${P}.levels.${j}.note`, 'div', 'top-note')}</div>
@@ -1258,12 +1294,12 @@ L.topgaps = (d, P) => `
     </div>
     <div class="gaps rv" style="--i:3">
       ${T(P + '.gapsTitle', 'div', 'box-title')}
-      <ol class="gap-list">${(d.gaps || []).map((g, j) => `<li class="rv" style="--i:${4 + j}"><span class="gap-n">${fa(j + 1)}</span>${T(`${P}.gaps.${j}`)}</li>`).join('')}</ol>
+      <ol class="gap-list">${arr(d.gaps).map((g, j) => `<li class="rv" style="--i:${4 + j}"><span class="gap-n">${fa(j + 1)}</span>${T(`${P}.gaps.${j}`)}</li>`).join('')}</ol>
     </div>
   </div>`;
 
 L.columns = (d, P) => `
-  <div class="cols">${(d.cols || []).map((c, j) => `
+  <div class="cols">${arr(d.cols).map((c, j) => `
     <div class="col-card rv" style="--i:${2 + j}">
       <div class="col-ico">${icon(c.icon)}</div>
       ${T(`${P}.cols.${j}.title`, 'h3', 'col-title')}
@@ -1275,25 +1311,25 @@ L.columns = (d, P) => `
 L.goals = (d, P) => `
   <div class="goal-main rv" style="--i:2"><div class="gm-ico">${icon('target')}</div><div>${T(P + '.mainLabel', 'div', 'gm-label')}${T(P + '.main', 'div', 'gm-text')}</div></div>
   ${T(P + '.specificLabel', 'div', 'sub-label rv', 'style="--i:3"')}
-  <div class="goal-grid">${(d.specific || []).map((g, j) => `
-    <div class="goal ph${g.ph || j + 1} rv" style="--i:${4 + j}">
+  <div class="goal-grid">${arr(d.specific).map((g, j) => `
+    <div class="goal ${phc(g.ph, j + 1)} rv" style="--i:${4 + j}">
       <div class="goal-top"><span class="goal-n">${fa(j + 1)}</span>${T(`${P}.specific.${j}.phase`, 'span', 'phase-chip')}</div>
       ${T(`${P}.specific.${j}.text`, 'p', 'goal-text')}
     </div>`).join('')}
   </div>
-  <div class="applied rv" style="--i:8">${T(P + '.appliedLabel', 'span', 'applied-label')}${(d.applied || []).map((a, j) => `<span class="applied-item">${icon('check')}${T(`${P}.applied.${j}`)}</span>`).join('')}</div>`;
+  <div class="applied rv" style="--i:8">${T(P + '.appliedLabel', 'span', 'applied-label')}${arr(d.applied).map((a, j) => `<span class="applied-item">${icon('check')}${T(`${P}.applied.${j}`)}</span>`).join('')}</div>`;
 
 L.questions = (d, P) => `
   <div class="lead-note rv" style="--i:2">${icon('info')}${T(P + '.lead')}</div>
-  <div class="q-grid">${(d.items || []).map((q, j) => `
-    <div class="q-card ph${q.ph || j + 1} rv" style="--i:${3 + j}">
+  <div class="q-grid">${arr(d.items).map((q, j) => `
+    <div class="q-card ${phc(q.ph, j + 1)} rv" style="--i:${3 + j}">
       <div class="q-head"><span class="q-n">${fa(j + 1)}</span>${T(`${P}.items.${j}.phase`, 'span', 'q-phase')}${T(`${P}.items.${j}.en`, 'span', 'q-en', 'dir="ltr"')}</div>
       ${T(`${P}.items.${j}.text`, 'p', 'q-text')}
     </div>`).join('')}
   </div>`;
 
 L.timeline = (d, P) => {
-  const items = d.items || [];
+  const items = arr(d.items);
   return `
   <div class="tl" style="--n:${items.length}">
     <div class="tl-line"></div>
@@ -1308,10 +1344,10 @@ L.timeline = (d, P) => {
 };
 
 L.diamond = (d, P) => {
-  const ph = d.phases || [];
+  const ph = arr(d.phases);
   return `
   <div class="dd">
-    <div class="dd-badges rv" style="--i:2">${(d.badges || []).map((b, j) => `<span class="dd-badge">${icon(j ? 'cube' : 'target')}${T(`${P}.badges.${j}`)}</span>`).join('')}</div>
+    <div class="dd-badges rv" style="--i:2">${arr(d.badges).map((b, j) => `<span class="dd-badge">${icon(j ? 'cube' : 'target')}${T(`${P}.badges.${j}`)}</span>`).join('')}</div>
     <div class="dd-caps rv" style="--i:3">${T(P + '.diamonds.0', 'div')}${T(P + '.diamonds.1', 'div')}</div>
     <div class="dd-fig rv" style="--i:4">
       <svg class="dd-svg" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
@@ -1321,20 +1357,20 @@ L.diamond = (d, P) => {
         <polygon class="o1" points="400,50 300,0 200,50 300,100"/><polygon class="o2" points="200,50 100,0 0,50 100,100"/>
       </svg>
       <div class="dd-labels">${ph.map((p, j) => `
-        <div class="dd-lab ${j % 2 ? 'con' : 'div'} ph${j + 1}">${T(`${P}.phases.${j}.fa`, 'div', 'dd-fa')}${T(`${P}.phases.${j}.en`, 'div', 'dd-en', 'dir="ltr"')}${T(`${P}.phases.${j}.mode`, 'div', 'dd-mode')}</div>`).join('')}
+        <div class="dd-lab ${j % 2 ? 'con' : 'div'} ${phc(j + 1, 1)}">${T(`${P}.phases.${j}.fa`, 'div', 'dd-fa')}${T(`${P}.phases.${j}.en`, 'div', 'dd-en', 'dir="ltr"')}${T(`${P}.phases.${j}.mode`, 'div', 'dd-mode')}</div>`).join('')}
       </div>
     </div>
-    <div class="dd-outs">${ph.map((p, j) => `<div class="dd-out ph${j + 1} rv" style="--i:${5 + j}">${T(`${P}.phases.${j}.out`)}</div>`).join('')}</div>
+    <div class="dd-outs">${ph.map((p, j) => `<div class="dd-out ${phc(j + 1, 1)} rv" style="--i:${5 + j}">${T(`${P}.phases.${j}.out`)}</div>`).join('')}</div>
   </div>`;
 };
 
 const stepBox = path => `<div class="step">${T(path + '.title', 'div', 'step-t')}${T(path + '.sub', 'div', 'step-s')}</div>`;
 L.flow = (d, P) => `
-  <div class="flow">${(d.rows || []).map((row, r) => `
+  <div class="flow">${arr(d.rows).map((row, r) => `
     ${r ? `<div class="flow-link rv" style="--i:${2 + r * 2}">${icon('arrowDown')}</div>` : ''}
-    <div class="flow-row ph${row.ph || r + 1} rv" style="--i:${3 + r * 2}">
+    <div class="flow-row ${phc(row.ph, r + 1)} rv" style="--i:${3 + r * 2}">
       <div class="flow-phase">${T(`${P}.rows.${r}.phase`, 'div', 'fp-name')}${T(`${P}.rows.${r}.en`, 'div', 'fp-en', 'dir="ltr"')}</div>
-      <div class="flow-steps">${(row.steps || []).map((st, j) => `${j ? `<span class="flow-arrow">${icon('arrowL')}</span>` : ''}${Array.isArray(st)
+      <div class="flow-steps">${arr(row.steps).map((st, j) => `${j ? `<span class="flow-arrow">${icon('arrowL')}</span>` : ''}${Array.isArray(st)
         ? `<div class="flow-par">${st.map((_, q) => stepBox(`${P}.rows.${r}.steps.${j}.${q}`)).join('')}</div>`
         : stepBox(`${P}.rows.${r}.steps.${j}`)}`).join('')}
       </div>
@@ -1347,9 +1383,9 @@ L.consensus = (d, P) => `
     <div class="cons-left rv" style="--i:2">
       ${T(P + '.scaleTitle', 'div', 'box-title')}
       <div class="scale9" aria-hidden="true">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<span class="sc b${n <= 3 ? 1 : n <= 6 ? 2 : 3}">${fa(n)}</span>`).join('')}</div>
-      <div class="scale-bands">${(d.bands || []).map((b, j) => T(`${P}.bands.${j}`, 'div', 'band')).join('')}</div>
-      <div class="rules">${(d.rules || []).map((r, j) => `
-        <div class="rule ${esc(r.kind)}">
+      <div class="scale-bands">${arr(d.bands).map((b, j) => T(`${P}.bands.${j}`, 'div', 'band')).join('')}</div>
+      <div class="rules">${arr(d.rules).map((r, j) => `
+        <div class="rule ${['keep', 'drop'].includes(r.kind) ? r.kind : 'none'}">
           <span class="rule-ico">${icon(r.kind === 'keep' ? 'check' : r.kind === 'drop' ? 'x' : 'circleDash')}</span>
           ${T(`${P}.rules.${j}.name`, 'span', 'rule-name')}
           ${T(`${P}.rules.${j}.text`, 'span', 'rule-text')}
@@ -1358,36 +1394,36 @@ L.consensus = (d, P) => `
     </div>
     <div class="cons-right rv" style="--i:3">
       ${T(P + '.weightTitle', 'div', 'box-title')}
-      <ol class="wsteps">${(d.wsteps || []).map((w, j) => `<li><span class="ws-n">${fa(j + 1)}</span>${T(`${P}.wsteps.${j}`)}</li>`).join('')}</ol>
+      <ol class="wsteps">${arr(d.wsteps).map((w, j) => `<li><span class="ws-n">${fa(j + 1)}</span>${T(`${P}.wsteps.${j}`)}</li>`).join('')}</ol>
       <div class="formula">${T(P + '.formula', 'div', 'f-main', 'dir="ltr"')}${T(P + '.formulaNote', 'div', 'f-note')}</div>
     </div>
   </div>`;
 
 L.cards = (d, P) => `
-  <div class="cards">${(d.cards || []).map((c, j) => `
+  <div class="cards">${arr(d.cards).map((c, j) => `
     <div class="card ${c.tone === 'amber' ? 'amber' : ''} rv" style="--i:${2 + j}">
       <div class="card-head"><span class="card-ico">${icon(c.icon)}</span>${T(`${P}.cards.${j}.title`, 'h3', 'card-title')}</div>
       ${c.formula != null ? T(`${P}.cards.${j}.formula`, 'div', 'formula-inline', 'dir="ltr"') : ''}
-      <ul class="card-lines">${(c.lines || []).map((l, q) => `<li>${T(`${P}.cards.${j}.lines.${q}`)}</li>`).join('')}</ul>
+      <ul class="card-lines">${arr(c.lines).map((l, q) => `<li>${T(`${P}.cards.${j}.lines.${q}`)}</li>`).join('')}</ul>
     </div>`).join('')}
   </div>`;
 
 L.gantt = (d, P) => {
-  const months = d.months || [];
+  const months = arr(d.months);
   const m = months.length || 1;
   return `
   <div class="gantt rv" style="--i:2;--m:${m}">
     <div class="g-row g-head"><div class="g-label"></div>${months.map((_, j) => T(`${P}.months.${j}`, 'div', 'g-month', `style="grid-column:${j + 2}"`)).join('')}</div>
-    ${(d.rows || []).map((r, j) => {
+    ${arr(d.rows).map((r, j) => {
       const s = clamp(+r.start || 1, 1, m), e = clamp(+r.end || s, s, m);
       return `<div class="g-row">
-        <div class="g-label"><span class="g-dot ph${r.ph != null ? r.ph : 0}"></span>${T(`${P}.rows.${j}.label`)}</div>
+        <div class="g-label"><span class="g-dot ${phc(r.ph, 0)}"></span>${T(`${P}.rows.${j}.label`)}</div>
         ${months.map((_, q) => `<div class="g-cell" style="grid-column:${q + 2}"></div>`).join('')}
-        <div class="g-bar ph${r.ph != null ? r.ph : 0}" style="grid-column:${s + 1} / ${e + 2};--i:${3 + j}"></div>
+        <div class="g-bar ${phc(r.ph, 0)}" style="grid-column:${s + 1} / ${e + 2};--i:${3 + j}"></div>
       </div>`;
     }).join('')}
   </div>
-  <div class="legend rv" style="--i:12">${(d.legend || []).map((l, j) => `<span class="lg"><i class="g-dot ph${l.ph}"></i>${T(`${P}.legend.${j}.label`)}</span>`).join('')}</div>`;
+  <div class="legend rv" style="--i:12">${arr(d.legend).map((l, j) => `<span class="lg"><i class="g-dot ${phc(l.ph, 0)}"></i>${T(`${P}.legend.${j}.label`)}</span>`).join('')}</div>`;
 };
 
 L.venn = (d, P, key) => `
@@ -1404,20 +1440,20 @@ L.venn = (d, P, key) => `
     </div>
     <div class="innov">
       ${T(P + '.innovTitle', 'div', 'box-title rv', 'style="--i:3"')}
-      ${(d.innov || []).map((n, j) => `<div class="innov-item rv" style="--i:${4 + j}"><span class="in-n">${fa(j + 1)}</span><div>${T(`${P}.innov.${j}.level`, 'div', 'in-level')}${T(`${P}.innov.${j}.text`, 'div', 'in-text')}</div></div>`).join('')}
+      ${arr(d.innov).map((n, j) => `<div class="innov-item rv" style="--i:${4 + j}"><span class="in-n">${fa(j + 1)}</span><div>${T(`${P}.innov.${j}.level`, 'div', 'in-level')}${T(`${P}.innov.${j}.text`, 'div', 'in-text')}</div></div>`).join('')}
     </div>
   </div>`;
 
 L.outputs = (d, P) => `
   <div class="out-grid">
     ${T(P + '.outTitle', 'div', 'sub-label rv', 'style="--i:2"')}
-    <div class="out-row">${(d.outputs || []).map((o, j) => `<div class="out-card rv" style="--i:${3 + j}"><span class="out-ico">${icon(o.icon)}</span>${T(`${P}.outputs.${j}.text`, 'div', 'out-text')}</div>`).join('')}</div>
+    <div class="out-row">${arr(d.outputs).map((o, j) => `<div class="out-card rv" style="--i:${3 + j}"><span class="out-ico">${icon(o.icon)}</span>${T(`${P}.outputs.${j}.text`, 'div', 'out-text')}</div>`).join('')}</div>
     ${T(P + '.usersTitle', 'div', 'sub-label rv', 'style="--i:6"')}
-    <div class="users-row">${(d.users || []).map((u, j) => `<div class="user-card rv" style="--i:${7 + j}"><span class="user-ico">${icon(u.icon)}</span><div>${T(`${P}.users.${j}.group`, 'div', 'user-group')}${T(`${P}.users.${j}.text`, 'div', 'user-text')}</div></div>`).join('')}</div>
+    <div class="users-row">${arr(d.users).map((u, j) => `<div class="user-card rv" style="--i:${7 + j}"><span class="user-ico">${icon(u.icon)}</span><div>${T(`${P}.users.${j}.group`, 'div', 'user-group')}${T(`${P}.users.${j}.text`, 'div', 'user-text')}</div></div>`).join('')}</div>
   </div>
   <div class="thanks rv" style="--i:10">${T(P + '.thanks', 'div', 'thanks-main')}${T(P + '.qa', 'div', 'thanks-qa')}</div>`;
 
-L.bullets = (d, P) => `<ul class="bullets">${(d.bullets || []).map((b, j) => `<li class="rv" style="--i:${2 + j}">${T(`${P}.bullets.${j}`)}</li>`).join('')}</ul>`;
+L.bullets = (d, P) => `<ul class="bullets">${arr(d.bullets).map((b, j) => `<li class="rv" style="--i:${2 + j}">${T(`${P}.bullets.${j}`)}</li>`).join('')}</ul>`;
 
 /* ═══ ۸. ساخت کل ارائه ═══ */
 function renderCover(total) {
@@ -1428,10 +1464,10 @@ function renderCover(total) {
       <div class="cover-text">
         <div class="cover-org rv" style="--i:0">${icon('school')}${T('cover.university')}<span class="dot-sep"></span>${T('cover.faculty')}</div>
         ${T('cover.kicker', 'div', 'cover-kicker rv', 'style="--i:1"')}
-        <h1 class="cover-title rv" style="--i:2">${(c.titleLines || []).map((l, j) => T(`cover.titleLines.${j}`, 'span', `tl${j + 1}`)).join('')}</h1>
+        <h1 class="cover-title rv" style="--i:2">${arr(c.titleLines).map((l, j) => T(`cover.titleLines.${j}`, 'span', `tl${j + 1}`)).join('')}</h1>
         ${T('cover.titleEn', 'p', 'cover-en rv', 'dir="ltr" style="--i:3"')}
-        <div class="people rv" style="--i:4">${(c.people || []).map((p, j) => `<div class="person">${T(`cover.people.${j}.role`, 'div', 'p-role')}${T(`cover.people.${j}.name`, 'div', 'p-name')}</div>`).join('')}</div>
-        <div class="kw rv" style="--i:5">${(c.keywords || []).map((k, j) => T(`cover.keywords.${j}`, 'span', 'kw-chip')).join('')}</div>
+        <div class="people rv" style="--i:4">${arr(c.people).map((p, j) => `<div class="person">${T(`cover.people.${j}.role`, 'div', 'p-role')}${T(`cover.people.${j}.name`, 'div', 'p-name')}</div>`).join('')}</div>
+        <div class="kw rv" style="--i:5">${arr(c.keywords).map((k, j) => T(`cover.keywords.${j}`, 'span', 'kw-chip')).join('')}</div>
       </div>
       <figure class="cover-art rv" style="--i:3">${HERO_SVG}${T('cover.artCaption', 'figcaption', 'art-cap')}</figure>
     </div>
@@ -1442,8 +1478,9 @@ function renderMenu(total) {
   return `<section class="slide slide-menu" data-key="menu" role="group" aria-roledescription="اسلاید" aria-label="منو">
     ${DECOR.a}
     <header class="menu-head">
-      <div>${T('menu.title', 'h2', 'h-title rv', 'style="--i:0"')}${T('menu.subtitle', 'p', 'menu-sub rv', 'style="--i:1"')}</div>
-      <div class="menu-legend rv" style="--i:1"><span class="lg-next">${T('menu.nextLabel')}</span><span class="lg-done">${icon('check')}${T('menu.doneLabel')}</span></div>
+      <div>${T('menu.title', 'h2', 'h-title rv', 'style="--i:0"')}
+        <div class="menu-subrow rv" style="--i:1">${T('menu.subtitle', 'p', 'menu-sub')}<div class="menu-legend"><span class="lg-next">${T('menu.nextLabel')}</span><span class="lg-done">${icon('check')}${T('menu.doneLabel')}</span></div></div>
+      </div>
     </header>
     <div class="tiles">${state.sections.map((s, si) => `
       <article class="tile rv" style="--i:${2 + si}" data-si="${si}" role="button" tabindex="0" aria-label="${esc(s.title)}">
@@ -1460,7 +1497,7 @@ function renderMenu(total) {
 function renderSlide(sec, si, sl, k, num, total) {
   const key = `s${si}-${k}`;
   const P = `sections.${si}.slides.${k}`;
-  const layout = L[sl.layout] ? sl.layout : 'bullets';
+  const layout = Object.prototype.hasOwnProperty.call(L, sl.layout) ? sl.layout : 'bullets';
   const deco = DECOR[['a', 'b', 'c'][num % 3]];
   return `<section class="slide layout-${layout}" data-key="${key}" role="group" aria-roledescription="اسلاید" aria-label="${esc(sl.title || '')}">
     ${deco}
@@ -1495,6 +1532,7 @@ function updateTileCounts() {
 const nav = { key: 'cover', cursor: 0, visited: new Set(), busy: false };
 let scale = 1;
 let fluid = false;
+let editing = false;
 
 function show(key, opts = {}) {
   const el = slideEls[key];
@@ -1508,17 +1546,26 @@ function show(key, opts = {}) {
   nav.key = key;
   const p = parseKey(key);
   if (p) { nav.visited.add(p.si); nav.cursor = p.si; }
-  if (fluid) window.scrollTo(0, 0);
+  if (fluid && !opts.keepScroll) window.scrollTo(0, 0);
   if (opts.user && key !== 'cover' && !timer.started) startTimer();
   updateMenuState();
   updateProgress();
   renderNotes();
   updatePace();
-  updatePresenter();
   announce();
   try { history.replaceState(null, '', '#' + key); } catch (e) { /* file:// در برخی مرورگرها */ }
+  updatePresenter();
 }
 
+// نخستین بخشِ ارائه‌نشده از «from» به بعد (با دور زدن)؛ اگر همه ارائه شده باشند = تعداد بخش‌ها
+function nextUnvisited(from) {
+  const n = state.sections.length;
+  for (let i = 0; i < n; i++) {
+    const si = (from + i) % n;
+    if (!nav.visited.has(si)) return si;
+  }
+  return n;
+}
 function next() {
   if (nav.busy) return;
   const key = nav.key;
@@ -1529,7 +1576,7 @@ function next() {
   }
   const { si, k } = parseKey(key);
   if (k < state.sections[si].slides.length - 1) return show(`s${si}-${k + 1}`, { dir: 1, user: true });
-  return zoomOut(si, si + 1);          // پایان بخش ← زوم معکوس به منو
+  return zoomOut(si, nextUnvisited(si + 1));          // پایان بخش ← زوم معکوس به منو
 }
 function prev() {
   if (nav.busy) return;
@@ -1549,7 +1596,10 @@ function prev() {
 function goMenu() {
   if (nav.busy) return;
   const p = parseKey(nav.key);
-  if (p) return zoomOut(p.si, p.si);
+  if (p) {
+    const last = p.k >= state.sections[p.si].slides.length - 1;
+    return zoomOut(p.si, last ? nextUnvisited(p.si + 1) : p.si);   // بخش تمام‌شده دوباره «بعدی» نمی‌شود
+  }
   if (nav.key === 'cover') show('menu', { dir: 1, user: true });
 }
 function goTo(key) {
@@ -1600,6 +1650,7 @@ async function zoomIn(si, k = 0) {
     await Promise.all([a1.finished, a2.finished]);
     show(key, { user: true });
     await ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-out', fill: 'forwards' }).finished;
+    if (document.activeElement && document.activeElement.closest && document.activeElement.closest('.tile')) document.activeElement.blur();
   } catch (e) {
     show(key, { user: true });
   } finally {
@@ -1617,9 +1668,15 @@ async function zoomOut(si, nextCursor) {
     renderNotes();
     updatePresenter();
   };
+  const reveal = () => {
+    const t = $(`.tile[data-si="${si}"]`, slideEls.menu);
+    if (fluid && t) t.scrollIntoView({ block: 'center' });
+    return t;
+  };
   if (reduceMotion.matches || !Element.prototype.animate) {
-    show('menu', { user: true });
+    show('menu', { user: true, keepScroll: true });
     done();
+    reveal();
     return;
   }
   nav.busy = true;
@@ -1627,9 +1684,9 @@ async function zoomOut(si, nextCursor) {
   try {
     ov.style.clipPath = FULL;
     await ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 110, easing: 'ease-out', fill: 'forwards' }).finished;
-    show('menu', { noReveal: true, user: true });
+    show('menu', { noReveal: true, user: true, keepScroll: true });
     done();
-    const tile = $(`.tile[data-si="${si}"]`, slideEls.menu);
+    const tile = reveal();
     if (tile) {
       const g = zoomGeometry(tile, s);
       const ease = 'cubic-bezier(.4,0,.2,1)';
@@ -1701,8 +1758,10 @@ function fit() {
   const wasFluid = fluid;
   fluid = w < 700 || (w < 1000 && w / h < 1.15);
   document.body.classList.toggle('fluid', fluid);
-  scale = fluid ? 1 : Math.min(w / 1600, h / 900);
+  const top = editing && !fluid ? 64 : 0;            // در حالت ویرایش، جای نوار ویرایش بالای صحنه خالی می‌ماند
+  scale = fluid ? 1 : Math.min(w / 1600, (h - top) / 900);
   stage.style.setProperty('--scale', scale);
+  stage.style.top = top ? `calc(50% + ${top / 2}px)` : '';
   if (wasFluid !== fluid && fluid) window.scrollTo(0, 0);
 }
 let fitRaf = 0;
@@ -1776,11 +1835,12 @@ function planWindow() {
   const times = order.map(k => +((slideData(k) || {}).time) || 0);
   if (nav.key === 'menu' && nav.visited.size) {
     const j = nav.cursor < state.sections.length ? order.indexOf(`s${nav.cursor}-0`) : order.length;
-    const start = sum(times.slice(0, j));
+    const start = sum(times.slice(1, j));
     return [start, start];
   }
   const i = Math.max(0, order.indexOf(nav.key));
-  const start = sum(times.slice(0, i));
+  if (i === 0) return [0, 0];                       // جلد زمان‌سنجی نمی‌شود؛ تایمر با خروج از جلد شروع می‌شود
+  const start = sum(times.slice(1, i));
   return [start, start + times[i]];
 }
 let lastPace = '';
@@ -1832,7 +1892,7 @@ function renderNotes() {
   const totalPlan = sum(order.map(k => +((slideData(k) || {}).time) || 0));
   notesEl.innerHTML = `
     <div class="nt-head">
-      <div class="nt-title"><span class="nt-num">${fa(i + 1)} / ${fa(order.length)}</span><span>${esc(titleOf(key))}</span></div>
+      <div class="nt-title"><span class="nt-num">${fa(i + 1)} / ${fa(order.length)}</span><span class="nt-slide">${esc(titleOf(key))}</span></div>
       <div class="nt-meta">
         <span class="nt-chip hot">${icon('timer')} زمان پیشنهادی: <b data-path="${P}.time" data-kind="time" data-ph="۰:۰۰">${fmtTime(+d.time || 0)}</b></span>
         <span class="nt-chip">برنامه: ${fmtTime(a)} تا ${fmtTime(b)}</span>
@@ -1856,15 +1916,25 @@ function toggleNotes(force) {
 }
 
 let pres = null;
+function presDoc() {      // دسترسی امن به سند پنجره سخنران (پس از بازخوانی صفحه ممکن است ممنوع شود)
+  try { return pres && !pres.closed ? pres.document : null; } catch (e) { pres = null; return null; }
+}
 function openPresenter() {
-  if (pres && !pres.closed) { pres.focus(); return; }
-  pres = window.open('', 'exo-presenter', 'popup,width=860,height=620');
-  if (!pres) { toast('مرورگر پنجره جدید را مسدود کرد؛ اجازه پاپ‌آپ را بدهید.'); return; }
+  const cur = presDoc();
+  if (cur && cur.getElementById('p-title')) { pres.focus(); return; }
+  let w = window.open('', 'exo-presenter', 'popup,width=860,height=620');
+  if (!w) { toast('مرورگر پنجره جدید را مسدود کرد؛ اجازه پاپ‌آپ را بدهید.'); return; }
+  try { void w.document.body; } catch (e) {          // پنجره قدیمی از بارگذاری قبلی: ببند و دوباره باز کن
+    try { w.close(); } catch (_) { /* نادیده */ }
+    w = window.open('', 'exo-presenter-' + Date.now(), 'popup,width=860,height=620');
+    try { void (w && w.document.body); } catch (_) { w = null; }
+    if (!w) { toast('پنجره سخنران باز نشد؛ آن را ببندید و دوباره P را بزنید.'); return; }
+  }
+  pres = w;
   const doc = pres.document;
   doc.documentElement.lang = 'fa';
   doc.documentElement.dir = 'rtl';
-  doc.title = 'یادداشت سخنران';
-  doc.head.innerHTML = `<meta charset="utf-8"><style>
+  doc.head.innerHTML = `<meta charset="utf-8"><title>یادداشت سخنران</title>${$$('link[rel="stylesheet"],link[rel="preconnect"]').map(l => l.outerHTML).join('')}<style>
     body{margin:0;padding:22px 28px;background:#0F2526;color:#E8F2F1;font:400 20px/1.9 ${getComputedStyle(document.documentElement).getPropertyValue('--font-body')};}
     header{display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:Vazirmatn,Tahoma,sans-serif}
     #p-num{color:#F8CF6A;font-weight:700}#p-timer{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
@@ -1877,8 +1947,8 @@ function openPresenter() {
   updatePresenterTimer(lastTimerText);
 }
 function updatePresenter() {
-  if (!pres || pres.closed) return;
-  const doc = pres.document;
+  const doc = presDoc();
+  if (!doc) return;
   const d = slideData(nav.key) || {};
   const i = order.indexOf(nav.key);
   const [a, b] = planWindow();
@@ -1890,13 +1960,13 @@ function updatePresenter() {
   set('p-next', 'بعدی: ' + nextLabel());
 }
 function updatePresenterTimer(text) {
-  if (!pres || pres.closed) return;
-  const el = pres.document.getElementById('p-timer');
+  const doc = presDoc();
+  if (!doc) return;
+  const el = doc.getElementById('p-timer');
   if (el && el.textContent !== text) el.textContent = text;
 }
 
 /* ═══ ۱۳. حالت ویرایش و همگام‌سازی متن‌ها ═══ */
-let editing = false;
 const PLAINTEXT_OK = (() => {
   try { const d = document.createElement('div'); d.contentEditable = 'plaintext-only'; return d.contentEditable === 'plaintext-only'; }
   catch (e) { return false; }
@@ -1916,6 +1986,7 @@ function setEditing(on) {
   document.body.classList.toggle('editing', on);
   applyEditable(document);
   setPressed('edit', on);
+  fit();
   if (!on) {
     if (document.activeElement && document.activeElement.closest && document.activeElement.closest('[data-path]')) document.activeElement.blur();
     if (saveTimer) saveLocal();
@@ -1932,6 +2003,12 @@ document.addEventListener('input', e => {
   if (!el || !editing) return;
   const path = el.dataset.path;
   const val = readText(el);
+  if (val === '' && el.firstChild) el.textContent = '';                     // حذف <br> باقی‌مانده تا جای‌نما دیده شود
+  else if (!el.hasAttribute('data-multiline') && /\n/.test(el.innerText)) { // متن چندخطی چسبانده‌شده در فیلد یک‌خطی
+    el.textContent = val;
+    const sel = window.getSelection(); const r = document.createRange();
+    r.selectNodeContents(el); r.collapse(false); sel.removeAllRanges(); sel.addRange(r);
+  }
   if (el.dataset.kind === 'time') {
     const sec = parseTime(val);
     el.classList.toggle('invalid', sec == null);
@@ -1942,6 +2019,12 @@ document.addEventListener('input', e => {
   } else {
     setPath(state, path, val);
     $$('[data-path]').forEach(o => { if (o !== el && o.dataset.path === path) o.textContent = val; });
+    if (/\.title$|titleLines\.\d+$/.test(path)) {          // عنوان‌های وابسته در یادداشت و برچسب دسترس‌پذیری
+      const slide = el.closest('.slide');
+      if (slide && /slides\.\d+\.title$/.test(path)) slide.setAttribute('aria-label', val);
+      const nt = $('.nt-slide', notesEl);
+      if (nt && !notesEl.contains(el)) nt.textContent = titleOf(nav.key);
+    }
     if (/^sections\.\d+\.title$/.test(path)) {
       const si = +path.split('.')[1];
       const t = $(`.tile[data-si="${si}"]`, stage);
@@ -1952,8 +2035,8 @@ document.addEventListener('input', e => {
   scheduleSave();
 });
 document.addEventListener('paste', e => {
-  const ed = e.target && e.target.closest ? e.target.closest('[contenteditable="true"]') : null;
-  if (!ed) return;
+  const ed = e.target && e.target.closest ? e.target.closest('[data-path]') : null;
+  if (!ed || !ed.isContentEditable) return;
   e.preventDefault();
   let text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
   if (!ed.hasAttribute('data-multiline')) text = text.replace(/\s*\n\s*/g, ' ');
@@ -1990,7 +2073,7 @@ function buildHtml() {
   const b = SOURCE_HTML.indexOf(M2, a + 1);
   if (a < 0 || b < 0) throw new Error('نشانگر داده پیدا نشد');
   const json = JSON.stringify(state, null, 2)
-    .replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+    .replace(/</g, '\\u003c').replace(/\*\//g, '*\\/').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   return SOURCE_HTML.slice(0, a + M1.length) + json + SOURCE_HTML.slice(b);
 }
 function saveHtml() {
@@ -2015,7 +2098,14 @@ fileInput.addEventListener('change', () => {
     let d;
     try { d = JSON.parse(txt); } catch (e) { toast('فایل JSON معتبر نیست.'); return; }
     if (!validDeck(d)) { toast('ساختار JSON با ارائه سازگار نیست (sections و slides لازم است).'); return; }
+    const prev = state;
     state = normalize(d);
+    try { buildDeck(); } catch (err) {               // اگر قابل نمایش نبود، چیزی تغییر نمی‌کند
+      state = prev;
+      rebuild(nav.key);
+      toast('این JSON قابل نمایش نیست: ' + err.message);
+      return;
+    }
     saveLocal();
     rebuild('cover');
     toast('محتوای JSON وارد شد.');
@@ -2042,8 +2132,8 @@ function rebuild(key) {
 /* ═══ ۱۵. نوار ابزار، نوار ویرایش، راهنما و پیام‌ها ═══ */
 const TOOLS = [
   { act: 'menu', icon: 'grid', tip: 'منو (Esc یا M)' },
-  { act: 'prev', icon: 'chevR', tip: 'قبلی' },
-  { act: 'next', icon: 'chevL', tip: 'بعدی' },
+  { act: 'prev', icon: 'chevR', tip: 'قبلی', dirIcon: true },
+  { act: 'next', icon: 'chevL', tip: 'بعدی', dirIcon: true },
   '|',
   { act: 'edit', icon: 'pencil', tip: 'حالت ویرایش (E)', toggle: true },
   { act: 'saveHtml', icon: 'download', tip: 'ذخیره به‌صورت فایل HTML (Ctrl+S)' },
@@ -2060,15 +2150,19 @@ const TOOLS = [
 function buildToolbar() {
   $('#toolbar').innerHTML = TOOLS.map(t => t === '|' ? '<span class="tb-sep" aria-hidden="true"></span>'
     : `<button class="tb-btn" data-act="${t.act}" data-tip="${t.tip}" aria-label="${t.tip}"${t.toggle ? ' aria-pressed="false"' : ''}>${icon(t.icon)}</button>`).join('');
+  updateArrowIcons();
   $('#editbar').innerHTML = `
-    <span class="eb-msg">${icon('pencil')} حالت ویرایش: روی هر متن کلیک کنید و بنویسید</span>
+    <span class="eb-msg">${icon('pencil')} حالت ویرایش</span>
     <span class="eb-status" id="eb-status">${restored ? 'نسخه ذخیره‌شده بازیابی شد' : 'ذخیره خودکار فعال'}</span>
     <button class="eb-btn" data-act="saveHtml">${icon('download')} ذخیره HTML</button>
-    <button class="eb-btn" data-act="exportJson">${icon('braces')} خروجی JSON</button>
-    <button class="eb-btn" data-act="importJson">${icon('upload')} ورود JSON</button>
-    <button class="eb-btn" data-act="reset">${icon('reset')} بازنشانی</button>
     <button class="eb-btn primary" data-act="edit">${icon('check')} پایان ویرایش</button>`;
   setPressed('timer', ui.timerVisible);
+}
+function updateArrowIcons() {      // در حالت چپ‌به‌راست، فلش‌های قبلی/بعدی جابه‌جا می‌شوند
+  const rtl = ui.arrows === 'rtl';
+  const p = $('#toolbar [data-act="prev"]'), n = $('#toolbar [data-act="next"]');
+  if (p) p.innerHTML = icon(rtl ? 'chevR' : 'chevL');
+  if (n) n.innerHTML = icon(rtl ? 'chevL' : 'chevR');
 }
 function setPressed(act, on) {
   const b = $(`#toolbar [data-act="${act}"]`);
@@ -2098,20 +2192,30 @@ function buildHelp() {
       <tr><td><kbd>Esc</kbd> یا <kbd>M</kbd></td><td>بازگشت به منو با زوم معکوس</td></tr>
       <tr><td><kbd>۱</kbd> تا <kbd>۹</kbd> (در منو)</td><td>ورود مستقیم به بخش</td></tr>
       <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>جلد / آخرین اسلاید</td></tr>
-      <tr><td><kbd>F</kbd></td><td>تمام‌صفحه (در کروم برای خروج، Esc را نگه دارید)</td></tr>
+      <tr><td><kbd>F</kbd></td><td>تمام‌صفحه؛ در کروم برای خروج Esc را نگه دارید. در فایرفاکس Esc از تمام‌صفحه خارج می‌شود، پس برای منو <kbd>M</kbd> را بزنید.</td></tr>
       <tr><td><kbd>N</kbd> / <kbd>P</kbd></td><td>یادداشت سخنران / پنجره جدای سخنران</td></tr>
       <tr><td><kbd>T</kbd></td><td>نمایش یا پنهان کردن تایمر ۲۰ دقیقه‌ای</td></tr>
       <tr><td><kbd>E</kbd> / <kbd>Ctrl+S</kbd></td><td>حالت ویرایش / ذخیره به‌صورت فایل HTML</td></tr>
-      <tr><td>کشیدن انگشت (موبایل)</td><td>به راست: بعدی · به چپ: قبلی</td></tr>
+      <tr><td>کشیدن انگشت (موبایل)</td><td>${ui.arrows === 'rtl' ? 'به راست: بعدی، به چپ: قبلی' : 'به چپ: بعدی، به راست: قبلی'}</td></tr>
     </table>
     <div class="help-foot"><span>کلیدهای حرفی با صفحه‌کلید فارسی هم کار می‌کنند.</span>
       <button class="eb-btn" data-act="arrows">جهت کلیدهای چپ/راست: ${ui.arrows === 'rtl' ? 'راست‌به‌چپ (← بعدی)' : 'چپ‌به‌راست (→ بعدی)'}</button></div>
   </div>`;
 }
+let helpOpener = null;
 function toggleHelp(force) {
   const open = force != null ? force : !helpEl.classList.contains('open');
+  const was = helpEl.classList.contains('open');
   helpEl.classList.toggle('open', open);
-  if (open) { const b = $('button', helpEl); if (b) b.focus(); }
+  ['#viewport', '#toolbar', '#editbar', '#timer', '#notes'].forEach(sel => { $(sel).inert = open; });   // فوکوس داخل راهنما می‌ماند
+  if (open && !was) {
+    helpOpener = document.activeElement;
+    const b = $('button', helpEl);
+    if (b) b.focus();
+  } else if (!open && was) {
+    if (helpOpener && helpOpener.isConnected && typeof helpOpener.focus === 'function') helpOpener.focus({ preventScroll: true });
+    helpOpener = null;
+  }
 }
 
 function toggleTimer(force) {
@@ -2126,6 +2230,7 @@ function toggleFullscreen() {
     if (!req) { toast('تمام‌صفحه در این مرورگر پشتیبانی نمی‌شود.'); return; }
     document.documentElement.requestFullscreen().then(() => {
       if (navigator.keyboard && navigator.keyboard.lock) navigator.keyboard.lock(['Escape']).catch(() => {});
+      else toast('در این مرورگر Esc از تمام‌صفحه خارج می‌شود؛ برای بازگشت به منو کلید M را بزنید.');
     }).catch(() => toast('مرورگر اجازه تمام‌صفحه نداد.'));
   } else if (document.exitFullscreen) {
     document.exitFullscreen().catch(() => {});
@@ -2150,7 +2255,11 @@ const ACTIONS = {
   timerReset: resetTimer,
   presenter: openPresenter,
   help: () => toggleHelp(),
-  arrows: () => { ui.arrows = ui.arrows === 'rtl' ? 'ltr' : 'rtl'; saveUi(); buildHelp(); toggleHelp(true); updateCoverHint(); }
+  arrows: () => {
+    ui.arrows = ui.arrows === 'rtl' ? 'ltr' : 'rtl';
+    saveUi(); buildHelp(); updateCoverHint(); updateArrowIcons();
+    const b = $('[data-act="arrows"]', helpEl); if (b) b.focus();
+  }
 };
 document.addEventListener('click', e => {
   const btn = e.target.closest ? e.target.closest('[data-act]') : null;
@@ -2188,6 +2297,12 @@ function onKey(e) {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (helpEl.classList.contains('open')) {
     if (e.key === 'Escape' || e.code === 'Slash' || e.code === 'KeyH') { e.preventDefault(); toggleHelp(false); }
+    else if (e.key === 'Tab') {
+      const f = $$('button', helpEl);
+      const i = f.indexOf(document.activeElement);
+      e.preventDefault();
+      f[(i + (e.shiftKey ? f.length - 1 : 1)) % f.length].focus();
+    }
     return;
   }
   const onButton = tgt && tgt.closest && tgt.closest('button, [role="button"]');
@@ -2235,6 +2350,9 @@ let touch0 = null;
 const viewportEl = $('#viewport');
 viewportEl.addEventListener('touchstart', e => {
   if (e.touches.length !== 1) { touch0 = null; return; }
+  for (let n = e.target; n && n !== viewportEl; n = n.parentElement) {   // داخل ناحیه‌ای که افقی اسکرول می‌شود، کشیدن = اسکرول
+    if (n.scrollWidth > n.clientWidth + 2 && /(auto|scroll)/.test(getComputedStyle(n).overflowX)) { touch0 = null; return; }
+  }
   const t = e.touches[0];
   touch0 = { x: t.clientX, y: t.clientY, time: performance.now() };
 }, { passive: true });
@@ -2259,7 +2377,10 @@ function wake() {
 }
 ['mousemove', 'mousedown', 'touchstart'].forEach(ev => addEventListener(ev, wake, { passive: true }));
 
-addEventListener('pagehide', () => { if (saveTimer) saveLocal(); });
+addEventListener('pagehide', () => {
+  if (saveTimer) saveLocal();
+  try { if (pres && !pres.closed) pres.close(); } catch (e) { /* نادیده */ }
+});
 addEventListener('beforeprint', () => { if (saveTimer) saveLocal(); });
 
 /* ═══ ۱۷. راه‌اندازی ═══ */
@@ -2268,8 +2389,14 @@ function init() {
   buildToolbar();
   buildHelp();
   buildTimer();
-  buildDeck();
-  const fromHash = decodeURIComponent((location.hash || '').slice(1));
+  try { buildDeck(); } catch (err) {                 // ذخیره محلیِ خراب: برگشت به نسخه اصلی
+    storageDel(STORE_KEY);
+    state = clone(DATA);
+    buildDeck();
+    setTimeout(() => toast('نسخه ذخیره‌شده خراب بود؛ نسخه اصلی بارگذاری شد.'), 50);
+  }
+  let fromHash = '';
+  try { fromHash = decodeURIComponent((location.hash || '').slice(1)); } catch (e) { /* hash نامعتبر */ }
   const start = slideEls[fromHash] ? fromHash : 'cover';
   if (start !== 'cover' && start !== 'menu') {
     const p = parseKey(start);
