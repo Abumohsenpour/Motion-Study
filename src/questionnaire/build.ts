@@ -145,7 +145,8 @@ export function questionnaireData(p: Project, expertId: Id, kind: RoundKey, opts
     .filter((id) => ids.includes(id))
     .map((id) => {
       const c = p.concepts.find((x) => x.id === id)!;
-      return { code: key.codes[id], label: `طرح ${key.codes[id]}`, sketch: c.sketch, description: c.description };
+      const shown = opts.digits === 'fa' ? key.codes[id].replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]) : key.codes[id];
+      return { code: key.codes[id], label: `طرح ${shown}`, sketch: c.sketch, description: c.description };
     });
   base.params = p.weighted.columns
     .map((col) => p.params.find((x) => x.id === col.paramId))

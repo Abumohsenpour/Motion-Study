@@ -1,8 +1,8 @@
 /** Generating the experts' offline files and downloading them one by one or as a ZIP. */
 import { strToU8, zipSync } from 'fflate';
-import type { Id, RoundKey } from '../../core';
+import { weightedConceptIds, type Id, type RoundKey } from '../../core';
 import { downloadBlob, downloadText } from '../../io/download';
-import { questionnaireData, questionnaireFileName, questionnaireHtml } from '../../questionnaire/build';
+import { makeBlindingKey, questionnaireData, questionnaireFileName, questionnaireHtml } from '../../questionnaire/build';
 import { usePrefs } from '../../state/prefs';
 import { useStore } from '../../state/store';
 import { makeFmt } from '../../ui/format';
@@ -28,13 +28,43 @@ function markInvited(ids: Id[], kind: RoundKey) {
   );
 }
 
+/**
+ * Makes sure every weighted-Pugh rater has a blinding key covering all current concepts. Existing codes are kept,
+ * so files already sent stay valid; new concepts get unused random codes (DECISIONS D-43).
+ */
+export function ensureBlindingKeys(expertIds: Id[]) {
+  const p = useStore.getState().project!;
+  const concepts = weightedConceptIds(p);
+  const missing = expertIds.filter((id) => {
+    const k = p.weighted.blinding[id];
+    return !k || concepts.some((c) => !(c in k.codes));
+  });
+  if (!missing.length) return;
+  useStore.getState().apply('ساخت کدهای تصادفی کانسپت‌ها برای خبرگان', (d) => {
+    for (const id of missing) {
+      const old = d.weighted.blinding[id];
+      const fresh = makeBlindingKey(concepts);
+      if (!old) {
+        d.weighted.blinding[id] = fresh;
+        continue;
+      }
+      const used = new Set(Object.values(old.codes));
+      const free = Array.from({ length: 90 }, (_, i) => String(i + 10)).filter((c) => !used.has(c));
+      for (const c of concepts) if (!(c in old.codes)) old.codes[c] = free.splice(Math.floor(Math.random() * free.length), 1)[0];
+      old.order = [...old.order.filter((c) => concepts.includes(c)), ...fresh.order.filter((c) => !old.order.includes(c))];
+    }
+  });
+}
+
 export function downloadQuestionnaire(expertId: Id, kind: RoundKey) {
+  if (kind === 'pugh') ensureBlindingKeys([expertId]);
   const f = build(expertId, kind);
   downloadText(f.html, f.name, 'text/html');
   markInvited([expertId], kind);
 }
 
 export function downloadAllQuestionnaires(expertIds: Id[], kind: RoundKey) {
+  if (kind === 'pugh') ensureBlindingKeys(expertIds);
   const files: Record<string, Uint8Array> = {};
   for (const id of expertIds) {
     const f = build(id, kind);

@@ -41,6 +41,7 @@ button.secondary{background:var(--surface);color:var(--ink);border:1px solid var
 .r.cj{font-size:13px;padding:0 10px}
 .r:hover{border-color:var(--accent)}
 .r.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.rating.small{gap:4px;flex-wrap:nowrap}
 .rating.small .r{min-width:34px;height:34px}
 .fb{margin-top:10px;background:#f7f6f2;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
 .fb-title{color:var(--muted);margin-bottom:4px}
@@ -68,7 +69,7 @@ input.pts.bad{border-color:#9b2c2c;background:#f8e3e3}
 .concept .sketch{display:block;max-width:100%;max-height:420px;margin:8px auto;border:1px solid var(--line);border-radius:8px;background:#fff}
 .concept .desc{text-align:justify}
 table.pugh td{padding:8px 4px;border-bottom:1px solid #eeece6;vertical-align:middle}
-table.pugh td:last-child{width:210px}
+table.pugh td:last-child{width:200px}
 @media (max-width:600px){.fb-row{grid-template-columns:24px 1fr}.fb-row .fb-bar,.fb-row .muted{grid-column:1/-1}table.pugh td{display:block;width:auto!important}}
 @media print{.sticky,.actions,button{display:none!important}.card{break-inside:avoid}}
 `;

@@ -52,7 +52,7 @@ export function miniBandBars(rows: BandRow[], bands: string[], fmt: Fmt, width =
       );
     });
   });
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${h}" width="${width}" height="${h}" role="img" aria-label="${esc(rows.map((r) => `${r.name}: ${r.percents.map((p, i) => `${bands[i]} ${fmt.pct(p, 0)}`).join('، ')}`).join(' | '))}" font-family="Vazirmatn, Tahoma, sans-serif">${parts.join('')}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" style="direction:ltr" viewBox="0 0 ${width} ${h}" width="${width}" height="${h}" role="img" aria-label="${esc(rows.map((r) => `${r.name}: ${r.percents.map((p, i) => `${bands[i]} ${fmt.pct(p, 0)}`).join('، ')}`).join(' | '))}" font-family="Vazirmatn, Tahoma, sans-serif">${parts.join('')}</svg>`;
 }
 
 export interface FigureItem {
@@ -130,7 +130,7 @@ export function bandFigure(items: FigureItem[], bands: string[], fmt: Fmt, opts:
     y += Math.max(blockH, 14) + blockGap;
   }
   const H = y;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Vazirmatn, Tahoma, sans-serif" role="img" aria-label="${esc(opts.title ?? 'توزیع پاسخ‌ها در طبقه‌ها به تفکیک حوزه')}"><rect width="${W}" height="${H}" fill="${surface}"/>${out.join('')}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" style="direction:ltr" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Vazirmatn, Tahoma, sans-serif" role="img" aria-label="${esc(opts.title ?? 'توزیع پاسخ‌ها در طبقه‌ها به تفکیک حوزه')}"><rect width="${W}" height="${H}" fill="${surface}"/>${out.join('')}</svg>`;
 }
 
 const truncate = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
