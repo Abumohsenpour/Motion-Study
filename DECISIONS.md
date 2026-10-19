@@ -151,11 +151,20 @@ Out of scope (Phase 1/4 or not software): the supervisors' clarity review of the
 
 ---
 
-## ❓ Questions for you (summary)
+## Answers received (19 Oct 2026)
 
-1. **C1:** OK to keep identities in a separate key file instead of inside the project `.json`?
-2. **P5:** Do you want the inclusion-criteria warning (minimum years per domain plus an "inclusion criteria met" checkbox)?
-3. **D-36:** A concept that is all "S" against the best in run 2: **not forwarded** (my default, literal reading) or forwarded?
-4. **D-38:** OK to generalise the "at least two concepts" safety rule beyond the literal "best dominates all"?
+You replied "OK (do what's best for the project and its results)". Applied as follows:
 
-Answer "OK" to accept all four defaults, or answer the ones you want changed.
+1. **C1:** separate identity key file, as written.
+2. **P5:** **built**. It is a rule of the proposal (inclusion criteria per domain) and costs little: each domain has an inclusion-criteria text and an optional minimum years (surgery: 5); experts below it, or with «معیارهای ورود احراز شد» unticked, get a warning on the experts screen and in the panel check.
+3. **D-36:** all-S concept in run 2 is not forwarded by itself (literal reading); overridable with a reason.
+4. **D-38:** safety rule generalised to "fewer than two forwarded", as written.
+
+## Additional decisions made during implementation
+
+| ID | Point | Decision |
+|---|---|---|
+| D-64 | Excel library | SheetJS from npm (`xlsx@0.18.5`, pinned). The newer SheetJS builds are distributed only from the SheetJS CDN, which this build environment cannot reach. 0.18.5 has two published advisories that concern **parsing hostile files** (prototype pollution, ReDoS). The app only parses files you choose yourself (your parameter table and response sheets), so the practical risk is low; noted here for transparency. |
+| D-65 | Which experts the panel description covers | The round-1 respondents (the panel that actually took part). Round-2 counts appear in the response-rate table. |
+| D-66 | Thresholds validation | Settings warns only when "retain" and "remove" could truly hold at once: top ≥ retain-min and top ≤ remove-max, bottom ≥ remove-min and bottom ≤ retain-max, and the two minimums add up to ≤ 100 %. |
+| D-67 | Sensitivity trigger with weights that do not sum to 1 | The trigger and the scenarios are evaluated on the normalised weights (D-46), so the gap is on the same 1–5 scale the proposal's 0.4 refers to. |
