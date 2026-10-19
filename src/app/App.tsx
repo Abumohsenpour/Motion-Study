@@ -1,6 +1,6 @@
 /** Top-level layout: welcome screen when no project is open, otherwise sidebar + step screen. */
 import { useEffect, useMemo } from 'react';
-import { create } from 'zustand';
+import { useNav } from './nav';
 import { useStore } from '../state/store';
 import { usePrefs } from '../state/prefs';
 import { ConfirmHost, ToastHost } from '../ui/dialogs';
@@ -12,23 +12,21 @@ import { Welcome } from './Welcome';
 import { ProjectScreen } from '../screens/ProjectScreen';
 import { ExpertsScreen } from '../screens/ExpertsScreen';
 import { ParamsScreen } from '../screens/ParamsScreen';
+import { Round1Screen, Round2Screen } from '../screens/RoundScreen';
+import { Analysis1Screen } from '../screens/Analysis1Screen';
 
 function Placeholder() {
   return <div className="text-muted">این بخش در مرحله بعد ساخته می‌شود.</div>;
 }
 
-export const useNav = create<{ step: StepId; go: (s: StepId) => void }>((set) => ({
-  step: 'project',
-  go: (step) => {
-    set({ step });
-    window.scrollTo({ top: 0 });
-  },
-}));
 
 const SCREENS: Partial<Record<StepId, () => React.JSX.Element>> = {
   project: ProjectScreen,
   experts: ExpertsScreen,
   params: ParamsScreen,
+  round1: Round1Screen,
+  analysis1: Analysis1Screen,
+  round2: Round2Screen,
 };
 
 const statusLabel: Record<StepStatus, string> = { 'not-started': 'شروع نشده', 'in-progress': 'در جریان', complete: 'کامل' };
