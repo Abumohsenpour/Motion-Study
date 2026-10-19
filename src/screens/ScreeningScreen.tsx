@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { majoritySymbol, newId, screeningAnalysis, screeningParamIds, type Concept, type Id, type PughSymbol, type ScreeningRun } from '../core';
 import { edit } from '../app/edit';
 import { useNav } from '../app/nav';
+import { REASON_FA } from './screeningReasons';
 import { useProject } from '../state/store';
 import { Modal, toast } from '../ui/dialogs';
 import { useFmt } from '../ui/format';
@@ -16,17 +17,6 @@ const move = <T,>(arr: T[], i: number, j: number) => {
   arr.splice(j, 0, x);
 };
 
-export const REASON_FA: Record<string, string> = {
-  best: 'کانسپت برتر (مرجع اجرای دوم)',
-  'kept-has-plus': 'حفظ: دست‌کم یک «+» نسبت به کانسپت برتر',
-  'safety-rule': 'افزوده با قاعده حداقل دو گزینه (بالاترین امتیاز خالص اجرای دوم)',
-  dominated: 'حذف: مغلوب کانسپت برتر در اجرای دوم',
-  'equivalent-no-plus': 'معادل کانسپت برتر، بدون مزیت متمایز (بدون «+» و «−»)',
-  'cap-exceeded': 'خارج از سقف کانسپت‌های راه‌یافته (امتیاز خالص پایین‌تر)',
-  infeasible: 'از نظر فنی امکان‌پذیر نیست',
-  'eliminated-run1': 'حذف: مغلوب مرجع در اجرای اول',
-  'not-in-run2': '—',
-};
 
 const SYM: Record<PughSymbol, string> = { '+': '+', '-': '−', S: 'S' };
 

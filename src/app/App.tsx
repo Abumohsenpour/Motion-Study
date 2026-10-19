@@ -17,13 +17,9 @@ import { Analysis1Screen } from '../screens/Analysis1Screen';
 import { WeightsScreen } from '../screens/WeightsScreen';
 import { ScreeningScreen } from '../screens/ScreeningScreen';
 import { WeightedScreen } from '../screens/WeightedScreen';
+import { ExportsScreen } from '../screens/ExportsScreen';
 
-function Placeholder() {
-  return <div className="text-muted">این بخش در مرحله بعد ساخته می‌شود.</div>;
-}
-
-
-const SCREENS: Partial<Record<StepId, () => React.JSX.Element>> = {
+const SCREENS: Record<StepId, () => React.JSX.Element> = {
   project: ProjectScreen,
   experts: ExpertsScreen,
   params: ParamsScreen,
@@ -33,6 +29,7 @@ const SCREENS: Partial<Record<StepId, () => React.JSX.Element>> = {
   weights: WeightsScreen,
   screening: ScreeningScreen,
   weighted: WeightedScreen,
+  exports: ExportsScreen,
 };
 
 const statusLabel: Record<StepStatus, string> = { 'not-started': 'شروع نشده', 'in-progress': 'در جریان', complete: 'کامل' };
@@ -133,7 +130,7 @@ export function App() {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
-  const Screen = SCREENS[step] ?? Placeholder;
+  const Screen = SCREENS[step];
   return (
     <>
       {!project ? (

@@ -14,6 +14,8 @@ export interface Fmt {
   int: (x: number | null | undefined) => string;
   /** x is already in percent (0–100). */
   pct: (x: number | null | undefined, decimals?: number) => string;
+  /** Like pct, always with a sign (+ / −). Show it inside an LTR span so the sign stays in front of the number. */
+  signedPct: (x: number | null | undefined, decimals?: number) => string;
   /** Converts the digits inside a free text. */
   digits: (s: string) => string;
   /** ISO date → Solar Hijri date (with the Gregorian date in the title attribute where used). */
@@ -42,6 +44,7 @@ export function makeFmt(mode: DigitMode): Fmt {
     auto: (x, d = 4) => (bad(x) ? '—' : nf(0, d).format(x)),
     int: (x) => (bad(x) ? '—' : nf(0, 0).format(x)),
     pct: (x, d = 1) => (bad(x) ? '—' : nf(d, d).format(x) + (mode === 'fa' ? '٪' : '%')),
+    signedPct: (x, d = 1) => (bad(x) ? '—' : (x > 0 ? '+' : x < 0 ? '−' : '') + nf(d, d).format(Math.abs(x)) + (mode === 'fa' ? '٪' : '%')),
     digits: (s) => (mode === 'fa' ? s.replace(/[0-9]/g, (c) => FA_DIGITS[+c]) : s),
     date: (iso) => {
       if (!iso) return '—';

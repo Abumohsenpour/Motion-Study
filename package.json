@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:excel": "bash tools/excel-verify/run.sh"
   },
   "dependencies": {
     "dexie": "^4.4.6",

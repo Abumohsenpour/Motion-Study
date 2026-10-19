@@ -7,12 +7,12 @@ import type { Fmt } from '../ui/format';
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export function scoreChart(items: { label: string; score: number; rank: number }[], fmt: Fmt, opts: { width?: number; title?: string; color?: string; ink?: string; muted?: string; surface?: string } = {}): string {
-  const W = opts.width ?? 640;
+  const W = opts.width ?? 720;
   const ink = opts.ink ?? '#1f2430';
   const muted = opts.muted ?? '#5d6475';
   const surface = opts.surface ?? '#ffffff';
   const color = opts.color ?? '#34507a';
-  const labelW = 190;
+  const labelW = 280;
   const valueW = 70;
   const barMax = W - labelW - valueW - 10;
   const rowH = 26;
@@ -30,7 +30,9 @@ export function scoreChart(items: { label: string; score: number; rank: number }
   items.forEach((it, i) => {
     const y = top + i * rowH;
     const w = Math.max(0, sx(it.score));
-    out.push(`<text x="${W}" y="${y + rowH / 2 + 4}" text-anchor="end" font-size="12" fill="${ink}">${fmt.int(it.rank)}. ${esc(it.label)}</text>`);
+    // long labels are shortened so they never run into the bars (the full label is in the bar's tooltip)
+    const label = it.label.length > 38 ? it.label.slice(0, 37) + '…' : it.label;
+    out.push(`<text x="${W}" y="${y + rowH / 2 + 4}" text-anchor="end" font-size="12" fill="${ink}">${fmt.int(it.rank)}. ${esc(label)}</text>`);
     out.push(`<rect x="${x0 - w}" y="${y + 5}" width="${w}" height="${rowH - 10}" rx="4" fill="${color}" fill-opacity="${i === 0 ? 1 : 0.65}"><title>${esc(it.label)}: ${fmt.num(it.score, 3)}</title></rect>`);
     out.push(`<text x="${x0 - w - 6}" y="${y + rowH / 2 + 4}" text-anchor="end" font-size="12" font-weight="700" fill="${ink}">${fmt.num(it.score, 3)}</text>`);
   });

@@ -5,3 +5,4 @@ dist-single/
 .vite/
 coverage/
 test-results/
+tools/excel-verify/work/

@@ -542,7 +542,9 @@ function SensitivityTab() {
                 {s.scenarios.map((sc) => (
                   <tr key={`${sc.paramIndex}${sc.delta}`} className={sc.rankingChanged ? 'bg-warn-soft' : undefined}>
                     <td className={td + ' ltr'}>{pcode(sc.paramIndex)}</td>
-                    <td className={td}>{sc.delta > 0 ? '+' : '−'}{fmt.int(Math.abs(sc.delta) * 100)}٪</td>
+                    <td className={td}>
+                      <span className="ltr">{fmt.signedPct(sc.delta * 100, 0)}</span>
+                    </td>
                     <td className={td + ' tabular-nums'}>{fmt.num(sc.weights[sc.paramIndex], 4)}</td>
                     <td className={td + ' text-xs'}>{sc.ranking.map((r) => `${cc(r.id)} (${fmt.num(r.score, 3)})`).join(' > ')}</td>
                     <td className={td}>{sc.topChanged ? <Badge tone="bad">بله</Badge> : <Badge tone="ok">خیر</Badge>}</td>
@@ -569,7 +571,7 @@ function SensitivityTab() {
               {s.breakEven.map((b, i) => (
                 <tr key={i}>
                   <td className={td + ' ltr'}>{pcode(i)}</td>
-                  <td className={td + ' tabular-nums'}>{b.delta === null ? '—' : `${b.delta > 0 ? '+' : '−'}${fmt.num(Math.abs(b.delta) * 100, 1)}٪`}</td>
+                  <td className={td + ' tabular-nums'}>{b.delta === null ? '—' : <span className="ltr">{fmt.signedPct(b.delta * 100, 1)}</span>}</td>
                   <td className={td}>
                     {b.delta === null ? <span className="text-muted">این وزن ترتیب دو کانسپت را تغییر نمی‌دهد (امتیاز برابر در این پارامتر)</span> : b.possible ? (Math.abs(b.delta) <= step ? <Badge tone="warn">در محدوده ±{fmt.int(step * 100)}٪</Badge> : <Badge>ممکن</Badge>) : <Badge tone="ok">ناممکن</Badge>}
                   </td>
