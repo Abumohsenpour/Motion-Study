@@ -6,3 +6,4 @@ dist-single/
 coverage/
 test-results/
 tools/excel-verify/work/
+tools/e2e/work/

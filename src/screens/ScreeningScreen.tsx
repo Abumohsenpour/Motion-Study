@@ -488,8 +488,8 @@ function ResultTab() {
             <thead>
               <tr>
                 <th className={th}>کانسپت</th>
-                <th className={th}>اجرای اول (+/−/S، خالص)</th>
-                <th className={th}>اجرای دوم (+/−/S، خالص)</th>
+                <th className={th}>اجرای اول (امتیاز خالص؛ تعداد + − S)</th>
+                <th className={th}>اجرای دوم (امتیاز خالص؛ تعداد + − S)</th>
                 <th className={th}>امکان‌پذیری</th>
                 <th className={th}>نتیجه قاعده</th>
                 <th className={th}>تصمیم نهایی</th>
@@ -500,7 +500,18 @@ function ResultTab() {
                 const c = cc(f.conceptId);
                 const t1 = a.run1!.totals[c.id];
                 const t2 = a.run2!.totals[c.id];
-                const fmtT = (t: typeof t1) => (t ? `${fmt.int(t.plus)}/${fmt.int(t.minus)}/${fmt.int(t.same)}، ${fmt.int(t.net)}` : '—');
+                // the net score first, then the counts in a left-to-right span so the signs stay with their numbers
+                const fmtT = (t: typeof t1) =>
+                  t ? (
+                    <span className="whitespace-nowrap">
+                      خالص <b className="ltr">{fmt.int(t.net)}</b>{' '}
+                      <span className="ltr text-xs text-muted">
+                        (+{fmt.int(t.plus)} −{fmt.int(t.minus)} S{fmt.int(t.same)})
+                      </span>
+                    </span>
+                  ) : (
+                    '—'
+                  );
                 return (
                   <tr key={c.id}>
                     <td className={td}>
@@ -558,6 +569,7 @@ function ResultTab() {
 export function ScreeningScreen() {
   const [tab, setTab] = useState<'concepts' | 'run1' | 'run2' | 'result'>('concepts');
   const p = useProject();
+  const fmt = useFmt();
   return (
     <div className="space-y-4">
       <PageTitle
@@ -567,7 +579,7 @@ export function ScreeningScreen() {
       <RatersCard />
       <Tabs
         tabs={[
-          { id: 'concepts', label: `کانسپت‌ها (${p.concepts.length})` },
+          { id: 'concepts', label: `کانسپت‌ها (${fmt.int(p.concepts.length)})` },
           { id: 'run1', label: 'اجرای اول' },
           { id: 'run2', label: 'اجرای دوم' },
           { id: 'result', label: 'نتیجه و راه‌یابی' },

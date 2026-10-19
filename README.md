@@ -23,8 +23,11 @@ Two sample projects can be opened from the start screen:
 
 - **نمونه حل‌شده دستی:** the small worked example of `SPEC.md` (fixtures F1–F4). Every number on its screens can be
   checked against the hand calculation.
-- **پروژه نمونه کامل:** 15 fictional experts in 3 domains, 5 semantic groups, 25 initial parameters plus one added from
-  the round-1 open answers, and 5 concepts. It exercises every screen and output.
+- **نمونه حل‌شده و امتیازدهی‌شده (داده فرضی):** a complete study on the thesis topic with hypothetical data, for
+  presenting the method (for example at the proposal defence). It has 15 experts in 3 domains, 5 semantic groups,
+  25 initial parameters plus one added from the round-1 open answers, and 5 concepts. All ten steps are filled in
+  and every result is computed. Opening it again from the start screen restores the original, so changes made while
+  rehearsing never carry over.
 
 ## Building from source
 
@@ -38,6 +41,7 @@ npm run typecheck      # TypeScript strict check
 npm run build          # regular build in dist/
 npm run build:single   # one self-contained HTML file in dist-single/index.html
 npm run verify:excel   # recalculates the exported workbooks in LibreOffice and compares (see tools/excel-verify)
+npm run test:manual    # types the whole worked example into the app by hand and checks the results (see tools/e2e)
 ```
 
 After `npm run build:single`, copy `dist-single/index.html` to `release/delphi-pugh-offline.html` to update the
@@ -66,6 +70,12 @@ ready-made file.
   - final weights 0.2198, 0.2177, 0.2438 and 0.3188;
   - weighted scores 3.367, 3.633 and 3.300;
   - break-even changes of +133.3 % and −57.1 %.
+- **Manual entry.** `npm run test:manual` starts the offline file in Chromium with the network off, creates an
+  empty project and types every value of the worked example through the screens: experts, groups and parameters,
+  both rounds' ratings, consent, open answers, coding and candidates, point allocations, concepts, screening votes
+  of three raters in two runs, weighted-matrix columns, weights and scores. It then checks the hand-calculated
+  results on screen, saves the project file and compares it with the worked example value by value. The last run
+  passed all 18 on-screen checks and the file comparison.
 - **Excel formulas.** The exported workbook carries live formulas next to the app's values.
   `npm run verify:excel` erases every cached value, has LibreOffice recalculate the workbook, and compares the two.
   The last run found 0 differences in 872 (worked example) and 5,633 (demo) formula cells.

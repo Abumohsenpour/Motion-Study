@@ -1,5 +1,6 @@
 /**
- * Full demo project with FICTIONAL data: 15 experts (5 per domain), 5 semantic groups, 25 parameters
+ * Solved and scored sample with HYPOTHETICAL data, for presenting the method (for example at the proposal
+ * defence): 15 experts (5 per domain), 5 semantic groups, 25 parameters
  * (+1 added in round 2 from open answers), 5 concepts. Deterministic (seeded), so the same numbers appear every
  * time. It exercises the whole workflow: a "cannot judge" answer, an expert who withdrew after round 1, an expert
  * who skipped the allocation, totals that are not 100, open answers merged into a candidate, both screening runs
@@ -106,7 +107,7 @@ function rating(r: () => number, profile: Profile, round: 1 | 2, domainShift: nu
 
 export function buildDemoProject(): { project: Project; identities: Record<Id, ExpertIdentity> } {
   const r = rng(20261019);
-  const p = createProject('پروژه نمونه (داده ساختگی)');
+  const p = createProject('نمونه حل‌شده و امتیازدهی‌شده (داده فرضی)');
   // fixed ids and dates so the demo is identical every time it is built
   p.createdAt = p.updatedAt = '2026-10-19T08:00:00.000Z';
   p.domains = p.domains.map((d, i) => ({ ...d, id: ['dom-surgery', 'dom-engineering', 'dom-ergonomics'][i] }));
@@ -312,7 +313,7 @@ export function buildDemoProject(): { project: Project; identities: Record<Id, E
 
   p.settingsSnapshot = { at: '2026-11-10T09:00:00.000Z', scale: structuredClone(p.scale), consensus: { ...p.settings.consensus }, candidatePct: p.settings.candidatePct };
   const identities: Record<Id, ExpertIdentity> = Object.fromEntries(
-    p.experts.map((e, i) => [e.id, { name: `خبره نمونه ${i + 1}`, contact: `expert${i + 1}@example.org`, notes: 'داده ساختگی برای نمایش' }]),
+    p.experts.map((e, i) => [e.id, { name: `خبره نمونه ${i + 1}`, contact: `expert${i + 1}@example.org`, notes: 'داده فرضی برای نمایش' }]),
   );
   p.id = newId('demo_');
   return { project: p, identities };

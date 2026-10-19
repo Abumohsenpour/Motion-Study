@@ -75,7 +75,7 @@ function Sidebar() {
                     <span className="mt-0.5 flex flex-wrap items-center gap-1">
                       <StatusBadge status={st.status} />
                       {st.warnings.length > 0 && (
-                        <span className="inline-flex items-center gap-0.5 text-[11px] text-warn" title={st.warnings.join('\n')}>
+                        <span className="inline-flex items-center gap-0.5 text-[11px] text-warn" title={st.warnings.map(fmt.digits).join('\n')}>
                           <Icon name="alert" className="size-3" />
                           {fmt.int(st.warnings.length)} هشدار
                         </span>

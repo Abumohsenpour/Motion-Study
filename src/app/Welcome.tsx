@@ -74,23 +74,40 @@ export function Welcome() {
         >
           بازکردن فایل پروژه (.json)
         </FilePick>
-        <Button icon="chart" onClick={() => {
-            const d = buildDemoProject();
-            openProject(d.project, d.identities);
-          }}>
-          پروژه نمونه کامل (۱۵ خبره، داده ساختگی)
-        </Button>
-        <Button
-          icon="grid"
-          onClick={() => {
-            const d = buildWorkedExample();
-            d.project.id = 'worked-' + Math.random().toString(36).slice(2, 8);
-            openProject(d.project, d.identities);
-          }}
-        >
-          نمونه حل‌شده دستی (اعداد SPEC)
-        </Button>
       </div>
+
+      <Card title="نمونه‌های حل‌شده" className="mt-8">
+        <div className="space-y-4">
+          <div>
+            <Button
+              icon="chart"
+              onClick={() => {
+                // opened afresh every time, so changes made while rehearsing never carry into the next presentation
+                const d = buildDemoProject();
+                openProject(d.project, d.identities);
+              }}
+            >
+              نمونه حل‌شده و امتیازدهی‌شده (۱۵ خبره، داده فرضی)
+            </Button>
+            <p className="mt-1 text-sm leading-7 text-muted">
+              هر ده مرحله با داده فرضی درباره اگزواسکلتون پشتیبان پیش‌بند سربی تکمیل شده است: دو دور دلفی با پاسخ‌های باز و پارامتر نامزد، اجماع، وزن‌های سلسله‌مراتبی، غربال پیو در دو اجرا، ماتریس پیو وزن‌دار با امتیاز خبرگان و تحلیل حساسیت. برای نمایش روش، مثلاً در جلسه دفاع از پروپوزال.
+            </p>
+          </div>
+          <div>
+            <Button
+              icon="grid"
+              onClick={() => {
+                const d = buildWorkedExample();
+                d.project.id = 'worked-' + Math.random().toString(36).slice(2, 8);
+                openProject(d.project, d.identities);
+              }}
+            >
+              نمونه حل‌شده دستی (اعداد SPEC)
+            </Button>
+            <p className="mt-1 text-sm leading-7 text-muted">نمونه کوچکی که همه اعداد آن پیش‌تر با دست محاسبه شده‌اند (SPEC.md بخش ۶)؛ برای نشان‌دادن درستی محاسبات برنامه.</p>
+          </div>
+        </div>
+      </Card>
 
       <Card title="پروژه‌های ذخیره‌شده در این رایانه" className="mt-8">
         {projects === null ? null : projects.length === 0 ? (
