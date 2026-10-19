@@ -23,3 +23,5 @@ export * from './project/selectors';
 export * from './project/delphiAnalysis';
 export * from './project/partBAnalysis';
 export * from './project/descriptives';
+export * from './project/impact';
+export * from './project/normalize';

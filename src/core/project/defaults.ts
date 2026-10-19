@@ -131,5 +131,6 @@ export function createProject(title = 'پروژه جدید'): Project {
     captions: {},
     settingsSnapshot: null,
     changeLog: [],
+    expertCodeCounter: 0,
   };
 }

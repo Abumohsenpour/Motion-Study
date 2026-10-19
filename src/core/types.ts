@@ -338,4 +338,6 @@ export interface Project {
   captions: Record<string, string>;
   settingsSnapshot: SettingsSnapshot | null;
   changeLog: ChangeLogEntry[];
+  /** Highest expert number ever issued, so a deleted expert's code is never reused (DECISIONS D-06). */
+  expertCodeCounter: number;
 }

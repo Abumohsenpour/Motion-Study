@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+/* Vazirmatn (variable weight) is bundled from the npm package and inlined in the single-file build. */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('vazirmatn/fonts/webfonts/Vazirmatn[wght].woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface-2: #f0efea;
+  --ink: #1f2430;
+  --muted: #5d6475;
+  --line: #dcdad2;
+  --accent: #34507a;
+  --accent-ink: #ffffff;
+  --accent-soft: #e5ebf4;
+  --ok: #2f6b45;
+  --ok-soft: #e3efe6;
+  --warn: #8a5a00;
+  --warn-soft: #fbf1dc;
+  --bad: #9b2c2c;
+  --bad-soft: #f8e3e3;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #15181e;
+  --surface: #1d2129;
+  --surface-2: #252a34;
+  --ink: #e6e8ec;
+  --muted: #a0a7b5;
+  --line: #343a46;
+  --accent: #8fb0e0;
+  --accent-ink: #12161d;
+  --accent-soft: #24324a;
+  --ok: #8fd0a4;
+  --ok-soft: #1f3327;
+  --warn: #f0c26b;
+  --warn-soft: #3a2f17;
+  --bad: #f0a0a0;
+  --bad-soft: #3d2222;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Vazirmatn', Tahoma, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* Inline LTR runs (parameter codes, English terms) inside RTL text. */
+.ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Large matrices: sticky header row and first column. */
+.sticky-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-2);
+}
+.sticky-table .sticky-col {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--surface);
+}
+.sticky-table thead th.sticky-col {
+  z-index: 3;
+  background: var(--surface-2);
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
