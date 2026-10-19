@@ -155,7 +155,9 @@ function ConsensusCard() {
       <div className="mt-3 rounded-lg bg-surface-2 p-3 text-sm">
         <div className="flex flex-wrap items-center gap-2">
           <span>با n =</span>
-          <NumberInput value={nn} integer min={1} max={999} onChange={(v) => setN(v)} className="w-20" aria-label="تعداد پاسخ معتبر" />
+          <span className="w-20 shrink-0">
+            <NumberInput value={nn} integer min={1} max={999} onChange={(v) => setN(v)} aria-label="تعداد پاسخ معتبر" />
+          </span>
           <span>پاسخ معتبر:</span>
         </div>
         <ul className="mt-2 list-disc space-y-1 ps-5">
@@ -332,11 +334,11 @@ function FilesCard() {
   return (
     <Card title="فایل پروژه و کلید هویت">
       <p className="mb-3 text-sm text-muted">
-        فایل پروژه (.json) همه داده‌ها و تنظیمات را دارد به‌جز نام، اطلاعات تماس و یادداشت‌های خبرگان. این‌ها طبق ملاحظات اخلاقی طرح در «فایل کلید هویت» جداگانه نگهداری می‌شوند. برای پشتیبان‌گیری کامل هر دو فایل را نگه دارید.
+        فایل پروژه <span className="ltr">(.json)</span> همه داده‌ها و تنظیمات را دارد به‌جز نام، اطلاعات تماس و یادداشت‌های خبرگان. این‌ها طبق ملاحظات اخلاقی طرح در «فایل کلید هویت» جداگانه نگهداری می‌شوند. برای پشتیبان‌گیری کامل هر دو فایل را نگه دارید.
       </p>
       <div className="flex flex-wrap gap-2">
         <Button icon="download" variant="primary" onClick={() => downloadText(serializeProject(p), `${safeFileName(p.title)}_${stamp()}.json`)}>
-          خروجی فایل پروژه (.json)
+          خروجی فایل پروژه <span className="ltr">(.json)</span>
         </Button>
         <Button icon="download" onClick={() => downloadText(serializeIdentityKey(p, identities), `${safeFileName(p.title)}_identity-key_${stamp()}.json`)}>
           خروجی فایل کلید هویت

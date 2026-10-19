@@ -59,7 +59,7 @@ export function ExportsScreen() {
         </p>
         <div className="flex flex-wrap gap-2">
           <Button variant="primary" icon="download" onClick={excel}>
-            دانلود Excel (.xlsx)
+            دانلود Excel <span className="ltr">(.xlsx)</span>
           </Button>
           <Button icon="download" onClick={csvZip}>
             همه جدول‌ها به‌صورت CSV (ZIP)
@@ -70,7 +70,7 @@ export function ExportsScreen() {
       <Card title="فایل پروژه و کلید هویت">
         <div className="flex flex-wrap gap-2">
           <Button icon="download" onClick={() => downloadText(serializeProject(p), `${base(p.title)}_${stamp()}.json`)}>
-            فایل پروژه (.json) — بدون نام‌ها
+            فایل پروژه <span className="ltr">(.json)</span> — بدون نام‌ها
           </Button>
           <Button icon="download" onClick={() => downloadText(serializeIdentityKey(p, identities), `${base(p.title)}_identity-key_${stamp()}.json`)}>
             فایل کلید هویت (نام‌ها؛ جدا نگه دارید)

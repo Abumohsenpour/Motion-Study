@@ -275,7 +275,7 @@ function ScoringTab() {
                 فایل‌های امتیازدهی همه (ZIP)
               </Button>
               <FilePick accept=".json,application/json" multiple onFiles={async (files) => setItems(await prepareFileImports(files, p, 'pugh'))}>
-                ورود فایل‌های امتیاز (.json)
+                ورود فایل‌های امتیاز <span className="ltr">(.json)</span>
               </FilePick>
             </div>
           </>

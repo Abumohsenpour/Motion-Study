@@ -136,7 +136,9 @@ function AllocationEditor({ p, expertId, onClose }: { p: Project; expertId: Id; 
           {p.groups.map((g) => (
             <label key={g.id} className="flex items-center gap-2 text-sm">
               <span className="flex-1">{g.name}</span>
-              <NumberInput className="w-20" min={0} value={a.groupPoints[g.id] ?? null} onChange={(v) => set((al) => void (al.groupPoints[g.id] = v))} aria-label={`امتیاز ${g.name}`} />
+              <span className="w-20 shrink-0">
+                <NumberInput min={0} value={a.groupPoints[g.id] ?? null} onChange={(v) => set((al) => void (al.groupPoints[g.id] = v))} aria-label={`امتیاز ${g.name}`} />
+              </span>
             </label>
           ))}
         </div>
@@ -154,7 +156,9 @@ function AllocationEditor({ p, expertId, onClose }: { p: Project; expertId: Id; 
                 <label key={x.id} className="flex items-center gap-2 py-0.5 text-sm">
                   <span className="ltr w-14 text-xs text-muted">{x.code}</span>
                   <span className="flex-1">{x.name}</span>
-                  <NumberInput className="w-20" min={0} value={a.paramPoints[x.id] ?? null} onChange={(v) => set((al) => void (al.paramPoints[x.id] = v))} aria-label={`امتیاز ${x.code}`} />
+                  <span className="w-20 shrink-0">
+                    <NumberInput min={0} value={a.paramPoints[x.id] ?? null} onChange={(v) => set((al) => void (al.paramPoints[x.id] = v))} aria-label={`امتیاز ${x.code}`} />
+                  </span>
                 </label>
               ))}
             </div>

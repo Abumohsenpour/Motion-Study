@@ -90,7 +90,7 @@ function FilesTab({ round }: { round: Round }) {
               دانلود همه پرسش‌نامه‌ها (ZIP)
             </Button>
             <FilePick accept=".json,application/json" multiple onFiles={async (files) => setItems(await prepareFileImports(files, p, round))}>
-              ورود فایل‌های پاسخ (.json)
+              ورود فایل‌های پاسخ <span className="ltr">(.json)</span>
             </FilePick>
           </>
         }

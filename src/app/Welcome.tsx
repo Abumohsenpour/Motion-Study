@@ -72,7 +72,7 @@ export function Welcome() {
             await openProject(project);
           }}
         >
-          بازکردن فایل پروژه (.json)
+          بازکردن فایل پروژه <span className="ltr">(.json)</span>
         </FilePick>
       </div>
 

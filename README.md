@@ -14,6 +14,8 @@ conflict with the proposal and every choice made where the proposal is silent.
 
 ## Using it
 
+A step-by-step user guide in Persian, with screenshots of every step, is in `docs/delphi-pugh-user-guide-fa.docx`.
+
 The ready-made offline file is `release/delphi-pugh-offline.html`. Open it in Chrome, Edge or Firefox by
 double-clicking; no internet and no installation are needed. Projects are saved automatically in the browser of
 that computer (IndexedDB). Use **فایل پروژه (.json)** on the outputs screen as a backup and to move a project to
