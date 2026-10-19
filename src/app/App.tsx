@@ -14,6 +14,7 @@ import { ExpertsScreen } from '../screens/ExpertsScreen';
 import { ParamsScreen } from '../screens/ParamsScreen';
 import { Round1Screen, Round2Screen } from '../screens/RoundScreen';
 import { Analysis1Screen } from '../screens/Analysis1Screen';
+import { WeightsScreen } from '../screens/WeightsScreen';
 
 function Placeholder() {
   return <div className="text-muted">این بخش در مرحله بعد ساخته می‌شود.</div>;
@@ -27,6 +28,7 @@ const SCREENS: Partial<Record<StepId, () => React.JSX.Element>> = {
   round1: Round1Screen,
   analysis1: Analysis1Screen,
   round2: Round2Screen,
+  weights: WeightsScreen,
 };
 
 const statusLabel: Record<StepStatus, string> = { 'not-started': 'شروع نشده', 'in-progress': 'در جریان', complete: 'کامل' };

@@ -8,7 +8,7 @@ import { parseProjectJson } from '../io/projectFile';
 import { confirmDialog, toast } from '../ui/dialogs';
 import { Button, Callout, Card, FilePick, IconButton } from '../ui/kit';
 import { useFmt } from '../ui/format';
-import { buildDemoProject } from '../demo/demoProject';
+import { buildDemoProject, buildWorkedExample } from '../demo/demoProject';
 
 export async function openProject(project: ReturnType<typeof createProject>, identities = {}) {
   await saveProject(project, identities).catch(() => toast('ذخیره در مرورگر ممکن نشد؛ پیش از بستن، از پروژه خروجی JSON بگیرید.', { tone: 'bad' }));
@@ -78,7 +78,17 @@ export function Welcome() {
             const d = buildDemoProject();
             openProject(d.project, d.identities);
           }}>
-          بارگذاری پروژه نمونه (داده ساختگی)
+          پروژه نمونه کامل (۱۵ خبره، داده ساختگی)
+        </Button>
+        <Button
+          icon="grid"
+          onClick={() => {
+            const d = buildWorkedExample();
+            d.project.id = 'worked-' + Math.random().toString(36).slice(2, 8);
+            openProject(d.project, d.identities);
+          }}
+        >
+          نمونه حل‌شده دستی (اعداد SPEC)
         </Button>
       </div>
 
