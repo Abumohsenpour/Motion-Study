@@ -515,13 +515,13 @@ function ResultTab() {
                   );
                 return (
                   <tr key={c.id}>
-                    <td className={td}>
+                    <td className={td + " min-w-44"}>
                       <span className="ltr font-semibold">{c.code}</span> {c.name}
                     </td>
                     <td className={td}>{c.id === a.run1!.datumId ? t('مرجع') : fmtT(t1)}</td>
                     <td className={td}>{c.id === a.best ? t('مرجع (برتر)') : fmtT(t2)}</td>
                     <td className={td}>{c.feasible ? <Badge tone="ok">{t('امکان‌پذیر')}</Badge> : <Badge tone="bad">{t('نیست')}</Badge>}</td>
-                    <td className={td + ' text-xs'}>
+                    <td className={td + ' min-w-52 text-xs'}>
                       {f.ruleReason === 'eliminated-run1' && t1
                         ? t('مغلوب مرجع {code} در اجرای اول: بدون «+»، {n} مورد «−»', { code: cc(a.run1!.datumId).code, n: fmt.int(t1.minus) })
                         : f.ruleReason === 'dominated' && t2

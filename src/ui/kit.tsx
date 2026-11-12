@@ -435,7 +435,7 @@ export function DomainChip({ domain, withName }: { domain: Domain | undefined; w
 /** Table wrapper with sticky header and horizontal scrolling for large matrices. */
 export function TableWrap({ children, maxHeight = '70vh' }: { children: ReactNode; maxHeight?: string }) {
   return (
-    <div className="overflow-auto rounded-xl border border-line" style={{ maxHeight }}>
+    <div className="relative overflow-auto rounded-xl border border-line" style={{ maxHeight }}>
       {children}
     </div>
   );
