@@ -5,6 +5,7 @@
  */
 import { useRef, useState, type KeyboardEvent } from 'react';
 import { CJ, allocationTotals, paramsOfRound, type Allocation, type DelphiResponse, type Id, type Project, type RatingValue } from '../../core';
+import { isRtl, t } from '../../i18n';
 import { useProject, useStore } from '../../state/store';
 import { useFmt } from '../../ui/format';
 import { Modal } from '../../ui/dialogs';
@@ -41,10 +42,10 @@ export function editResponse(round: 'r1' | 'r2', expertId: Id, f: (r: DelphiResp
 }
 
 function parseKey(s: string): RatingValue | undefined {
-  const t = s.trim().replace(/[۰-۹]/g, (c) => String(FA.indexOf(c)));
-  if (t === '') return null;
-  if (/^(x|ق|؟|\?|cj)$/i.test(t)) return CJ;
-  const n = Number(t);
+  const k = s.trim().replace(/[۰-۹]/g, (c) => String(FA.indexOf(c)));
+  if (k === '') return null;
+  if (/^(x|ق|؟|\?|cj)$/i.test(k)) return CJ;
+  const n = Number(k);
   return Number.isInteger(n) ? n : undefined;
 }
 
@@ -67,10 +68,12 @@ function Cell({
 }) {
   const fmt = useFmt();
   const [text, setText] = useState<string | null>(null);
-  const shown = text ?? (value === CJ ? '؟' : typeof value === 'number' ? fmt.int(value) : '');
+  const shown = text ?? (value === CJ ? t('؟') : typeof value === 'number' ? fmt.int(value) : '');
   const invalid = typeof value === 'number' && (value < min || value > max || !Number.isInteger(value));
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    const moves: Record<string, [number, number]> = { ArrowUp: [-1, 0], ArrowDown: [1, 0], Enter: [1, 0], ArrowLeft: [0, 1], ArrowRight: [0, -1] };
+    // the next cell is on the left in a right-to-left table and on the right in a left-to-right one
+    const fwd = isRtl() ? 1 : -1;
+    const moves: Record<string, [number, number]> = { ArrowUp: [-1, 0], ArrowDown: [1, 0], Enter: [1, 0], ArrowLeft: [0, fwd], ArrowRight: [0, -fwd] };
     if (moves[e.key]) {
       e.preventDefault();
       onNav(...moves[e.key]);
@@ -116,7 +119,7 @@ function AllocationEditor({ p, expertId, onClose }: { p: Project; expertId: Id; 
   const e = p.experts.find((x) => x.id === expertId)!;
   const r = p.responses.r2[expertId];
   const a: Allocation = r?.allocation ?? { groupPoints: {}, paramPoints: {} };
-  const t = allocationTotals(p, a);
+  const totals = allocationTotals(p, a);
   const set = (f: (al: Allocation) => void) =>
     editResponse('r2', expertId, (resp) => {
       resp.allocation ??= { groupPoints: {}, paramPoints: {} };
@@ -124,20 +127,20 @@ function AllocationEditor({ p, expertId, onClose }: { p: Project; expertId: Id; 
     }, e.code);
   const tot = (v: number) => (
     <Badge tone={Math.abs(v - 100) < 1e-9 ? 'ok' : 'warn'}>
-      مجموع {fmt.auto(v, 2)} {Math.abs(v - 100) < 1e-9 ? '✓' : '(نه ۱۰۰)'}
+      {Math.abs(v - 100) < 1e-9 ? t('مجموع {v} ✓', { v: fmt.auto(v, 2) }) : t('مجموع {v} (نه ۱۰۰)', { v: fmt.auto(v, 2) })}
     </Badge>
   );
   return (
-    <Modal open wide title={`توزیع امتیاز — ${e.code}`} onClose={onClose} footer={<Button onClick={onClose}>بستن</Button>}>
-      <p className="mb-3 text-sm text-muted">مجموع غیر از ۱۰۰ فقط هشدار است؛ روابط ۱ و ۲ امتیازها را نرمال می‌کنند. خانه خالی در سطحی که عدد دیگری دارد صفر شمرده می‌شود.</p>
+    <Modal open wide title={t('توزیع امتیاز — {code}', { code: e.code })} onClose={onClose} footer={<Button onClick={onClose}>{t('بستن')}</Button>}>
+      <p className="mb-3 text-sm text-muted">{t('مجموع غیر از ۱۰۰ فقط هشدار است؛ روابط ۱ و ۲ امتیازها را نرمال می‌کنند. خانه خالی در سطحی که عدد دیگری دارد صفر شمرده می‌شود.')}</p>
       <div className="mb-4 rounded-lg border border-line p-3">
-        <div className="mb-2 flex items-center gap-2 font-semibold">گروه‌های معنایی {tot(t.groupTotal)}</div>
+        <div className="mb-2 flex items-center gap-2 font-semibold">{t('گروه‌های معنایی')} {tot(totals.groupTotal)}</div>
         <div className="grid gap-2 md:grid-cols-3">
           {p.groups.map((g) => (
             <label key={g.id} className="flex items-center gap-2 text-sm">
               <span className="flex-1">{g.name}</span>
               <span className="w-20 shrink-0">
-                <NumberInput min={0} value={a.groupPoints[g.id] ?? null} onChange={(v) => set((al) => void (al.groupPoints[g.id] = v))} aria-label={`امتیاز ${g.name}`} />
+                <NumberInput min={0} value={a.groupPoints[g.id] ?? null} onChange={(v) => set((al) => void (al.groupPoints[g.id] = v))} aria-label={t('امتیاز {name}', { name: g.name })} />
               </span>
             </label>
           ))}
@@ -150,14 +153,14 @@ function AllocationEditor({ p, expertId, onClose }: { p: Project; expertId: Id; 
           return (
             <div key={g.id} className="rounded-lg border border-line p-3">
               <div className="mb-2 flex items-center gap-2 font-semibold">
-                {g.name} {tot(t.perGroup[g.id])}
+                {g.name} {tot(totals.perGroup[g.id])}
               </div>
               {ps.map((x) => (
                 <label key={x.id} className="flex items-center gap-2 py-0.5 text-sm">
                   <span className="ltr w-14 text-xs text-muted">{x.code}</span>
                   <span className="flex-1">{x.name}</span>
                   <span className="w-20 shrink-0">
-                    <NumberInput min={0} value={a.paramPoints[x.id] ?? null} onChange={(v) => set((al) => void (al.paramPoints[x.id] = v))} aria-label={`امتیاز ${x.code}`} />
+                    <NumberInput min={0} value={a.paramPoints[x.id] ?? null} onChange={(v) => set((al) => void (al.paramPoints[x.id] = v))} aria-label={t('امتیاز {name}', { name: x.code })} />
                   </span>
                 </label>
               ))}
@@ -173,7 +176,7 @@ function OpenTextEditor({ p, expertId, onClose }: { p: Project; expertId: Id; on
   const e = p.experts.find((x) => x.id === expertId)!;
   const r = p.responses.r1[expertId];
   return (
-    <Modal open wide title={`پاسخ‌های باز — ${e.code}`} onClose={onClose} footer={<Button onClick={onClose}>بستن</Button>}>
+    <Modal open wide title={t('پاسخ‌های باز — {code}', { code: e.code })} onClose={onClose} footer={<Button onClick={onClose}>{t('بستن')}</Button>}>
       <div className="space-y-3">
         {p.groups.map((g) => (
           <label key={g.id} className="block">
@@ -182,7 +185,7 @@ function OpenTextEditor({ p, expertId, onClose }: { p: Project; expertId: Id; on
               rows={2}
               value={r?.openTexts[g.id] ?? ''}
               onChange={(v) => editResponse('r1', expertId, (resp) => void (resp.openTexts[g.id] = v), e.code)}
-              aria-label={`پاسخ باز ${g.name}`}
+              aria-label={t('پاسخ باز {name}', { name: g.name })}
             />
           </label>
         ))}
@@ -203,28 +206,32 @@ export function EntryGrid({ round, expertIds }: { round: 'r1' | 'r2'; expertIds:
   return (
     <div>
       <p className="mb-2 text-sm text-muted">
-        عدد {fmt.int(p.scale.min)} تا {fmt.int(p.scale.max)} = امتیاز؛ x یا ق یا ؟ = «{p.scale.cannotJudgeLabel}»؛ Delete = پاک‌کردن. کلیدهای جهت‌نما و Enter بین خانه‌ها جابه‌جا می‌کنند.
+        {t('عدد {min} تا {max} = امتیاز؛ x یا ق یا ؟ = «{cj}»؛ Delete = پاک‌کردن. کلیدهای جهت‌نما و Enter بین خانه‌ها جابه‌جا می‌کنند.', {
+          min: fmt.int(p.scale.min),
+          max: fmt.int(p.scale.max),
+          cj: p.scale.cannotJudgeLabel,
+        })}
       </p>
       <TableWrap maxHeight="68vh">
         <table className="sticky-table border-separate border-spacing-0 text-sm">
           <thead>
             <tr>
-              <th className="sticky-col border-b border-line px-2 py-1 text-right" rowSpan={2}>
-                خبره
+              <th className="sticky-col border-b border-line px-2 py-1 text-start" rowSpan={2}>
+                {t('خبره')}
               </th>
               {groupsUsed.map(({ g, n }) => (
-                <th key={g.id} colSpan={n} className="border-b border-l border-line px-1 py-1 text-center text-xs font-semibold text-muted">
+                <th key={g.id} colSpan={n} className="border-b border-e border-line px-1 py-1 text-center text-xs font-semibold text-muted">
                   {g.name}
                 </th>
               ))}
               <th className="border-b border-line px-2 text-xs" rowSpan={2}>
-                رضایت
+                {t('رضایت')}
               </th>
               <th className="border-b border-line px-2 text-xs" rowSpan={2}>
-                پاسخ‌ها
+                {t('پاسخ‌ها')}
               </th>
               <th className="border-b border-line px-2 text-xs" rowSpan={2}>
-                {round === 'r1' ? 'پاسخ باز' : 'توزیع امتیاز'}
+                {round === 'r1' ? t('پاسخ باز') : t('توزیع امتیاز')}
               </th>
             </tr>
             <tr>
@@ -234,7 +241,7 @@ export function EntryGrid({ round, expertIds }: { round: 'r1' | 'r2'; expertIds:
                   .map((x) => (
                     <th key={x.id} className="border-b border-line px-0.5 py-1 text-center text-[11px] font-medium" title={`${x.code}: ${x.name}`}>
                       <span className="ltr">{x.code}</span>
-                      {x.origin === 'round2' && <span className="block text-[10px] text-accent">جدید</span>}
+                      {x.origin === 'round2' && <span className="block text-[10px] text-accent">{t('جدید')}</span>}
                     </th>
                   )),
               )}
@@ -284,7 +291,7 @@ export function EntryGrid({ round, expertIds }: { round: 'r1' | 'r2'; expertIds:
                           resp.consent = { given: v, at: v ? new Date().toISOString() : null };
                         }, e.code)
                       }
-                      label={<span className="sr-only">رضایت {e.code}</span>}
+                      label={<span className="sr-only">{t('رضایت {code}', { code: e.code })}</span>}
                     />
                   </td>
                   <td className="border-b border-line px-2 text-center text-xs whitespace-nowrap text-muted">
@@ -293,11 +300,11 @@ export function EntryGrid({ round, expertIds }: { round: 'r1' | 'r2'; expertIds:
                   <td className="border-b border-line px-2 text-center">
                     {round === 'r1' ? (
                       <Button size="sm" variant="ghost" onClick={() => setOpenTx(eid)}>
-                        {Object.values(r?.openTexts ?? {}).some((t) => t.trim()) ? 'دارد ✎' : 'افزودن'}
+                        {Object.values(r?.openTexts ?? {}).some((s) => s.trim()) ? t('دارد ✎') : t('افزودن')}
                       </Button>
                     ) : (
                       <Button size="sm" variant="ghost" onClick={() => setAlloc(eid)}>
-                        {r?.allocation && Object.values(r.allocation.groupPoints).some((v) => v != null) ? 'دارد ✎' : 'افزودن'}
+                        {r?.allocation && Object.values(r.allocation.groupPoints).some((v) => v != null) ? t('دارد ✎') : t('افزودن')}
                       </Button>
                     )}
                   </td>

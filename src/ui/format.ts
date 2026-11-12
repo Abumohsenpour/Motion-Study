@@ -3,7 +3,7 @@
  * Decimal separator «٫», no thousands grouping. Dates are shown in the Solar Hijri calendar.
  */
 import { useMemo } from 'react';
-import { usePrefs, type DigitMode } from '../state/prefs';
+import { usePrefs, type DigitMode, type Lang } from '../state/prefs';
 
 export interface Fmt {
   mode: DigitMode;
@@ -24,7 +24,8 @@ export interface Fmt {
 
 const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
 
-export function makeFmt(mode: DigitMode): Fmt {
+/** `lang` only affects dates: Solar Hijri in the Persian interface, Gregorian (YYYY-MM-DD) in the English one. */
+export function makeFmt(mode: DigitMode, lang: Lang = 'fa'): Fmt {
   const locale = mode === 'fa' ? 'fa-IR' : 'en-US';
   const cache = new Map<string, Intl.NumberFormat>();
   const nf = (min: number, max: number) => {
@@ -33,7 +34,7 @@ export function makeFmt(mode: DigitMode): Fmt {
     return cache.get(k)!;
   };
   const bad = (x: number | null | undefined): x is null | undefined => x === null || x === undefined || !Number.isFinite(x);
-  const dateFmt = new Intl.DateTimeFormat(mode === 'fa' ? 'fa-IR-u-ca-persian' : 'en-US-u-ca-persian-nu-latn', {
+  const dateFmt = new Intl.DateTimeFormat(lang === 'en' ? 'en-CA' : mode === 'fa' ? 'fa-IR-u-ca-persian' : 'en-US-u-ca-persian-nu-latn', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -54,9 +55,18 @@ export function makeFmt(mode: DigitMode): Fmt {
   };
 }
 
+/** Formatter for code outside React (dialogs, previews). */
+export function currentFmt(): Fmt {
+  const { digits, lang } = usePrefs.getState();
+  return makeFmt(lang === 'en' ? 'latin' : digits, lang);
+}
+
 export function useFmt(): Fmt {
-  const mode = usePrefs((s) => s.digits);
-  return useMemo(() => makeFmt(mode), [mode]);
+  const digits = usePrefs((s) => s.digits);
+  const lang = usePrefs((s) => s.lang);
+  // the English interface always uses Latin digits
+  const mode = lang === 'en' ? 'latin' : digits;
+  return useMemo(() => makeFmt(mode, lang), [mode, lang]);
 }
 
 /** Accepts Persian, Arabic-Indic or Latin digits and «٫» / «,» / «.» as the decimal mark. */

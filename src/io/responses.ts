@@ -16,6 +16,7 @@ import {
   type RatingValue,
   type ResponseKind,
 } from '../core';
+import { t } from '../i18n';
 import { readRows, normHeader, type Row } from './sheets';
 import { writeWorkbook } from './sheets';
 
@@ -39,6 +40,7 @@ export interface ImportItem {
   apply: ((d: Draft<Project>, today: string) => void) | null;
 }
 
+/** Persian names (translated where they are shown: `t(KIND_FA[kind])`). */
 const KIND_FA: Record<ResponseKind, string> = { r1: 'دور اول', r2: 'دور دوم', pugh: 'ماتریس وزن‌دار' };
 
 const isAns = (v: RatingValue | undefined) => v === CJ || typeof v === 'number';
@@ -83,9 +85,9 @@ function delphiItem(p: Project, base: Omit<ImportItem, 'apply' | 'replaces' | 'c
   const ids = paramsOfRound(p, round).map((x) => x.id);
   const answered = ids.filter((id) => isAns(resp.ratings[id])).length;
   const warnings = [...base.warnings];
-  if (answered < ids.length) warnings.push(`${ids.length - answered} پرسش بی‌پاسخ`);
-  if (!resp.consent.given) warnings.push('رضایت آگاهانه ثبت نشده است');
-  if (round === 'r2' && !resp.allocation) warnings.push('توزیع امتیاز ندارد (از وزن‌دهی کنار گذاشته می‌شود)');
+  if (answered < ids.length) warnings.push(t('{n} پرسش بی‌پاسخ', { n: ids.length - answered }));
+  if (!resp.consent.given) warnings.push(t('رضایت آگاهانه ثبت نشده است'));
+  if (round === 'r2' && !resp.allocation) warnings.push(t('توزیع امتیاز ندارد (از وزن‌دهی کنار گذاشته می‌شود)'));
   return {
     ...base,
     warnings,
@@ -122,22 +124,22 @@ export async function prepareFileImports(files: File[], p: Project, expected: Re
       defaultSelected: true,
     };
     if (!envelope) {
-      base.problems.push(problems.includes('not-json') ? 'فایل JSON نیست' : 'فایل پاسخ این برنامه نیست');
+      base.problems.push(problems.includes('not-json') ? t('فایل JSON نیست') : t('فایل پاسخ این برنامه نیست'));
       items.push({ ...base, replaces: false, changed: 0, answered: 0, total: 0, apply: null });
       continue;
     }
-    if (problems.includes('wrong-project')) base.problems.push('مربوط به پروژه دیگری است');
-    if (envelope.kind !== expected) base.problems.push(`فایل ${KIND_FA[envelope.kind] ?? envelope.kind} است، نه ${KIND_FA[expected]}`);
+    if (problems.includes('wrong-project')) base.problems.push(t('مربوط به پروژه دیگری است'));
+    if (envelope.kind !== expected) base.problems.push(t('فایل {a} است، نه {b}', { a: KIND_FA[envelope.kind] ? t(KIND_FA[envelope.kind]) : envelope.kind, b: t(KIND_FA[expected]) }));
     if (problems.includes('bad-checksum')) {
-      base.warnings.push('کنترل صحت (checksum) نادرست است: فایل آسیب دیده یا دستی ویرایش شده است');
+      base.warnings.push(t('کنترل صحت (checksum) نادرست است: فایل آسیب دیده یا دستی ویرایش شده است'));
       base.defaultSelected = false;
     }
     const e = p.experts.find((x) => x.id === envelope.expertId) ?? p.experts.find((x) => x.code === envelope.expertCode);
-    if (!e) base.problems.push(`خبره ${envelope.expertCode} در فهرست نیست`);
+    if (!e) base.problems.push(t('خبره {code} در فهرست نیست', { code: envelope.expertCode }));
     else {
       base.expertId = e.id;
-      if (e.code !== envelope.expertCode) base.warnings.push(`کد خبره در فایل ${envelope.expertCode} است و اکنون ${e.code}`);
-      if (e.excludeAllData) base.warnings.push('این خبره با استفاده از داده‌هایش مخالفت کرده است؛ داده در تحلیل‌ها شمرده نمی‌شود');
+      if (e.code !== envelope.expertCode) base.warnings.push(t('کد خبره در فایل {a} است و اکنون {b}', { a: envelope.expertCode, b: e.code }));
+      if (e.excludeAllData) base.warnings.push(t('این خبره با استفاده از داده‌هایش مخالفت کرده است؛ داده در تحلیل‌ها شمرده نمی‌شود'));
     }
     if (!e || base.problems.length) {
       items.push({ ...base, replaces: false, changed: 0, answered: 0, total: 0, apply: null });
@@ -150,7 +152,7 @@ export async function prepareFileImports(files: File[], p: Project, expected: Re
     const pl = envelope.payload as DelphiPayload;
     const known = new Set(paramsOfRound(p, expected).map((x) => x.id));
     const unknown = Object.keys(pl.ratings ?? {}).filter((k) => !known.has(k));
-    if (unknown.length) base.warnings.push(`${unknown.length} پارامتر ناشناخته در فایل (نادیده گرفته می‌شود)`);
+    if (unknown.length) base.warnings.push(t('{n} پارامتر ناشناخته در فایل (نادیده گرفته می‌شود)', { n: unknown.length }));
     items.push(delphiItem(p, base, expected, toResponse(p, e.id, expected, pl, 'file'), 'file'));
   }
   return items;
@@ -160,7 +162,7 @@ function pughItem(p: Project, base: Omit<ImportItem, 'apply' | 'replaces' | 'cha
   const key = p.weighted.blinding[expertId];
   const warnings = [...base.warnings];
   const problems = [...base.problems];
-  if (!key) problems.push('کلید کدهای تصادفی این خبره پیدا نشد (فایل امتیازدهی از این پروژه ساخته نشده است)');
+  if (!key) problems.push(t('کلید کدهای تصادفی این خبره پیدا نشد (فایل امتیازدهی از این پروژه ساخته نشده است)'));
   const byCode = new Map(Object.entries(key?.codes ?? {}).map(([cid, code]) => [code, cid]));
   const cols = new Set(p.weighted.columns.map((c) => c.paramId));
   const scores: Record<Id, Record<Id, number | null>> = {};
@@ -169,7 +171,7 @@ function pughItem(p: Project, base: Omit<ImportItem, 'apply' | 'replaces' | 'cha
   for (const [code, byParam] of Object.entries(pl.scores ?? {})) {
     const cid = byCode.get(code);
     if (!cid) {
-      warnings.push(`کانسپت با کد ${code} ناشناخته است`);
+      warnings.push(t('کانسپت با کد {code} ناشناخته است', { code }));
       continue;
     }
     scores[cid] = {};
@@ -181,8 +183,8 @@ function pughItem(p: Project, base: Omit<ImportItem, 'apply' | 'replaces' | 'cha
       if (ok) answered++;
     }
   }
-  if (answered < total) warnings.push(`${total - answered} خانه بی‌پاسخ`);
-  if (!pl.consent?.given) warnings.push('رضایت آگاهانه ثبت نشده است');
+  if (answered < total) warnings.push(t('{n} خانه بی‌پاسخ', { n: total - answered }));
+  if (!pl.consent?.given) warnings.push(t('رضایت آگاهانه ثبت نشده است'));
   const prev = p.weighted.scores[expertId];
   let changed = 0;
   if (prev)
@@ -262,17 +264,17 @@ const yes = (v: unknown) => /^(بله|آری|yes|y|1|true|✓)$/i.test(String(v 
 
 export async function prepareSheetImport(file: File, p: Project, round: 'r1' | 'r2'): Promise<{ items: ImportItem[]; problems: string[] }> {
   const rows = await readRows(file);
-  if (!rows.length) return { items: [], problems: ['فایل خالی است'] };
+  if (!rows.length) return { items: [], problems: [t('فایل خالی است')] };
   const head = rows[0].map((h) => String(h ?? '').trim());
   const norm = head.map(normHeader);
   const codeCol = norm.findIndex((h) => ['کدخبره', 'کد', 'code', 'expert', 'expertcode'].includes(h));
-  if (codeCol < 0) return { items: [], problems: ['ستون «کد خبره» پیدا نشد'] };
+  if (codeCol < 0) return { items: [], problems: [t('ستون «کد خبره» پیدا نشد')] };
   const consentCol = norm.findIndex((h) => ['رضایت', 'consent'].includes(h));
   const params = paramsOfRound(p, round);
   const col = (label: string) => head.findIndex((h) => normHeader(h) === normHeader(label));
   const pCols = params.map((x) => ({ id: x.id, c: col(x.code) }));
   const missing = params.filter((_, i) => pCols[i].c < 0).map((x) => x.code);
-  const problems = missing.length ? [`ستون پارامترهای ${missing.join('، ')} پیدا نشد (بی‌پاسخ شمرده می‌شوند)`] : [];
+  const problems = missing.length ? [t('ستون پارامترهای {codes} پیدا نشد (بی‌پاسخ شمرده می‌شوند)', { codes: missing.join(t('، ')) })] : [];
   const items: ImportItem[] = [];
   rows.slice(1).forEach((r, i) => {
     const code = String(r[codeCol] ?? '').trim();
@@ -280,11 +282,11 @@ export async function prepareSheetImport(file: File, p: Project, round: 'r1' | '
     const e = p.experts.find((x) => x.code === code);
     const base = {
       key: `${i}:${code}`,
-      fileName: `${file.name} — ردیف ${i + 2}`,
+      fileName: t('{file} — ردیف {n}', { file: file.name, n: i + 2 }),
       kind: round,
       expertId: e?.id ?? null,
       expertCode: code,
-      problems: e ? [] : [`خبره ${code} در فهرست نیست`],
+      problems: e ? [] : [t('خبره {code} در فهرست نیست', { code })],
       warnings: [] as string[],
       defaultSelected: true,
     };
@@ -297,7 +299,7 @@ export async function prepareSheetImport(file: File, p: Project, round: 'r1' | '
       ratings: Object.fromEntries(pCols.map(({ id, c }) => [id, c >= 0 ? parseCell(r[c]) : null])),
       openTexts:
         round === 'r1'
-          ? Object.fromEntries(p.groups.map((g) => [g.id, String(r[col(OPEN_PREFIX + g.name)] ?? '').trim()]).filter(([, t]) => t))
+          ? Object.fromEntries(p.groups.map((g) => [g.id, String(r[col(OPEN_PREFIX + g.name)] ?? '').trim()]).filter(([, s]) => s))
           : {},
       allocation:
         round === 'r2'
@@ -310,7 +312,7 @@ export async function prepareSheetImport(file: File, p: Project, round: 'r1' | '
     };
     if (pl.allocation && !Object.values(pl.allocation.groupPoints).some((v) => v !== null)) pl.allocation = null;
     const bad = Object.values(pl.ratings).filter((v) => typeof v === 'number' && !(Number.isInteger(v) && v >= p.scale.min && v <= p.scale.max)).length;
-    if (bad) base.warnings.push(`${bad} مقدار خارج از مقیاس (نامعتبر شمرده می‌شود)`);
+    if (bad) base.warnings.push(t('{n} مقدار خارج از مقیاس (نامعتبر شمرده می‌شود)', { n: bad }));
     items.push(delphiItem(p, base, round, toResponse(p, e.id, round, pl, 'sheet'), 'sheet'));
   });
   return { items, problems };

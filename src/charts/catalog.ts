@@ -1,13 +1,15 @@
 /**
- * Every chart of the project, for the thesis chapter: SVG (with the font embedded, so it renders anywhere) and
- * PNG at 2× resolution.
+ * Every chart of the project for the thesis chapter, in Persian or English: SVG (with the font embedded, so it
+ * renders anywhere) and PNG at 2× resolution. Both language versions are drawn by the same code from the same
+ * numbers; only the texts and the reading direction differ.
  */
 import fontUrl from 'vazirmatn/fonts/webfonts/Vazirmatn[wght].woff2?inline';
-import { projectWeights, roundStats, weightedAnalysis, type Project } from '../core';
+import { projectWeights, round2Analysis, roundStats, weightedAnalysis, type ParamStats, type Project } from '../core';
+import { tr, type Lang } from '../i18n';
 import type { Fmt } from '../ui/format';
-import { bandRows } from '../report/delphiSections';
-import { bandFigure } from './bandChart';
-import { scoreChart } from './scoreChart';
+import { bandFigure, type BandRow, type FigureItem } from './bandChart';
+import { chartLabels, type Labels } from './labels';
+import { consensusChart, scoreChart, weightsChart } from './scoreChart';
 
 export interface ChartItem {
   key: string;
@@ -15,57 +17,63 @@ export interface ChartItem {
   svg: string;
 }
 
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-
-/** Final weights Wᵢ (bars) with the IQR of the individual weights (whiskers), sorted by weight. */
-export function weightsChart(items: { code: string; name: string; w: number; q1: number | null; q3: number | null }[], fmt: Fmt, title?: string): string {
-  const W = 720;
-  const labelW = 230;
-  const valueW = 64;
-  const rowH = 22;
-  const top = (title ? 30 : 6) + 22;
-  const max = Math.max(0.0001, ...items.map((x) => Math.max(x.w, x.q3 ?? 0)));
-  const barMax = W - labelW - valueW - 10;
-  const x0 = W - labelW;
-  const sx = (v: number) => (v / max) * barMax;
-  const H = top + items.length * rowH + 10;
-  const ink = '#1f2430';
-  const muted = '#5d6475';
-  const out: string[] = [];
-  if (title) out.push(`<text x="${W}" y="18" text-anchor="end" font-size="14" font-weight="700" fill="${ink}">${esc(title)}</text>`);
-  const ly = (title ? 30 : 6) + 6;
-  out.push(`<rect x="${W - 14}" y="${ly}" width="14" height="10" rx="2" fill="#34507a"/><text x="${W - 20}" y="${ly + 9}" text-anchor="end" font-size="11" fill="${ink}">وزن نهایی Wᵢ</text>`);
-  out.push(`<line x1="${W - 140}" y1="${ly + 5}" x2="${W - 120}" y2="${ly + 5}" stroke="${ink}" stroke-width="2"/><text x="${W - 146}" y="${ly + 9}" text-anchor="end" font-size="11" fill="${ink}">دامنه بین چارکی وزن‌های فردی (Q1–Q3)</text>`);
-  items.forEach((it, i) => {
-    const y = top + i * rowH;
-    out.push(`<text x="${W}" y="${y + 15}" text-anchor="end" font-size="11.5" fill="${ink}">${esc(it.code)} — ${esc(it.name.length > 26 ? it.name.slice(0, 25) + '…' : it.name)}</text>`);
-    out.push(`<rect x="${x0 - sx(it.w)}" y="${y + 4}" width="${sx(it.w)}" height="${rowH - 8}" rx="3" fill="#34507a" fill-opacity=".85"/>`);
-    if (it.q1 !== null && it.q3 !== null) {
-      const a = x0 - sx(it.q1);
-      const b = x0 - sx(it.q3);
-      out.push(`<line x1="${a}" y1="${y + rowH / 2}" x2="${b}" y2="${y + rowH / 2}" stroke="${ink}" stroke-width="2"/><line x1="${a}" y1="${y + 6}" x2="${a}" y2="${y + rowH - 6}" stroke="${ink}" stroke-width="2"/><line x1="${b}" y1="${y + 6}" x2="${b}" y2="${y + rowH - 6}" stroke="${ink}" stroke-width="2"/>`);
-    }
-    out.push(`<text x="${Math.min(x0 - sx(it.w), x0 - sx(it.q3 ?? 0)) - 6}" y="${y + 15}" text-anchor="end" font-size="11" fill="${muted}">${fmt.num(it.w, 4)}</text>`);
+/** Rows of a band figure for one parameter, with names in the chart's language. */
+export function figureItem(p: Project, s: ParamStats, L: Labels): FigureItem {
+  const rows: BandRow[] = p.domains.map((d) => {
+    const b = s.byDomain[d.id];
+    return { short: L.domainShort(d.id), name: L.domain(d.id), color: d.color, n: b.n, counts: b.counts, percents: b.percents };
   });
-  return `<svg xmlns="http://www.w3.org/2000/svg" style="direction:ltr" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Vazirmatn, Tahoma, sans-serif" role="img" aria-label="${esc(title ?? 'وزن نهایی پارامترها')}"><rect width="${W}" height="${H}" fill="#ffffff"/>${out.join('')}</svg>`;
+  return { code: s.param.code, name: L.param(s.param.id), rows, overall: { n: s.overall.n, counts: s.overall.counts, percents: s.overall.percents } };
 }
 
-export function chartCatalog(p: Project, fmt: Fmt): ChartItem[] {
+export function chartCatalog(p: Project, fmt: Fmt, lang: Lang = 'fa'): ChartItem[] {
   const out: ChartItem[] = [];
-  const bands = p.scale.bands.map((b) => b.label);
+  const L = chartLabels(p, lang);
+  const T = (fa: string, v?: Record<string, string | number>) => tr(lang, fa, v);
+  const bands = p.scale.bands.map((_, i) => L.band(i));
+  const top = p.scale.bands.length - 1;
+  const stats: Partial<Record<'r1' | 'r2', ParamStats[]>> = {};
   for (const round of ['r1', 'r2'] as const) {
-    let stats: ReturnType<typeof roundStats> = [];
     try {
-      stats = roundStats(p, round);
+      const st = roundStats(p, round);
+      if (st.some((s) => s.overall.n > 0)) stats[round] = st;
     } catch {
       /* no data */
     }
-    if (!stats.some((s) => s.overall.n > 0)) continue;
+  }
+  const subtitle = T('درصد پاسخ‌های معتبر هر حوزه در هر طبقه مقیاس؛ n = تعداد پاسخ معتبر');
+  for (const round of ['r1', 'r2'] as const) {
+    const st = stats[round];
+    if (!st) continue;
     for (const g of p.groups) {
-      const items = stats.filter((s) => s.param.groupId === g.id);
+      const items = st.filter((s) => s.param.groupId === g.id);
       if (!items.length) continue;
-      const title = `توزیع پاسخ‌های ${round === 'r1' ? 'دور اول' : 'دور دوم'} به تفکیک حوزه — ${g.name}`;
-      out.push({ key: `${round}-${g.id}`, title, svg: bandFigure(items.map((s) => ({ code: s.param.code, name: s.param.name, rows: bandRows(p, s) })), bands, fmt, { title }) });
+      const title = T(round === 'r1' ? 'توزیع پاسخ‌های دور اول — {group}' : 'توزیع پاسخ‌های دور دوم — {group}', { group: L.group(g.id) });
+      out.push({
+        key: `${round}-${g.id}`,
+        title,
+        svg: bandFigure(items.map((s) => figureItem(p, s, L)), bands, fmt, { lang, title, subtitle, threshold: round === 'r2' ? p.settings.consensus.retainTopMin : undefined }),
+      });
+    }
+  }
+  if (stats.r2) {
+    try {
+      const r1 = new Map((stats.r1 ?? []).map((s) => [s.param.id, s]));
+      const title = T('اجماع پارامترها: سهم طبقه بالا در دور اول و دوم');
+      out.push({
+        key: 'consensus',
+        title,
+        svg: consensusChart(
+          round2Analysis(p).map((r) => {
+            const a = r1.get(r.param.id);
+            return { code: r.param.code, name: L.param(r.param.id), r1Top: a && a.overall.n ? a.overall.percents[top] : null, r2Top: r.overall.n ? r.overall.percents[top] : null, status: r.consensus.status };
+          }),
+          fmt,
+          { lang, title, subtitle: T('وضعیت اجماع طبق معیار ازپیش‌تعیین‌شده، فقط از پاسخ‌های دور دوم'), threshold: p.settings.consensus.retainTopMin, topBand: L.band(top) },
+        ),
+      });
+    } catch {
+      /* not enough data */
     }
   }
   try {
@@ -74,23 +82,20 @@ export function chartCatalog(p: Project, fmt: Fmt): ChartItem[] {
       const items = w.retainedParams
         .map((id) => {
           const x = p.params.find((q) => q.id === id)!;
-          return { code: x.code, name: x.name, w: w.final[id], q1: w.agreement[id].q1, q3: w.agreement[id].q3 };
+          return { code: x.code, name: L.param(id), group: L.group(x.groupId), w: w.final[id], q1: w.agreement[id].q1, q3: w.agreement[id].q3 };
         })
         .sort((a, b) => b.w - a.w);
-      const title = 'وزن نهایی پارامترهای مورد اجماع';
-      out.push({ key: 'weights', title, svg: weightsChart(items, fmt, title) });
+      const title = T('وزن نهایی پارامترهای مورد اجماع');
+      out.push({ key: 'weights', title, svg: weightsChart(items, fmt, { lang, title, subtitle: T('به ترتیب وزن؛ مجموع وزن‌ها ۱۰۰٪') }) });
     }
     const a = weightedAnalysis(p, w.final);
     if (a.result.ranking.length) {
-      const title = 'امتیاز وزنی کانسپت‌ها';
+      const title = T('امتیاز وزنی کانسپت‌ها');
+      const name = (id: string) => [p.concepts.find((c) => c.id === id)?.code, L.concept(id)].filter(Boolean).join(' — ');
       out.push({
         key: 'weighted',
         title,
-        svg: scoreChart(
-          a.result.ranking.map((r) => ({ label: `${p.concepts.find((c) => c.id === r.id)?.code} — ${p.concepts.find((c) => c.id === r.id)?.name}`, score: r.score, rank: r.rank })),
-          fmt,
-          { title },
-        ),
+        svg: scoreChart(a.result.ranking.map((r) => ({ label: name(r.id), score: r.score, rank: r.rank })), fmt, { lang, title, subtitle: T('ماتریس پیو وزن‌دار؛ عدد داخل نشان = رتبه') }),
       });
     }
   } catch {

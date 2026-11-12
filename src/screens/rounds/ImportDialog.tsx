@@ -1,5 +1,6 @@
 /** Preview of response files / spreadsheet rows before they are imported. */
 import { useState } from 'react';
+import { t } from '../../i18n';
 import type { ImportItem } from '../../io/responses';
 import { useStore } from '../../state/store';
 import { Modal, toast } from '../../ui/dialogs';
@@ -24,20 +25,20 @@ export function ImportDialog({ items, notes, label, onClose }: { items: ImportIt
       },
       { detail: chosen.map((i) => `${i.expertCode}${i.replaces ? ' (جایگزینی)' : ''}`).join('، ') },
     );
-    toast(`${fmt.int(chosen.length)} پاسخ‌نامه وارد شد.`);
+    toast(t('{n} پاسخ‌نامه وارد شد.', { n: fmt.int(chosen.length) }));
     onClose();
   };
   return (
     <Modal
       open
       wide
-      title="پیش‌نمایش ورود پاسخ‌ها"
+      title={t('پیش‌نمایش ورود پاسخ‌ها')}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>انصراف</Button>
+          <Button onClick={onClose}>{t('انصراف')}</Button>
           <Button variant="primary" onClick={run} disabled={sel.size === 0}>
-            ورود {fmt.int(sel.size)} مورد انتخاب‌شده
+            {t('ورود {n} مورد انتخاب‌شده', { n: fmt.int(sel.size) })}
           </Button>
         </>
       }
@@ -49,7 +50,7 @@ export function ImportDialog({ items, notes, label, onClose }: { items: ImportIt
       ))}
       {dupExperts.length > 0 && (
         <Callout tone="warn" className="mb-2">
-          برای یک خبره بیش از یک فایل انتخاب شده است؛ آخرین مورد جایگزین قبلی می‌شود.
+          {t('برای یک خبره بیش از یک فایل انتخاب شده است؛ آخرین مورد جایگزین قبلی می‌شود.')}
         </Callout>
       )}
       <TableWrap maxHeight="55vh">
@@ -57,11 +58,11 @@ export function ImportDialog({ items, notes, label, onClose }: { items: ImportIt
           <thead>
             <tr>
               <th className={th} />
-              <th className={th}>فایل / ردیف</th>
-              <th className={th}>خبره</th>
-              <th className={th}>وضعیت</th>
-              <th className={th}>پاسخ‌ها</th>
-              <th className={th}>بررسی</th>
+              <th className={th}>{t('فایل / ردیف')}</th>
+              <th className={th}>{t('خبره')}</th>
+              <th className={th}>{t('وضعیت')}</th>
+              <th className={th}>{t('پاسخ‌ها')}</th>
+              <th className={th}>{t('بررسی')}</th>
             </tr>
           </thead>
           <tbody>
@@ -78,21 +79,21 @@ export function ImportDialog({ items, notes, label, onClose }: { items: ImportIt
                         return n;
                       })
                     }
-                    label={<span className="sr-only">انتخاب</span>}
+                    label={<span className="sr-only">{t('انتخاب')}</span>}
                   />
                 </td>
                 <td className={td + ' text-xs ltr'}>{i.fileName}</td>
                 <td className={td + ' ltr'}>{i.expertCode}</td>
                 <td className={td}>
                   {!i.apply ? (
-                    <Badge tone="bad">قابل ورود نیست</Badge>
+                    <Badge tone="bad">{t('قابل ورود نیست')}</Badge>
                   ) : i.replaces ? (
-                    <Badge tone="warn">جایگزینی — {fmt.int(i.changed)} پاسخ متفاوت</Badge>
+                    <Badge tone="warn">{t('جایگزینی — {n} پاسخ متفاوت', { n: fmt.int(i.changed) })}</Badge>
                   ) : (
-                    <Badge tone="ok">جدید</Badge>
+                    <Badge tone="ok">{t('جدید')}</Badge>
                   )}
                 </td>
-                <td className={td}>{i.total ? `${fmt.int(i.answered)} از ${fmt.int(i.total)}` : '—'}</td>
+                <td className={td}>{i.total ? t('{a} از {b}', { a: fmt.int(i.answered), b: fmt.int(i.total) }) : '—'}</td>
                 <td className={td + ' text-xs'}>
                   {i.problems.map((x) => (
                     <div key={x} className="text-bad">

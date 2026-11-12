@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { candidateRows, paramsOfRound, r2Invitees, respondents, type Id, type Project } from '../core';
 import { edit } from '../app/edit';
 import { useNav } from '../app/nav';
+import { t } from '../i18n';
 import { prepareFileImports, prepareSheetImport, downloadResponseTemplate, type ImportItem } from '../io/responses';
 import { useProject } from '../state/store';
 import { toast } from '../ui/dialogs';
@@ -33,17 +34,17 @@ function R2Invitees() {
   const r1 = new Set(respondents(p, 'r1').map((e) => e.id));
   return (
     <Card
-      title="دعوت‌شدگان دور دوم"
+      title={t('دعوت‌شدگان دور دوم')}
       actions={
         p.r2Invited && (
           <Button size="sm" onClick={() => edit('بازگشت دعوت دور دوم به پیش‌فرض', (d) => void (d.r2Invited = null))}>
-            بازگشت به پیش‌فرض
+            {t('بازگشت به پیش‌فرض')}
           </Button>
         )
       }
     >
       <p className="mb-2 text-sm text-muted">
-        پیش‌فرض: پاسخ‌دهندگان دور اول که انصراف نداده‌اند ({fmt.int(inv.size)} نفر). {p.r2Invited ? 'فهرست دستی تنظیم شده است.' : ''}
+        {t('پیش‌فرض: پاسخ‌دهندگان دور اول که انصراف نداده‌اند ({n} نفر).', { n: fmt.int(inv.size) })} {p.r2Invited ? t('فهرست دستی تنظیم شده است.') : ''}
       </p>
       <div className="flex flex-wrap gap-x-4 gap-y-1">
         {p.experts.map((e) => (
@@ -62,7 +63,7 @@ function R2Invitees() {
               <span className="inline-flex items-center gap-1">
                 <DomainChip domain={p.domains.find((d) => d.id === e.domainId)} />
                 <span className="ltr">{e.code}</span>
-                {!r1.has(e.id) && <span className="text-xs text-muted">(بدون پاسخ دور ۱)</span>}
+                {!r1.has(e.id) && <span className="text-xs text-muted">{t('(بدون پاسخ دور ۱)')}</span>}
               </span>
             }
           />
@@ -83,33 +84,33 @@ function FilesTab({ round }: { round: Round }) {
     <div className="space-y-4">
       {round === 'r2' && <R2Invitees />}
       <Card
-        title={`فایل‌های پرسش‌نامه و دریافت پاسخ (${fmt.int(ids.length)} خبره)`}
+        title={t('فایل‌های پرسش‌نامه و دریافت پاسخ ({n} خبره)', { n: fmt.int(ids.length) })}
         actions={
           <>
             <Button icon="download" variant="primary" disabled={!canGenerate || !ids.length} onClick={() => downloadAllQuestionnaires(ids, round)}>
-              دانلود همه پرسش‌نامه‌ها (ZIP)
+              {t('دانلود همه پرسش‌نامه‌ها (ZIP)')}
             </Button>
             <FilePick accept=".json,application/json" multiple onFiles={async (files) => setItems(await prepareFileImports(files, p, round))}>
-              ورود فایل‌های پاسخ <span className="ltr">(.json)</span>
+              {t('ورود فایل‌های پاسخ')} <span className="ltr">(.json)</span>
             </FilePick>
           </>
         }
       >
         <p className="mb-3 text-sm text-muted">
-          برای هر خبره یک فایل HTML آفلاین ساخته می‌شود که با کد او شخصی شده است. خبره فایل را در هر مرورگری باز می‌کند، رضایت می‌دهد، پاسخ می‌دهد و «ذخیره پاسخ» را می‌زند؛ فایل کوچکی مانند{' '}
-          <span className="ltr">E07_{round === 'r1' ? 'round1' : 'round2'}.json</span> ذخیره می‌شود که آن را برای شما ایمیل می‌کند. پیش‌نویس پاسخ‌ها در خود فایل نگه داشته می‌شود.
-          {round === 'r2' && ' فایل دور دوم برای هر خبره بازخورد کنترل‌شده شخصی دارد: توزیع پاسخ‌های پنل در دور اول به تفکیک حوزه و فقط امتیاز خود او.'}
+          {t('برای هر خبره یک فایل HTML آفلاین ساخته می‌شود که با کد او شخصی شده است. خبره فایل را در هر مرورگری باز می‌کند، رضایت می‌دهد، پاسخ می‌دهد و «ذخیره پاسخ» را می‌زند؛ فایل کوچکی مانند')}{' '}
+          <span className="ltr">E07_{round === 'r1' ? 'round1' : 'round2'}.json</span> {t('ذخیره می‌شود که آن را برای شما ایمیل می‌کند. پیش‌نویس پاسخ‌ها در خود فایل نگه داشته می‌شود.')}
+          {round === 'r2' && ' ' + t('فایل دور دوم برای هر خبره بازخورد کنترل‌شده شخصی دارد: توزیع پاسخ‌های پنل در دور اول به تفکیک حوزه و فقط امتیاز خود او.')}
         </p>
-        {!canGenerate && <Callout tone="warn">ابتدا گروه‌ها و پارامترها را تعریف کنید.</Callout>}
+        {!canGenerate && <Callout tone="warn">{t('ابتدا گروه‌ها و پارامترها را تعریف کنید.')}</Callout>}
         <TableWrap>
           <table className="sticky-table w-full text-sm">
             <thead>
               <tr>
-                <th className={th}>کد</th>
-                <th className={th}>حوزه</th>
-                <th className={th}>وضعیت</th>
-                <th className={th}>پاسخ دریافت‌شده</th>
-                <th className={th}>رضایت</th>
+                <th className={th}>{t('کد')}</th>
+                <th className={th}>{t('حوزه')}</th>
+                <th className={th}>{t('وضعیت')}</th>
+                <th className={th}>{t('پاسخ دریافت‌شده')}</th>
+                <th className={th}>{t('رضایت')}</th>
                 <th className={th} />
               </tr>
             </thead>
@@ -127,30 +128,30 @@ function FilesTab({ round }: { round: Round }) {
                     </td>
                     <td className={td}>
                       <Badge tone={st.state === 'responded' ? 'ok' : st.state === 'withdrew' ? 'bad' : st.state === 'none' ? 'neutral' : 'accent'}>
-                        {{ none: 'فایل ساخته نشده', invited: 'دعوت‌شده', consented: 'رضایت داده', responded: 'پاسخ داده', withdrew: 'انصراف' }[st.state]}
+                        {{ none: t('فایل ساخته نشده'), invited: t('دعوت‌شده'), consented: t('رضایت داده'), responded: t('پاسخ داده'), withdrew: t('انصراف داده') }[st.state]}
                       </Badge>{' '}
                       <span className="text-xs text-muted">{st.date ? fmt.date(st.date) : ''}</span>
                     </td>
                     <td className={td}>
                       {r ? (
                         <span className="text-xs">
-                          {fmt.int(answered)} از {fmt.int(params.length)} — {{ file: 'فایل', manual: 'ورود دستی', sheet: 'صفحه‌گسترده' }[r.source]} — {fmt.date(r.receivedAt)}
-                          {round === 'r2' && !r.allocation && <Badge tone="warn" className="ms-1">بدون توزیع امتیاز</Badge>}
+                          {t('{a} از {b}', { a: fmt.int(answered), b: fmt.int(params.length) })} — {{ file: t('فایل'), manual: t('ورود دستی'), sheet: t('صفحه‌گسترده') }[r.source]} — {fmt.date(r.receivedAt)}
+                          {round === 'r2' && !r.allocation && <Badge tone="warn" className="ms-1">{t('بدون توزیع امتیاز')}</Badge>}
                         </span>
                       ) : (
                         <span className="text-xs text-muted">—</span>
                       )}
                     </td>
-                    <td className={td}>{r ? r.consent.given ? <Badge tone="ok">ثبت شده</Badge> : <Badge tone="warn">ثبت نشده</Badge> : null}</td>
+                    <td className={td}>{r ? r.consent.given ? <Badge tone="ok">{t('ثبت شده')}</Badge> : <Badge tone="warn">{t('ثبت نشده')}</Badge> : null}</td>
                     <td className={td + ' whitespace-nowrap'}>
                       <Button size="sm" icon="download" disabled={!canGenerate} onClick={() => downloadQuestionnaire(id, round)}>
-                        پرسش‌نامه
+                        {t('پرسش‌نامه')}
                       </Button>
                       {r && (
                         <IconButton
                           icon="trash"
                           tone="danger"
-                          label="حذف پاسخ‌نامه"
+                          label={t('حذف پاسخ‌نامه')}
                           onClick={() =>
                             edit(
                               'حذف پاسخ‌نامه',
@@ -159,7 +160,7 @@ function FilesTab({ round }: { round: Round }) {
                                 const x = d.experts.find((q) => q.id === id)!;
                                 if (x.status[round].state === 'responded') x.status[round] = { state: 'invited', date: x.status[round].date };
                               },
-                              { preview: true, confirm: { title: `حذف پاسخ‌نامه ${e.code}`, confirmLabel: 'حذف' }, undoToast: `پاسخ‌نامه ${e.code} حذف شد` },
+                              { preview: true, confirm: { title: t('حذف پاسخ‌نامه {code}', { code: e.code }), confirmLabel: t('حذف') }, undoToast: t('پاسخ‌نامه {code} حذف شد', { code: e.code }) },
                             )
                           }
                         />
@@ -181,13 +182,13 @@ function SheetTab({ round }: { round: Round }) {
   const p = useProject();
   const [res, setRes] = useState<{ items: ImportItem[]; problems: string[] } | null>(null);
   return (
-    <Card title="ورود از Excel / CSV">
+    <Card title={t('ورود از Excel / CSV')}>
       <p className="mb-3 text-sm text-muted">
-        اگر پاسخ‌ها را با ابزار فرم آنلاین یا در Excel گردآوری کرده‌اید، آن‌ها را در قالب الگو (یک ردیف برای هر خبره و یک ستون برای هر کد پارامتر) وارد کنید. پیش از ورود، پیش‌نمایش و تفاوت‌ها نمایش داده می‌شود.
+        {t('اگر پاسخ‌ها را با ابزار فرم آنلاین یا در Excel گردآوری کرده‌اید، آن‌ها را در قالب الگو (یک ردیف برای هر خبره و یک ستون برای هر کد پارامتر) وارد کنید. پیش از ورود، پیش‌نمایش و تفاوت‌ها نمایش داده می‌شود.')}
       </p>
       <div className="flex flex-wrap gap-2">
         <Button icon="download" onClick={() => downloadResponseTemplate(p, round, roundExperts(p, round))}>
-          دانلود الگو (با پاسخ‌های فعلی)
+          {t('دانلود الگو (با پاسخ‌های فعلی)')}
         </Button>
         <FilePick
           accept=".xlsx,.xls,.csv"
@@ -195,11 +196,11 @@ function SheetTab({ round }: { round: Round }) {
             try {
               setRes(await prepareSheetImport(f, p, round));
             } catch {
-              toast('خواندن فایل ممکن نشد.', { tone: 'bad' });
+              toast(t('خواندن فایل ممکن نشد.'), { tone: 'bad' });
             }
           }}
         >
-          ورود فایل
+          {t('ورود فایل')}
         </FilePick>
       </div>
       {res && <ImportDialog items={res.items} notes={res.problems} label={round === 'r1' ? 'ورود پاسخ‌های دور اول از صفحه‌گسترده' : 'ورود پاسخ‌های دور دوم از صفحه‌گسترده'} onClose={() => setRes(null)} />}
@@ -220,39 +221,39 @@ export function RoundScreen({ round }: { round: Round }) {
   return (
     <div className="space-y-4">
       <PageTitle
-        title={round === 'r1' ? 'دور اول' : 'دور دوم'}
+        title={round === 'r1' ? t('دور اول') : t('دور دوم')}
         subtitle={
           round === 'r1'
-            ? 'هر پارامتر همراه با الزام طراحی، توضیح مختصر و محدوده عددی روی مقیاس امتیازدهی ارزیابی می‌شود. در پایان هر گروه معنایی یک پرسش باز برای پیشنهاد پارامتر جدید یا توضیح هست.'
-            : 'بازامتیازدهی همه پارامترهای دور اول به همراه پارامترهای جدید، با بازخورد کنترل‌شده شخصی؛ و توزیع سلسله‌مراتبی ۱۰۰ امتیاز برای وزن‌دهی.'
+            ? t('هر پارامتر همراه با الزام طراحی، توضیح مختصر و محدوده عددی روی مقیاس امتیازدهی ارزیابی می‌شود. در پایان هر گروه معنایی یک پرسش باز برای پیشنهاد پارامتر جدید یا توضیح هست.')
+            : t('بازامتیازدهی همه پارامترهای دور اول به همراه پارامترهای جدید، با بازخورد کنترل‌شده شخصی؛ و توزیع سلسله‌مراتبی ۱۰۰ امتیاز برای وزن‌دهی.')
         }
       />
       <div className="flex flex-wrap gap-2 text-sm">
-        <Badge>{fmt.int(params.length)} پارامتر</Badge>
-        {round === 'r2' && <Badge tone="accent">{fmt.int(newParams.length)} پارامتر جدید</Badge>}
-        <Badge tone="ok">{fmt.int(nResp)} پاسخ‌دهنده</Badge>
-        {(sched.extendedTo ?? sched.deadline) && <Badge>مهلت: {fmt.date(sched.extendedTo ?? sched.deadline)}</Badge>}
+        <Badge>{t('{n} پارامتر', { n: fmt.int(params.length) })}</Badge>
+        {round === 'r2' && <Badge tone="accent">{t('{n} پارامتر جدید', { n: fmt.int(newParams.length) })}</Badge>}
+        <Badge tone="ok">{t('{n} پاسخ‌دهنده', { n: fmt.int(nResp) })}</Badge>
+        {(sched.extendedTo ?? sched.deadline) && <Badge>{t('مهلت: {date}', { date: fmt.date(sched.extendedTo ?? sched.deadline) })}</Badge>}
       </div>
       {pendingCandidates.length > 0 && (
-        <Callout tone="warn" title="پارامترهای جدید تأییدشده هنوز ساخته نشده‌اند">
-          {fmt.int(pendingCandidates.length)} پارامتر نامزد به آستانه رسیده ولی هنوز به فهرست اضافه نشده است.{' '}
+        <Callout tone="warn" title={t('پارامترهای جدید تأییدشده هنوز ساخته نشده‌اند')}>
+          {t('{n} پارامتر نامزد به آستانه رسیده ولی هنوز به فهرست اضافه نشده است.', { n: fmt.int(pendingCandidates.length) })}{' '}
           <button type="button" className="font-semibold text-accent underline" onClick={() => go('analysis1')}>
-            رفتن به تحلیل دور اول
+            {t('رفتن به تحلیل دور اول')}
           </button>
         </Callout>
       )}
       <Tabs
         tabs={[
-          { id: 'files', label: 'فایل‌ها و دریافت پاسخ' },
-          { id: 'manual', label: 'ورود دستی' },
-          { id: 'sheet', label: 'ورود از Excel / CSV' },
+          { id: 'files', label: t('فایل‌ها و دریافت پاسخ') },
+          { id: 'manual', label: t('ورود دستی') },
+          { id: 'sheet', label: t('ورود از Excel / CSV') },
         ]}
         value={tab}
         onChange={setTab}
       />
       {tab === 'files' && <FilesTab round={round} />}
       {tab === 'manual' && (
-        <Card title="ورود دستی پاسخ‌ها">
+        <Card title={t('ورود دستی پاسخ‌ها')}>
           <EntryGrid round={round} expertIds={roundExperts(p, round)} />
         </Card>
       )}

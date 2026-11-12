@@ -1,136 +1,187 @@
 /**
- * Domain-coloured band charts (round-1 analysis, round-2 feedback, report figures), built as SVG strings so the
- * same code renders on screen and exports to SVG/PNG.
+ * Band charts: how the valid answers of each domain fall into the bands of the importance scale.
  *
- * Encoding: one row per domain, in the domain's colour (identity); the bands are steps of opacity within that
- * colour, light → dark = bottom → top band (magnitude). Every row carries the domain's short label, so colour
- * is never the only signal, and every chart has a legend. Segments are separated by a 2px surface gap.
+ * Encoding: one row per domain in the domain's colour (identity) plus a neutral row for the whole panel; the bands
+ * are steps of opacity within that colour, dark → light = top → bottom band (magnitude). The top band starts at
+ * the axis origin, so its share (the quantity the consensus rule looks at) can be compared down the figure.
+ * Every row carries the domain's short label and every chart has a legend, so colour is never the only signal.
  */
+import { currentLang, tr, type Lang } from '../i18n';
 import type { Fmt } from '../ui/format';
+import { Canvas, THEME, esc, heading, textWidth, truncate } from './svg';
 
 export interface BandRow {
   short: string;
   name: string;
   color: string;
   n: number;
+  /** Per band, bottom → top. */
   counts: number[];
   percents: (number | null)[];
 }
 
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-
 /** Opacity of band i of k (bottom band lightest). */
-export const bandOpacity = (i: number, k: number): number => (k <= 1 ? 1 : 0.32 + (0.68 * i) / (k - 1));
+export const bandOpacity = (i: number, k: number): number => (k <= 1 ? 1 : 0.3 + (0.7 * i) / (k - 1));
 
 /** Compact per-domain stacked bars for a table cell (no text; tooltips carry the numbers). */
-export function miniBandBars(rows: BandRow[], bands: string[], fmt: Fmt, width = 150): string {
+export function miniBandBars(rows: BandRow[], bands: string[], fmt: Fmt, width = 150, lang: Lang = currentLang()): string {
   const rowH = 12;
   const gap = 4;
   const chip = 14;
   const barW = width - chip - 4;
   const h = rows.length * (rowH + gap) - gap;
-  const parts: string[] = [];
+  const c = new Canvas(lang, width);
+  const k = bands.length;
   rows.forEach((r, ri) => {
     const y = ri * (rowH + gap);
-    // RTL: chip on the right, bar grows leftwards from the right edge
-    parts.push(
-      `<rect x="${width - chip}" y="${y - 1}" width="${chip}" height="${rowH + 2}" rx="3" fill="${r.color}"/>`,
-      `<text x="${width - chip / 2}" y="${y + rowH / 2 + 0.5}" fill="#fff" font-size="9" font-weight="700" text-anchor="middle" dominant-baseline="middle">${esc(r.short)}</text>`,
-    );
+    c.chip(0, y - 1, chip, rowH + 2, r.short, r.color);
+    const x0 = chip + 4;
     if (!r.n) {
-      parts.push(`<rect x="0" y="${y}" width="${barW}" height="${rowH}" rx="2" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-dasharray="3 2"><title>${esc(r.name)}: پاسخ معتبری نیست</title></rect>`);
+      c.rect(x0, y, barW, rowH, { rx: 2, stroke: 'currentColor', dash: '3 2', title: `${r.name}: ${tr(lang, 'پاسخ معتبری نیست')}` });
       return;
     }
-    let x = barW;
-    r.percents.forEach((pc, bi) => {
-      const w = ((pc ?? 0) / 100) * barW;
-      if (w <= 0) return;
-      const segW = Math.max(0, w - (x - w > 0.5 ? 2 : 0));
-      x -= w;
-      parts.push(
-        `<rect x="${x + (w - segW)}" y="${y}" width="${segW}" height="${rowH}" rx="2" fill="${r.color}" fill-opacity="${bandOpacity(bi, bands.length).toFixed(2)}"><title>${esc(r.name)} — ${esc(bands[bi])}: ${fmt.pct(pc, 1)} (${fmt.int(r.counts[bi])} از ${fmt.int(r.n)})</title></rect>`,
-      );
-    });
+    let x = x0;
+    for (let bi = k - 1; bi >= 0; bi--) {
+      const pc = r.percents[bi] ?? 0;
+      const w = (pc / 100) * barW;
+      if (w <= 0) continue;
+      c.rect(x, y, Math.max(0.5, w - 2), rowH, {
+        fill: r.color,
+        opacity: bandOpacity(bi, k),
+        rx: 2,
+        title: `${r.name} — ${bands[bi]}: ${fmt.pct(pc, 1)} (${tr(lang, '{a} از {b}', { a: fmt.int(r.counts[bi]), b: fmt.int(r.n) })})`,
+      });
+      x += w;
+    }
   });
-  return `<svg xmlns="http://www.w3.org/2000/svg" style="direction:ltr" viewBox="0 0 ${width} ${h}" width="${width}" height="${h}" role="img" aria-label="${esc(rows.map((r) => `${r.name}: ${r.percents.map((p, i) => `${bands[i]} ${fmt.pct(p, 0)}`).join('، ')}`).join(' | '))}" font-family="Vazirmatn, Tahoma, sans-serif">${parts.join('')}</svg>`;
+  return c.svg(h, rows.map((r) => `${r.name}: ${r.percents.map((p, i) => `${bands[i]} ${fmt.pct(p, 0)}`).join(', ')}`).join(' | '));
 }
 
 export interface FigureItem {
   code: string;
   name: string;
+  /** Domain rows. */
   rows: BandRow[];
+  /** Whole panel (optional extra row, drawn first in a neutral colour). */
+  overall?: Omit<BandRow, 'short' | 'name' | 'color'>;
+}
+
+export interface BandFigureOpts {
+  lang?: Lang;
+  width?: number;
+  title?: string;
+  subtitle?: string;
+  /** Percent of the top band needed for "retain" (drawn as a marker on the whole-panel row). */
+  threshold?: number;
+}
+
+/** Splits a name into at most two lines of about `n` characters. */
+function twoLines(s: string, n: number): string[] {
+  if (s.length <= n) return [s];
+  const cut = s.lastIndexOf(' ', n);
+  const i = cut > n * 0.5 ? cut : n;
+  return [s.slice(0, i).trim(), truncate(s.slice(i).trim(), n)];
 }
 
 /**
- * Report figure: for each parameter, one stacked bar per domain with the percentages written next to it in ink
- * colour, plus a legend for the bands (opacity steps) and the domains (colour + short label).
+ * Figure for the thesis: for each parameter, one 100 % stacked bar for the whole panel and one per domain, with
+ * the percentages written inside the segments.
  */
-export function bandFigure(items: FigureItem[], bands: string[], fmt: Fmt, opts: { width?: number; title?: string; ink?: string; muted?: string; surface?: string } = {}): string {
-  const W = opts.width ?? 760;
-  const ink = opts.ink ?? '#1f2430';
-  const muted = opts.muted ?? '#5d6475';
-  const surface = opts.surface ?? '#ffffff';
-  const labelW = 210;
-  const chip = 16;
-  const numW = 150;
-  const barW = W - labelW - chip - numW - 24;
-  const rowH = 14;
-  const rowGap = 4;
-  const blockGap = 14;
-  const domains = items[0]?.rows ?? [];
-  const legendH = 46;
-  const out: string[] = [];
-  let y = 0;
-  if (opts.title) {
-    out.push(`<text x="${W}" y="16" text-anchor="end" font-size="14" font-weight="700" fill="${ink}">${esc(opts.title)}</text>`);
-    y = 26;
-  }
-  // legend: bands (neutral swatches with the same opacity steps) and domains
-  let lx = W;
-  out.push(`<text x="${lx}" y="${y + 12}" text-anchor="end" font-size="11" fill="${muted}">طبقه‌ها:</text>`);
-  lx -= 52;
-  bands.forEach((b, i) => {
-    out.push(`<rect x="${lx - 14}" y="${y + 3}" width="14" height="12" rx="2" fill="${ink}" fill-opacity="${bandOpacity(i, bands.length).toFixed(2)}"/>`);
-    out.push(`<text x="${lx - 18}" y="${y + 12}" text-anchor="end" font-size="11" fill="${ink}">${esc(b)}</text>`);
-    lx -= 30 + b.length * 6.2;
-  });
-  lx = W;
-  out.push(`<text x="${lx}" y="${y + 34}" text-anchor="end" font-size="11" fill="${muted}">حوزه‌ها:</text>`);
-  lx -= 52;
-  domains.forEach((d) => {
-    out.push(`<rect x="${lx - 16}" y="${y + 24}" width="16" height="14" rx="3" fill="${d.color}"/>`);
-    out.push(`<text x="${lx - 8}" y="${y + 31.5}" text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700" fill="#fff">${esc(d.short)}</text>`);
-    out.push(`<text x="${lx - 20}" y="${y + 34}" text-anchor="end" font-size="11" fill="${ink}">${esc(d.name)}</text>`);
-    lx -= 40 + d.name.length * 6.2;
-  });
-  y += legendH;
-  for (const it of items) {
-    const blockH = it.rows.length * (rowH + rowGap) - rowGap;
-    out.push(`<text x="${W}" y="${y + 11}" text-anchor="end" font-size="12" font-weight="700" fill="${ink}">${esc(it.code)} — ${esc(truncate(it.name, 34))}</text>`);
-    it.rows.forEach((r, ri) => {
-      const ry = y + ri * (rowH + rowGap);
-      const cx = W - labelW;
-      out.push(`<rect x="${cx - chip}" y="${ry}" width="${chip}" height="${rowH}" rx="3" fill="${r.color}"/>`);
-      out.push(`<text x="${cx - chip / 2}" y="${ry + rowH / 2 + 0.5}" text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700" fill="#fff">${esc(r.short)}</text>`);
-      const right = cx - chip - 6;
-      if (!r.n) {
-        out.push(`<rect x="${right - barW}" y="${ry}" width="${barW}" height="${rowH}" rx="2" fill="none" stroke="${muted}" stroke-dasharray="3 2"/>`);
-      } else {
-        let x = right;
-        r.percents.forEach((pc, bi) => {
-          const w = ((pc ?? 0) / 100) * barW;
-          if (w <= 0) return;
-          x -= w;
-          out.push(`<rect x="${x + 1}" y="${ry}" width="${Math.max(0, w - 2)}" height="${rowH}" rx="2" fill="${r.color}" fill-opacity="${bandOpacity(bi, bands.length).toFixed(2)}" stroke="${surface}" stroke-width="0"/>`);
-        });
-      }
-      const txt = r.n ? `${r.percents.map((pc) => fmt.int(Math.round(pc ?? 0))).join(' · ')}٪  (n=${fmt.int(r.n)})` : 'بدون پاسخ معتبر';
-      out.push(`<text x="${right - barW - 6}" y="${ry + rowH - 3}" text-anchor="end" font-size="10.5" fill="${muted}">${esc(txt)}</text>`);
-    });
-    y += Math.max(blockH, 14) + blockGap;
-  }
-  const H = y;
-  return `<svg xmlns="http://www.w3.org/2000/svg" style="direction:ltr" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Vazirmatn, Tahoma, sans-serif" role="img" aria-label="${esc(opts.title ?? 'توزیع پاسخ‌ها در طبقه‌ها به تفکیک حوزه')}"><rect width="${W}" height="${H}" fill="${surface}"/>${out.join('')}</svg>`;
-}
+export function bandFigure(items: FigureItem[], bands: string[], fmt: Fmt, opts: BandFigureOpts = {}): string {
+  const lang = opts.lang ?? 'fa';
+  const T = (fa: string, v?: Record<string, string | number>) => tr(lang, fa, v);
+  const W = opts.width ?? 820;
+  const pad = 22;
+  const c = new Canvas(lang, W);
+  const k = bands.length;
+  const labelW = 236;
+  const chipW = 20;
+  const nW = 50;
+  const x0 = pad + labelW + chipW + 8;
+  const barW = W - pad - nW - x0;
+  const rowH = 16;
+  const rowGap = 3;
+  const blockGap = 18;
+  let y = heading(c, pad, opts.title, opts.subtitle);
 
-const truncate = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+  // ---- legend: bands (neutral swatches, top band first), then the rows
+  let lx = pad;
+  const legendItem = (draw: (x: number) => number, w: number) => {
+    if (lx + w > W - pad) {
+      lx = pad;
+      y += 20;
+    }
+    lx = draw(lx) + 16;
+  };
+  for (let bi = k - 1; bi >= 0; bi--) {
+    const label = bands[bi];
+    legendItem((x) => {
+      c.rect(x, y, 14, 12, { fill: THEME.overall, opacity: bandOpacity(bi, k), rx: 2 });
+      c.text(x + 19, y + 10, label, { size: 11 });
+      return x + 19 + textWidth(label, 11);
+    }, 19 + textWidth(label, 11));
+  }
+  lx = pad;
+  y += 22;
+  const first = items[0];
+  const legendRows = [...(first?.overall ? [{ short: 'Σ', name: T('کل پنل'), color: THEME.overall }] : []), ...(first?.rows ?? [])];
+  for (const d of legendRows) {
+    legendItem((x) => {
+      c.chip(x, y - 1, chipW, 14, d.short, d.color);
+      c.text(x + chipW + 5, y + 10, d.name, { size: 11 });
+      return x + chipW + 5 + textWidth(d.name, 11);
+    }, chipW + 5 + textWidth(d.name, 11));
+  }
+  if (opts.threshold !== undefined) {
+    const label = T('آستانه «حفظ»: {n} در طبقه بالا (کل پنل)', { n: fmt.pct(opts.threshold, 0) });
+    legendItem((x) => {
+      c.line(x + 4, y - 2, x + 4, y + 14, { stroke: THEME.ink, width: 2 });
+      c.text(x + 12, y + 10, label, { size: 11 });
+      return x + 12 + textWidth(label, 11);
+    }, 12 + textWidth(label, 11));
+  }
+  y += 40;
+
+  // ---- axis: 0 … 100 %, grid lines behind the bars
+  const rowsPer = (it: FigureItem) => it.rows.length + (it.overall ? 1 : 0);
+  const bodyH = items.reduce((s, it) => s + Math.max(rowsPer(it) * (rowH + rowGap) - rowGap, 34) + blockGap, 0) - blockGap;
+  for (const tick of [0, 25, 50, 75, 100]) {
+    const x = x0 + (tick / 100) * barW;
+    c.line(x, y - 4, x, y + bodyH + 4, { stroke: THEME.grid });
+    c.text(x, y - 9, fmt.pct(tick, 0), { size: 10, fill: THEME.faint, anchor: 'middle' });
+  }
+  c.text(W - pad, y - 9, 'n', { size: 10, fill: THEME.faint, anchor: 'end', ltr: true });
+
+  for (const it of items) {
+    const rows: (Omit<BandRow, 'name'> & { isOverall?: boolean })[] = [...(it.overall ? [{ ...it.overall, short: 'Σ', color: THEME.overall, isOverall: true }] : []), ...it.rows];
+    const blockH = Math.max(rows.length * (rowH + rowGap) - rowGap, 34);
+    c.text(pad, y + 12, it.code, { size: 12, weight: 700, ltr: true });
+    twoLines(it.name, 38).forEach((line, li) => c.text(pad, y + 28 + li * 15, line, { size: 11.5, fill: THEME.muted }));
+    rows.forEach((r, ri) => {
+      const ry = y + ri * (rowH + rowGap);
+      c.chip(pad + labelW, ry, chipW, rowH, r.short, r.color);
+      if (!r.n) {
+        c.rect(x0, ry + 1, barW, rowH - 2, { rx: 3, stroke: THEME.faint, dash: '3 3' });
+        c.text(x0 + 8, ry + rowH - 4, T('بدون پاسخ معتبر'), { size: 10.5, fill: THEME.faint });
+        return;
+      }
+      let x = x0;
+      for (let bi = k - 1; bi >= 0; bi--) {
+        const pc = r.percents[bi] ?? 0;
+        const w = (pc / 100) * barW;
+        if (w <= 0) continue;
+        const op = bandOpacity(bi, k);
+        c.rect(x, ry, Math.max(1, w - 2), rowH, { fill: r.color, opacity: op, rx: 3 });
+        if (w >= 30) c.text(x + (w - 2) / 2, ry + rowH - 4.5, fmt.pct(pc, 0), { size: 10, weight: 600, anchor: 'middle', fill: op > 0.6 ? '#ffffff' : THEME.ink });
+        x += w;
+      }
+      c.text(W - pad, ry + rowH - 4, fmt.int(r.n), { size: 10.5, fill: THEME.muted, anchor: 'end' });
+      if (r.isOverall && opts.threshold !== undefined) {
+        const tx = x0 + (opts.threshold / 100) * barW;
+        c.line(tx, ry - 3, tx, ry + rowH + 3, { stroke: THEME.ink, width: 2 });
+      }
+    });
+    y += blockH + blockGap;
+  }
+  return c.svg(y - blockGap + pad, esc(opts.title ?? T('توزیع پاسخ‌ها در طبقه‌ها به تفکیک حوزه')));
+}

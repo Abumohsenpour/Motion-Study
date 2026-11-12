@@ -121,9 +121,10 @@ export function roundStatsSection(r: ReportBuilder, p: Project, round: 'r1' | 'r
         `${round}-fig-${g.id}`,
         `توزیع پاسخ‌های ${rn} در طبقه‌های مقیاس به تفکیک حوزه — گروه «${g.name}»`,
         bandFigure(
-          items.map((s) => ({ code: s.param.code, name: s.param.name, rows: bandRows(p, s) })),
+          items.map((s) => ({ code: s.param.code, name: s.param.name, rows: bandRows(p, s), overall: { n: s.overall.n, counts: s.overall.counts, percents: s.overall.percents } })),
           p.scale.bands.map((b) => b.label),
           fmt,
+          { lang: 'fa', threshold: round === 'r2' ? p.settings.consensus.retainTopMin : undefined },
         ),
       );
     }

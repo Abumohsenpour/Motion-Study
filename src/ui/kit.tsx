@@ -4,6 +4,7 @@ import type { Domain } from '../core';
 import { PALETTE } from '../core';
 import { parseNumber, useFmt } from './format';
 import { Icon, type IconName } from './icons';
+import { isRtl, t } from '../i18n';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
 
@@ -26,11 +27,11 @@ export function Button({
       type="button"
       {...rest}
       className={cx(
-        'inline-flex items-center gap-1.5 rounded-md border font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45',
+        'inline-flex items-center gap-1.5 rounded-lg border font-medium transition-all active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
-        size === 'sm' ? 'px-2 py-0.5 text-[13px]' : 'px-3 py-1.5 text-sm',
-        variant === 'primary' && 'border-accent bg-accent text-accent-ink hover:opacity-90',
-        variant === 'secondary' && 'border-line bg-surface text-ink hover:bg-surface-2',
+        size === 'sm' ? 'px-2.5 py-0.5 text-[13px]' : 'px-3.5 py-1.5 text-sm',
+        variant === 'primary' && 'border-accent bg-accent text-accent-ink shadow-sm hover:brightness-110',
+        variant === 'secondary' && 'border-line bg-surface text-ink shadow-[0_1px_0_rgba(23,26,46,0.03)] hover:border-accent/40 hover:bg-surface-2',
         variant === 'ghost' && 'border-transparent bg-transparent text-ink hover:bg-surface-2',
         variant === 'danger' && 'border-bad/40 bg-surface text-bad hover:bg-bad-soft',
         className,
@@ -70,8 +71,8 @@ export function IconButton({
 export function Reorder({ onUp, onDown, first, last }: { onUp: () => void; onDown: () => void; first: boolean; last: boolean }) {
   return (
     <span className="inline-flex">
-      <IconButton icon="up" label="انتقال به بالا" onClick={onUp} disabled={first} />
-      <IconButton icon="down" label="انتقال به پایین" onClick={onDown} disabled={last} />
+      <IconButton icon="up" label={t('انتقال به بالا')} onClick={onUp} disabled={first} />
+      <IconButton icon="down" label={t('انتقال به پایین')} onClick={onDown} disabled={last} />
     </span>
   );
 }
@@ -81,7 +82,7 @@ export function Reorder({ onUp, onDown, first, last }: { onUp: () => void; onDow
 // ---------------------------------------------------------------------------------------------
 
 const inputCls =
-  'w-full rounded-md border border-line bg-surface px-2 py-1 text-sm text-ink placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25';
+  'w-full rounded-lg border border-line bg-surface px-2.5 py-1 text-sm text-ink transition-colors placeholder:text-muted/70 hover:border-muted/50 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25';
 
 export function TextInput({
   value,
@@ -103,7 +104,8 @@ export function TextInput({
       type="text"
       value={value}
       placeholder={placeholder}
-      dir={ltr ? 'ltr' : undefined}
+      // in the English interface, Persian content typed by the researcher keeps its own direction
+      dir={ltr ? 'ltr' : isRtl() ? undefined : 'auto'}
       onChange={(e) => onChange(e.target.value)}
       className={cx(inputCls, ltr && 'text-left', className)}
       {...rest}
@@ -131,6 +133,7 @@ export function TextArea({
       value={value}
       rows={rows}
       placeholder={placeholder}
+      dir={isRtl() ? undefined : 'auto'}
       onChange={(e) => onChange(e.target.value)}
       className={cx(inputCls, 'leading-7', className)}
       {...rest}
@@ -280,13 +283,13 @@ export function ColorPicker({ value, onChange }: { value: string; onChange: (v: 
           key={c}
           type="button"
           title={c}
-          aria-label={`رنگ ${c}`}
+          aria-label={t('رنگ {c}', { c })}
           onClick={() => onChange(c)}
           className={cx('size-5 rounded-full border border-line', value.toLowerCase() === c.toLowerCase() && 'ring-2 ring-accent ring-offset-1')}
           style={{ background: c }}
         />
       ))}
-      <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="h-6 w-8 cursor-pointer rounded border border-line bg-surface" aria-label="رنگ دلخواه" />
+      <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="h-6 w-8 cursor-pointer rounded border border-line bg-surface" aria-label={t('رنگ دلخواه')} />
     </span>
   );
 }
@@ -344,13 +347,13 @@ const toneCls: Record<Tone, string> = {
 };
 
 export function Badge({ tone = 'neutral', children, className }: { tone?: Tone; children: ReactNode; className?: string }) {
-  return <span className={cx('inline-flex items-center gap-1 rounded-full border px-2 py-0 text-xs whitespace-nowrap', toneCls[tone], className)}>{children}</span>;
+  return <span className={cx('inline-flex items-center gap-1 rounded-full border px-2 py-0 text-xs font-medium whitespace-nowrap', toneCls[tone], className)}>{children}</span>;
 }
 
 export function Callout({ tone = 'neutral', title, children, className }: { tone?: Tone; title?: ReactNode; children?: ReactNode; className?: string }) {
   const icon: IconName = tone === 'bad' || tone === 'warn' ? 'alert' : tone === 'ok' ? 'check' : 'info';
   return (
-    <div className={cx('flex gap-2 rounded-lg border px-3 py-2 text-sm', toneCls[tone], className)} role={tone === 'bad' ? 'alert' : undefined}>
+    <div className={cx('flex gap-2.5 rounded-xl border px-3.5 py-2.5 text-sm', toneCls[tone], className)} role={tone === 'bad' ? 'alert' : undefined}>
       <Icon name={icon} className="mt-1 size-4 shrink-0" />
       <div className="min-w-0 text-ink">
         {title && <div className="font-semibold">{title}</div>}
@@ -362,10 +365,10 @@ export function Callout({ tone = 'neutral', title, children, className }: { tone
 
 export function Card({ title, actions, children, className, id }: { title?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string; id?: string }) {
   return (
-    <section id={id} className={cx('rounded-xl border border-line bg-surface p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]', className)}>
+    <section id={id} className={cx('rounded-2xl border border-line bg-surface p-5 shadow-card', className)}>
       {(title || actions) && (
-        <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          {title && <h2 className="text-base font-semibold">{title}</h2>}
+        <header className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
+          {title && <h2 className="text-[15px] font-bold">{title}</h2>}
           {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
         </header>
       )}
@@ -376,10 +379,10 @@ export function Card({ title, actions, children, className, id }: { title?: Reac
 
 export function PageTitle({ title, subtitle, actions }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="text-xl font-bold">{title}</h1>
-        {subtitle && <p className="mt-1 max-w-3xl text-sm text-muted">{subtitle}</p>}
+        <h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>
+        {subtitle && <p className="mt-1.5 max-w-3xl text-sm leading-7 text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -387,12 +390,12 @@ export function PageTitle({ title, subtitle, actions }: { title: ReactNode; subt
 }
 
 export function Empty({ children }: { children: ReactNode }) {
-  return <div className="rounded-lg border border-dashed border-line px-4 py-6 text-center text-sm text-muted">{children}</div>;
+  return <div className="rounded-xl border border-dashed border-line bg-surface-2/40 px-4 py-8 text-center text-sm text-muted">{children}</div>;
 }
 
 export function Tabs<T extends string>({ tabs, value, onChange }: { tabs: { id: T; label: ReactNode }[]; value: T; onChange: (v: T) => void }) {
   return (
-    <div role="tablist" className="mb-4 flex flex-wrap gap-1 border-b border-line">
+    <div role="tablist" className="mb-5 inline-flex max-w-full flex-wrap gap-1 rounded-xl border border-line bg-surface-2 p-1">
       {tabs.map((t) => (
         <button
           key={t.id}
@@ -401,8 +404,8 @@ export function Tabs<T extends string>({ tabs, value, onChange }: { tabs: { id: 
           aria-selected={t.id === value}
           onClick={() => onChange(t.id)}
           className={cx(
-            '-mb-px rounded-t-md border border-b-0 px-3 py-1.5 text-sm',
-            t.id === value ? 'border-line bg-surface font-semibold text-ink' : 'border-transparent text-muted hover:text-ink',
+            'rounded-lg px-3.5 py-1.5 text-sm transition-colors',
+            t.id === value ? 'bg-surface font-semibold text-accent shadow-sm' : 'text-muted hover:text-ink',
           )}
         >
           {t.label}
@@ -432,13 +435,13 @@ export function DomainChip({ domain, withName }: { domain: Domain | undefined; w
 /** Table wrapper with sticky header and horizontal scrolling for large matrices. */
 export function TableWrap({ children, maxHeight = '70vh' }: { children: ReactNode; maxHeight?: string }) {
   return (
-    <div className="overflow-auto rounded-lg border border-line" style={{ maxHeight }}>
+    <div className="overflow-auto rounded-xl border border-line" style={{ maxHeight }}>
       {children}
     </div>
   );
 }
 
-export const th = 'border-b border-line px-2 py-1.5 text-right text-[13px] font-semibold text-muted whitespace-nowrap';
+export const th = 'border-b border-line px-2 py-2 text-start text-[13px] font-semibold text-muted whitespace-nowrap';
 export const td = 'border-b border-line/70 px-2 py-1 align-middle';
 
 /** Runs a callback when Ctrl/Cmd+Z / Ctrl+Y / Ctrl+Shift+Z are pressed outside text fields. */

@@ -11,40 +11,53 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg: #f5f4f0;
+  /* CORTEX palette: cool neutrals, an indigo accent and a deep navy navigation rail. */
+  --bg: #f3f4f9;
   --surface: #ffffff;
-  --surface-2: #f0efea;
-  --ink: #1f2430;
-  --muted: #5d6475;
-  --line: #dcdad2;
-  --accent: #34507a;
+  --surface-2: #eef0f7;
+  --ink: #171a2e;
+  --muted: #5a6079;
+  --line: #dde0ec;
+  --accent: #4a3fd6;
   --accent-ink: #ffffff;
-  --accent-soft: #e5ebf4;
-  --ok: #2f6b45;
-  --ok-soft: #e3efe6;
-  --warn: #8a5a00;
-  --warn-soft: #fbf1dc;
-  --bad: #9b2c2c;
-  --bad-soft: #f8e3e3;
+  --accent-soft: #ebe9fd;
+  --ok: #1c7448;
+  --ok-soft: #e1f3e8;
+  --warn: #8f5a06;
+  --warn-soft: #fcf1d6;
+  --bad: #b02525;
+  --bad-soft: #fbe5e5;
+  --rail: #14172f;
+  --rail-2: #1e2245;
+  --rail-ink: #eceefa;
+  --rail-muted: #9da3c6;
+  --brand-a: #5b4ff0;
+  --brand-b: #12b5a6;
+  --shadow: 0 1px 2px rgba(23, 26, 46, 0.04), 0 4px 16px rgba(23, 26, 46, 0.05);
   color-scheme: light;
 }
 
 .dark {
-  --bg: #15181e;
-  --surface: #1d2129;
-  --surface-2: #252a34;
-  --ink: #e6e8ec;
-  --muted: #a0a7b5;
-  --line: #343a46;
-  --accent: #8fb0e0;
-  --accent-ink: #12161d;
-  --accent-soft: #24324a;
-  --ok: #8fd0a4;
-  --ok-soft: #1f3327;
-  --warn: #f0c26b;
-  --warn-soft: #3a2f17;
-  --bad: #f0a0a0;
-  --bad-soft: #3d2222;
+  --bg: #0e1020;
+  --surface: #171a30;
+  --surface-2: #1f2342;
+  --ink: #e8eaf6;
+  --muted: #a3a9c6;
+  --line: #2d3256;
+  --accent: #a9a3ff;
+  --accent-ink: #12142a;
+  --accent-soft: #2a2b5e;
+  --ok: #86d6a6;
+  --ok-soft: #173326;
+  --warn: #f1c672;
+  --warn-soft: #3a2f15;
+  --bad: #f3a3a3;
+  --bad-soft: #3f2023;
+  --rail: #0a0c19;
+  --rail-2: #171a33;
+  --rail-ink: #e8eaf6;
+  --rail-muted: #8c92b5;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
   color-scheme: dark;
 }
 
@@ -65,6 +78,11 @@
   --color-warn-soft: var(--warn-soft);
   --color-bad: var(--bad);
   --color-bad-soft: var(--bad-soft);
+  --color-rail: var(--rail);
+  --color-rail-2: var(--rail-2);
+  --color-rail-ink: var(--rail-ink);
+  --color-rail-muted: var(--rail-muted);
+  --shadow-card: var(--shadow);
 }
 
 html,
@@ -77,6 +95,33 @@ body {
 body {
   margin: 0;
   line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* English interface: slightly tighter line height; Persian content typed by the researcher keeps its own direction. */
+html[lang='en'] body {
+  line-height: 1.55;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+/* Brand gradient (logo, primary highlights). */
+.brand-gradient {
+  background: linear-gradient(135deg, var(--brand-a), var(--brand-b));
+}
+.brand-text {
+  background: linear-gradient(135deg, var(--brand-a), var(--brand-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Thin, quiet scrollbars. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent;
 }
 
 /* Inline LTR runs (parameter codes, English terms) inside RTL text. */
@@ -94,7 +139,7 @@ body {
 }
 .sticky-table .sticky-col {
   position: sticky;
-  right: 0;
+  inset-inline-start: 0;
   z-index: 1;
   background: var(--surface);
 }

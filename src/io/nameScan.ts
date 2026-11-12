@@ -33,7 +33,7 @@ export function scanOutputsForNames(p: Project, identities: Record<Id, ExpertIde
   // the xlsx itself (all XML parts, including shared strings)
   const parts = unzipSync(workbookBytes(p));
   outputs.push(['Excel (.xlsx)', Object.values(parts).map((u) => strFromU8(u)).join('\n')]);
-  for (const c of chartCatalog(p, fmt)) outputs.push([`نمودار ${c.title}`, c.svg]);
+  for (const lang of ['fa', 'en'] as const) for (const c of chartCatalog(p, fmt, lang)) outputs.push([`نمودار ${c.title}`, c.svg]);
   for (const e of p.experts) {
     for (const kind of ['r1', 'r2', 'pugh'] as const) {
       try {

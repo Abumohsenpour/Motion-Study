@@ -3,6 +3,7 @@
  * embedded, nothing is loaded from the network, and the page saves cleanly to PDF via the browser's print dialog.
  * Tables and figures get numbered Persian captions; any caption can be edited (project.captions).
  */
+import { BRAND, LOGO_SVG } from '../shared/brand';
 import fontUrl from 'vazirmatn/fonts/webfonts/Vazirmatn[wght].woff2?inline';
 import type { Fmt } from '../ui/format';
 
@@ -101,7 +102,9 @@ ${REPORT_CSS}
 <body>
 <div class="toolbar"><button onclick="window.print()">چاپ / ذخیره PDF</button></div>
 <main>
+<div class="brand">${LOGO_SVG.replace('<svg ', '<svg width="22" height="22" ')}<span class="ltr">${BRAND.name}</span><span class="muted">${BRAND.nameFa}</span></div>
 ${this.parts.join('\n')}
+<div class="foot brandfoot">تهیه‌شده با <span class="ltr">${BRAND.name} ${BRAND.version}</span></div>
 </main>
 </body>
 </html>`;
@@ -111,10 +114,13 @@ ${this.parts.join('\n')}
 export const REPORT_CSS = `
 @page{size:A4;margin:18mm 16mm}
 *{box-sizing:border-box}
-body{margin:0;background:#f5f4f0;color:#1f2430;font-family:Vazirmatn,Tahoma,sans-serif;font-size:12.5px;line-height:1.75}
-main{max-width:900px;margin:0 auto;background:#fff;padding:28px 36px 40px;border:1px solid #dcdad2}
+body{margin:0;background:#f3f4f9;color:#171a2e;font-family:Vazirmatn,Tahoma,sans-serif;font-size:12.5px;line-height:1.75}
+main{max-width:900px;margin:0 auto 24px;background:#fff;padding:28px 36px 40px;border:1px solid #dde0ec;border-radius:14px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.14em;font-size:12px;margin-bottom:14px}
+.brand .muted{letter-spacing:0;font-weight:500}
+.brandfoot{margin-top:28px;padding-top:8px;border-top:1px solid #dde0ec;text-align:center}
 h1{font-size:20px;margin:0 0 4px}
-h2{font-size:16px;margin:26px 0 8px;padding-bottom:4px;border-bottom:1px solid #dcdad2}
+h2{font-size:16px;margin:26px 0 8px;padding-bottom:4px;border-bottom:2px solid #ebe9fd;color:#2b2599}
 h3{font-size:13.5px;margin:16px 0 6px}
 p{margin:6px 0;text-align:justify}
 .meta{color:#5d6475;font-size:12px}
@@ -128,8 +134,8 @@ figure.fig figcaption{text-align:center;margin-top:4px}
 figure.fig svg{display:block;max-width:100%;height:auto;margin:0 auto}
 table{border-collapse:collapse;width:100%;font-size:11.5px}
 .small table{font-size:10.5px}
-th,td{border:1px solid #cfccc3;padding:3px 5px;text-align:center;vertical-align:middle}
-th{background:#f0efea;font-weight:700}
+th,td{border:1px solid #d5d8e6;padding:3px 5px;text-align:center;vertical-align:middle}
+th{background:#eef0f7;font-weight:700}
 td.r,th.r{text-align:right}
 thead{display:table-header-group}
 tr{break-inside:avoid}
@@ -138,8 +144,8 @@ tr{break-inside:avoid}
 .chip{display:inline-block;min-width:16px;padding:0 3px;border-radius:3px;color:#fff;font-weight:700;font-size:10px;text-align:center}
 .ok{color:#2f6b45;font-weight:700}.bad{color:#9b2c2c;font-weight:700}.muted{color:#5d6475}
 .toolbar{max-width:900px;margin:12px auto;text-align:left}
-.toolbar button{font:inherit;padding:6px 14px;border-radius:6px;border:1px solid #34507a;background:#34507a;color:#fff;cursor:pointer}
-@media print{body{background:#fff}main{border:0;padding:0;max-width:none}.toolbar{display:none}}
+.toolbar button{font:inherit;padding:7px 16px;border-radius:8px;border:1px solid #4a3fd6;background:#4a3fd6;color:#fff;cursor:pointer}
+@media print{body{background:#fff}main{border:0;border-radius:0;padding:0;max-width:none;margin:0}.toolbar{display:none}}
 `;
 
 /** Opens a report in a new tab (blob URL); falls back to a download if pop-ups are blocked. */

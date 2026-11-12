@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 export type DigitMode = 'fa' | 'latin';
 export type ThemeMode = 'light' | 'dark';
+export type Lang = 'fa' | 'en';
 
 const read = (k: string): string | null => {
   try {
@@ -31,6 +32,9 @@ interface Prefs {
   digits: DigitMode;
   theme: ThemeMode;
   showNames: boolean;
+  /** Interface language. */
+  lang: Lang;
+  setLang: (l: Lang) => void;
   setDigits: (d: DigitMode) => void;
   setTheme: (t: ThemeMode) => void;
   setShowNames: (v: boolean) => void;
@@ -40,6 +44,11 @@ export const usePrefs = create<Prefs>((set) => ({
   digits: read('dp.digits') === 'latin' ? 'latin' : 'fa',
   theme: (read('dp.theme') as ThemeMode | null) ?? (systemDark() ? 'dark' : 'light'),
   showNames: read('dp.showNames') !== '0',
+  lang: read('dp.lang') === 'en' ? 'en' : 'fa',
+  setLang: (lang) => {
+    write('dp.lang', lang);
+    set({ lang });
+  },
   setDigits: (digits) => {
     write('dp.digits', digits);
     set({ digits });

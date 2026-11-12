@@ -3,6 +3,7 @@
  * `confirmDialog()` returns a promise, so an edit can wait for the researcher's decision
  * ("this will change …; reason: …") before it is applied.
  */
+import { t } from '../i18n';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { create } from 'zustand';
 import { Button, TextArea, cx } from './kit';
@@ -33,18 +34,18 @@ export function Modal({
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 pt-[8vh]" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#0b0d1a]/55 p-4 backdrop-blur-[2px] pt-[8vh]" onMouseDown={onClose}>
       <div
         ref={ref}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
         onMouseDown={(e) => e.stopPropagation()}
-        className={cx('w-full rounded-xl border border-line bg-surface shadow-xl outline-none', wide ? 'max-w-5xl' : 'max-w-xl')}
+        className={cx('w-full rounded-2xl border border-line bg-surface shadow-2xl outline-none', wide ? 'max-w-5xl' : 'max-w-xl')}
       >
         <header className="flex items-center justify-between border-b border-line px-4 py-3">
           <h2 className="text-base font-semibold">{title}</h2>
-          <button type="button" onClick={onClose} aria-label="بستن" className="rounded p-1 text-muted hover:bg-surface-2">
+          <button type="button" onClick={onClose} aria-label={t('بستن')} className="rounded p-1 text-muted hover:bg-surface-2">
             <Icon name="x" />
           </button>
         </header>
@@ -94,9 +95,9 @@ export function ConfirmHost() {
       onClose={() => finish(false)}
       footer={
         <>
-          <Button onClick={() => finish(false)}>انصراف</Button>
+          <Button onClick={() => finish(false)}>{t('انصراف')}</Button>
           <Button variant={current.tone === 'danger' ? 'danger' : 'primary'} onClick={() => finish(true)}>
-            {current.confirmLabel ?? 'اعمال'}
+            {current.confirmLabel ?? t('اعمال')}
           </Button>
         </>
       }
@@ -111,8 +112,8 @@ export function ConfirmHost() {
       )}
       {current.askReason && (
         <div className="mt-3">
-          <label className="mb-1 block text-[13px] text-muted">دلیل تغییر (در دفتر تغییرات ثبت می‌شود؛ اختیاری)</label>
-          <TextArea value={reason} onChange={setReason} rows={2} aria-label="دلیل تغییر" />
+          <label className="mb-1 block text-[13px] text-muted">{t('دلیل تغییر (در دفتر تغییرات ثبت می‌شود؛ اختیاری)')}</label>
+          <TextArea value={reason} onChange={setReason} rows={2} aria-label={t('دلیل تغییر')} />
         </div>
       )}
     </Modal>
@@ -142,12 +143,12 @@ export function toast(text: string, opts: { tone?: 'normal' | 'bad'; action?: To
 export function ToastHost() {
   const toasts = useToastStore((s) => s.toasts);
   return (
-    <div className="no-print fixed bottom-4 left-4 z-[60] flex flex-col gap-2" aria-live="polite">
+    <div className="no-print fixed bottom-4 end-4 z-[60] flex flex-col gap-2" aria-live="polite">
       {toasts.map((t) => (
         <div
           key={t.id}
           className={cx(
-            'flex items-center gap-3 rounded-lg border px-3 py-2 text-sm shadow-lg',
+            'flex items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm shadow-lg',
             t.tone === 'bad' ? 'border-bad/40 bg-bad-soft text-bad' : 'border-line bg-surface text-ink',
           )}
         >

@@ -1,4 +1,4 @@
-# Delphi + Pugh research tool
+# CORTEX (کورتکس) — Delphi + Pugh research workbench
 
 A desktop-browser application for the two phases of the thesis «طراحی اگزواسکلتون غیرفعال ارگونومیک پشتیبان
 پیش‌بند سربی برای جراحی درون‌عروقی مبتنی بر مدل الماس دوگانه»:
@@ -8,7 +8,8 @@ A desktop-browser application for the two phases of the thesis «طراحی اگ
 - **Part B — Develop phase:** Pugh screening (+ / − / S, two runs) and the weighted Pugh matrix (relations ۶ to ۸)
   with sensitivity analysis.
 
-The interface is Persian and right-to-left. Everything runs offline in the browser, and the data stays on the
+The interface is available in Persian (right-to-left) and English, switchable at any time; the expert
+questionnaires, the report and the Excel workbook are Persian. Everything runs offline in the browser, and the data stays on the
 researcher's computer. `SPEC.md` holds every formula, rule and hand-calculated example. `DECISIONS.md` lists every
 conflict with the proposal and every choice made where the proposal is silent.
 
@@ -16,7 +17,7 @@ conflict with the proposal and every choice made where the proposal is silent.
 
 A step-by-step user guide in Persian, with screenshots of every step, is in `docs/delphi-pugh-user-guide-fa.docx`.
 
-The ready-made offline file is `release/delphi-pugh-offline.html`. Open it in Chrome, Edge or Firefox by
+The ready-made offline file is `release/cortex-offline.html`. Open it in Chrome, Edge or Firefox by
 double-clicking; no internet and no installation are needed. Projects are saved automatically in the browser of
 that computer (IndexedDB). Use **فایل پروژه (.json)** on the outputs screen as a backup and to move a project to
 another computer. The identity key file (expert names) is a separate download; keep it apart from the project file.
@@ -46,7 +47,7 @@ npm run verify:excel   # recalculates the exported workbooks in LibreOffice and 
 npm run test:manual    # types the whole worked example into the app by hand and checks the results (see tools/e2e)
 ```
 
-After `npm run build:single`, copy `dist-single/index.html` to `release/delphi-pugh-offline.html` to update the
+After `npm run build:single`, copy `dist-single/index.html` to `release/cortex-offline.html` to update the
 ready-made file.
 
 ## How the code is organised
@@ -59,13 +60,14 @@ ready-made file.
 | `src/screens/`, `src/app/`, `src/ui/` | The ten steps of the interface and its shared components. |
 | `src/questionnaire/` | The personal offline questionnaire files sent to experts (consent page, progress, draft saving, checksummed response file). |
 | `src/io/` | Excel/CSV import and export, project and identity files, response-file import, anonymity scan. |
-| `src/report/`, `src/charts/` | The printable thesis report with numbered captions, and the SVG charts. |
+| `src/report/`, `src/charts/` | The printable thesis report with numbered captions, and the SVG charts. Every chart is drawn in a Persian and an English version by the same code (`charts/svg.ts` mirrors the layout); English names of project items come from `Project.labelsEn`. |
+| `src/i18n/` | The two-language interface: Persian text stays in the code as the source, `t('…')` looks up the English text in `en/*.ts`. A test fails if any text has no English entry. |
 | `src/demo/` | The two sample projects. |
 | `tools/excel-verify/` | Independent check of the Excel formulas with LibreOffice. |
 
 ## Verification
 
-- **Unit tests.** `npm test` runs 98 tests. They cover every relation, threshold and rule, the hand-calculated
+- **Unit tests.** `npm test` runs the unit tests. They cover every relation, threshold and rule, the hand-calculated
   fixtures, edge cases (ties, missing data, all-zero allocations, cannot-judge answers, withdrawals), response-file
   checksums, questionnaire privacy and blinding, and the anonymity of every output.
 - **Worked example in the interface.** The worked example reproduces the hand-calculated values on screen:

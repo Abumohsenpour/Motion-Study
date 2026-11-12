@@ -336,6 +336,8 @@ export interface Project {
   screening: Screening;
   weighted: WeightedMatrix;
   captions: Record<string, string>;
+  /** Optional English labels for the English version of the charts, by item id (also `band:<i>`, `short:<domainId>`). */
+  labelsEn: Record<string, string>;
   settingsSnapshot: SettingsSnapshot | null;
   changeLog: ChangeLogEntry[];
   /** Highest expert number ever issued, so a deleted expert's code is never reused (DECISIONS D-06). */

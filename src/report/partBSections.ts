@@ -147,6 +147,7 @@ export function weightedSection(r: ReportBuilder, p: Project, partA?: Record<Id,
       scoreChart(
         a.result.ranking.map((x) => ({ label: `${cc(x.id).code} — ${cc(x.id).name}`, score: x.score, rank: x.rank })),
         fmt,
+        { lang: 'fa' },
       ),
     );
   const s = a.sensitivity;

@@ -18,7 +18,7 @@ export function downloadText(text: string, filename: string, mime = 'application
  * ASCII-only file name part. Some browsers/systems silently replace non-ASCII download names with "download",
  * so Persian titles fall back to the given default.
  */
-export const safeFileName = (s: string, fallback = 'delphi-project'): string =>
+export const safeFileName = (s: string, fallback = 'cortex-project'): string =>
   s
     .replace(/[^A-Za-z0-9 _.-]+/g, ' ')
     .trim()

@@ -146,6 +146,13 @@ export function buildWorkedExample(): { project: Project; identities: Record<Id,
   );
   for (const id of p.weighted.raterIds) p.experts.find((e) => e.id === id)!.status.pugh = { state: 'responded', date: today };
 
+  p.labelsEn = {
+    ...Object.fromEntries(p.params.map((x, i) => [x.id, `Parameter ${i + 1}`])),
+    ...Object.fromEntries(p.concepts.map((c, i) => [c.id, i === 0 ? 'Simplest (datum of run 1)' : `Concept ${i + 1}`])),
+    G1: 'Group 1 (G1)',
+    G2: 'Group 2 (G2)',
+    G3: 'Group 3 (G3)',
+  };
   p.settingsSnapshot = { at: today, scale: structuredClone(p.scale), consensus: { ...p.settings.consensus }, candidatePct: p.settings.candidatePct };
   const identities = Object.fromEntries(p.experts.map((e, i) => [e.id, { name: `خبره نمونه ${i + 1}`, contact: `expert${i + 1}@example.org`, notes: 'داده ساختگی' }]));
   return { project: p, identities };

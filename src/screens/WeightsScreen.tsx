@@ -10,7 +10,8 @@ import { miniBandBars } from '../charts/bandChart';
 import { downloadText } from '../io/download';
 import { bandRows, medianIqr } from '../report/delphiSections';
 import { openReport, ReportBuilder } from '../report/html';
-import { briefSection, consensusSection, EXCLUSION_FA, STATUS_FA, weightsSection } from '../report/weightsSections';
+import { briefSection, consensusSection, EXCLUSION_FA, weightsSection } from '../report/weightsSections';
+import { statusLabel, t } from '../i18n';
 import { useProject } from '../state/store';
 import { useFmt } from '../ui/format';
 import { Icon } from '../ui/icons';
@@ -20,8 +21,8 @@ function StatusBadge({ s, conflict }: { s: ConsensusStatus; conflict?: boolean }
   return (
     <Badge tone={s === 'retain' ? 'ok' : s === 'remove' ? 'bad' : 'neutral'}>
       <Icon name={s === 'retain' ? 'check' : s === 'remove' ? 'x' : 'info'} className="size-3" />
-      {STATUS_FA[s]}
-      {conflict && ' (تعارض)'}
+      {statusLabel(s)}
+      {conflict && t(' (تعارض)')}
     </Badge>
   );
 }
@@ -31,18 +32,18 @@ function PanelCheckCard() {
   const fmt = useFmt();
   const pc = panelCheck(p);
   return (
-    <Callout tone={pc.ok ? 'ok' : 'bad'} title={pc.ok ? 'حداقل نهایی پنل برقرار است' : 'حداقل نهایی پنل برقرار نیست'}>
+    <Callout tone={pc.ok ? 'ok' : 'bad'} title={pc.ok ? t('حداقل نهایی پنل برقرار است') : t('حداقل نهایی پنل برقرار نیست')}>
       <div className="mt-1 flex flex-wrap items-center gap-3 text-sm">
         <span>
-          کل پاسخ‌دهندگان دور دوم: <b>{fmt.int(pc.total)}</b> (حداقل {fmt.int(p.settings.panel.minTotal)}) {pc.totalOk ? '✓' : '✗'}
+          {t('کل پاسخ‌دهندگان دور دوم:')} <b>{fmt.int(pc.total)}</b> {t('(حداقل {n})', { n: fmt.int(p.settings.panel.minTotal) })} {pc.totalOk ? '✓' : '✗'}
         </span>
         {p.domains.map((d) => (
           <span key={d.id} className="inline-flex items-center gap-1">
-            <DomainChip domain={d} /> {d.name}: <b>{fmt.int(pc.perDomain[d.id])}</b> (حداقل {fmt.int(p.settings.panel.minPerDomain)}) {pc.domainOk[d.id] ? '✓' : '✗'}
+            <DomainChip domain={d} /> {d.name}: <b>{fmt.int(pc.perDomain[d.id])}</b> {t('(حداقل {n})', { n: fmt.int(p.settings.panel.minPerDomain) })} {pc.domainOk[d.id] ? '✓' : '✗'}
           </span>
         ))}
       </div>
-      {!pc.ok && <div className="mt-1 text-sm">طبق طرح، این شرط پیش از تحلیل دور دوم بررسی می‌شود. تحلیل انجام می‌شود ولی این وضعیت در گزارش ذکر خواهد شد.</div>}
+      {!pc.ok && <div className="mt-1 text-sm">{t('طبق طرح، این شرط پیش از تحلیل دور دوم بررسی می‌شود. تحلیل انجام می‌شود ولی این وضعیت در گزارش ذکر خواهد شد.')}</div>}
     </Callout>
   );
 }
@@ -52,52 +53,59 @@ function ConsensusTab() {
   const fmt = useFmt();
   const rows = useMemo(() => round2Analysis(p), [p]);
   const [filter, setFilter] = useState<'all' | ConsensusStatus>('all');
-  const t = p.settings.consensus;
+  const cs = p.settings.consensus;
   const shown = filter === 'all' ? rows : rows.filter((r) => r.consensus.status === filter);
   const count = (s: ConsensusStatus) => rows.filter((r) => r.consensus.status === s).length;
   const nTypical = respondents(p, 'r2').length;
-  const h = consensusHelper(nTypical, t);
+  const h = consensusHelper(nTypical, cs);
   return (
     <div className="space-y-4">
       <PanelCheckCard />
       <Card
-        title="وضعیت اجماع (فقط امتیازهای دور دوم)"
+        title={t('وضعیت اجماع (فقط امتیازهای دور دوم)')}
         actions={
           <Select
             value={filter}
             onChange={setFilter}
             options={[
-              { value: 'all', label: `همه (${fmt.int(rows.length)})` },
-              { value: 'retain', label: `حفظ (${fmt.int(count('retain'))})` },
-              { value: 'remove', label: `حذف (${fmt.int(count('remove'))})` },
-              { value: 'none', label: `فاقد اجماع (${fmt.int(count('none'))})` },
+              { value: 'all', label: t('همه ({n})', { n: fmt.int(rows.length) }) },
+              { value: 'retain', label: t('حفظ ({n})', { n: fmt.int(count('retain')) }) },
+              { value: 'remove', label: t('حذف ({n})', { n: fmt.int(count('remove')) }) },
+              { value: 'none', label: t('فاقد اجماع ({n})', { n: fmt.int(count('none')) }) },
             ]}
-            aria-label="فیلتر وضعیت"
+            aria-label={t('فیلتر وضعیت')}
           />
         }
       >
         <p className="mb-2 text-sm text-muted">
-          حفظ: ≥{fmt.int(t.retainTopMin)}٪ پاسخ‌های معتبر در طبقه بالا و ≤{fmt.int(t.retainBottomMax)}٪ در طبقه پایین. حذف: ≥{fmt.int(t.removeBottomMin)}٪ در طبقه پایین و ≤{fmt.int(t.removeTopMax)}٪ در طبقه بالا. با n ={' '}
-          {fmt.int(nTypical)}: حفظ یعنی دست‌کم {fmt.int(h.retainMinTop)} پاسخ بالا و حداکثر {fmt.int(h.retainMaxBottom)} پاسخ پایین. میانه و IQR فقط توصیفی‌اند.
+          {t('حفظ: ≥{a} پاسخ‌های معتبر در طبقه بالا و ≤{b} در طبقه پایین. حذف: ≥{c} در طبقه پایین و ≤{d} در طبقه بالا. با n = {n}: حفظ یعنی دست‌کم {top} پاسخ بالا و حداکثر {bottom} پاسخ پایین. میانه و IQR فقط توصیفی‌اند.', {
+            a: fmt.pct(cs.retainTopMin, 0),
+            b: fmt.pct(cs.retainBottomMax, 0),
+            c: fmt.pct(cs.removeBottomMin, 0),
+            d: fmt.pct(cs.removeTopMax, 0),
+            n: fmt.int(nTypical),
+            top: fmt.int(h.retainMinTop),
+            bottom: fmt.int(h.retainMaxBottom),
+          })}
         </p>
         {rows.length === 0 || nTypical === 0 ? (
-          <Empty>هنوز پاسخی برای دور دوم ثبت نشده است.</Empty>
+          <Empty>{t('هنوز پاسخی برای دور دوم ثبت نشده است.')}</Empty>
         ) : (
           <TableWrap>
             <table className="sticky-table w-full text-sm">
               <thead>
                 <tr>
-                  <th className={th}>کد</th>
-                  <th className={th}>پارامتر</th>
+                  <th className={th}>{t('کد')}</th>
+                  <th className={th}>{t('پارامتر')}</th>
                   <th className={th}>n</th>
                   {p.scale.bands.map((b) => (
                     <th key={b.id} className={th}>
                       {b.label}
                     </th>
                   ))}
-                  <th className={th}>میانه (Q1–Q3)</th>
-                  <th className={th}>به تفکیک حوزه</th>
-                  <th className={th}>وضعیت</th>
+                  <th className={th}>{t('میانه (Q1–Q3)')}</th>
+                  <th className={th}>{t('به تفکیک حوزه')}</th>
+                  <th className={th}>{t('وضعیت')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -105,11 +113,11 @@ function ConsensusTab() {
                   <tr key={r.param.id}>
                     <td className={td + ' ltr'}>{r.param.code}</td>
                     <td className={td}>
-                      {r.param.name} {r.param.origin === 'round2' && <Badge tone="accent">جدید</Badge>}
+                      {r.param.name} {r.param.origin === 'round2' && <Badge tone="accent">{t('جدید')}</Badge>}
                     </td>
                     <td className={td + ' text-center'}>
                       {fmt.int(r.overall.n)}
-                      {r.overall.nCannotJudge > 0 && <span className="block text-[11px] text-muted">؟ {fmt.int(r.overall.nCannotJudge)}</span>}
+                      {r.overall.nCannotJudge > 0 && <span className="block text-[11px] text-muted">{t('؟')} {fmt.int(r.overall.nCannotJudge)}</span>}
                     </td>
                     {r.overall.counts.map((c, i) => (
                       <td key={i} className={td + ' text-center whitespace-nowrap'}>
@@ -122,7 +130,7 @@ function ConsensusTab() {
                     </td>
                     <td className={td}>
                       <StatusBadge s={r.consensus.status} conflict={r.consensus.conflict} />
-                      {r.consensus.noValidAnswers && <span className="block text-[11px] text-muted">بدون پاسخ معتبر</span>}
+                      {r.consensus.noValidAnswers && <span className="block text-[11px] text-muted">{t('بدون پاسخ معتبر')}</span>}
                     </td>
                   </tr>
                 ))}
@@ -141,11 +149,11 @@ function WeightsTab() {
   const w = useMemo(() => projectWeights(p), [p]);
   const [open, setOpen] = useState<string | null>(null);
   const pcode = (id: string) => p.params.find((x) => x.id === id)?.code ?? '';
-  if (!w.retainedParams.length) return <Empty>هیچ پارامتری به اجماع حفظ نرسیده است؛ وزنی محاسبه نمی‌شود.</Empty>;
+  if (!w.retainedParams.length) return <Empty>{t('هیچ پارامتری به اجماع حفظ نرسیده است؛ وزنی محاسبه نمی‌شود.')}</Empty>;
   const used = p.domains.filter((d) => w.domainWeights[d.id]);
   return (
     <div className="space-y-4">
-      <Card title="خبرگان واردشده در وزن‌دهی">
+      <Card title={t('خبرگان واردشده در وزن‌دهی')}>
         <div className="flex flex-wrap gap-2 text-sm">
           {w.perExpert.map((e) => (
             <Badge key={e.expertId} tone={e.droppedGroups.length ? 'warn' : 'ok'}>
@@ -155,11 +163,11 @@ function WeightsTab() {
           ))}
         </div>
         {w.excluded.length > 0 && (
-          <Callout tone="warn" className="mt-3" title={`${fmt.int(w.excluded.length)} خبره کنار گذاشته شدند (توزیع امتیاز ناقص)`}>
+          <Callout tone="warn" className="mt-3" title={t('{n} خبره کنار گذاشته شدند (توزیع امتیاز ناقص)', { n: fmt.int(w.excluded.length) })}>
             <ul className="list-disc ps-5">
               {w.excluded.map((x) => (
                 <li key={x.expertId}>
-                  <span className="ltr font-semibold">{codeOf(p, x.expertId)}</span>: {EXCLUSION_FA[x.reason]}
+                  <span className="ltr font-semibold">{codeOf(p, x.expertId)}</span>: {t(EXCLUSION_FA[x.reason])}
                   {x.groupId && ` (${p.groups.find((g) => g.id === x.groupId)?.name})`}
                 </li>
               ))}
@@ -168,23 +176,23 @@ function WeightsTab() {
         )}
         {w.perExpert.some((e) => e.droppedGroups.length) && (
           <Callout tone="warn" className="mt-3">
-            * این خبره به گروهی امتیاز داده ولی به هیچ پارامتر حفظ‌شده آن گروه امتیازی نداده است؛ آن گروه برای او فاقد پارامتر حفظ‌شده تلقی شد و سهمش میان گروه‌های دیگر او بازتوزیع شد (DECISIONS D-22).
+            {t('* این خبره به گروهی امتیاز داده ولی به هیچ پارامتر حفظ‌شده آن گروه امتیازی نداده است؛ آن گروه برای او فاقد پارامتر حفظ‌شده تلقی شد و سهمش میان گروه‌های دیگر او بازتوزیع شد (DECISIONS D-22).')}
           </Callout>
         )}
         {w.domainsMissing.length > 0 && (
           <Callout tone="bad" className="mt-3">
-            حوزه {w.domainsMissing.map((d) => p.domains.find((x) => x.id === d)?.name).join('، ')} توزیع‌کننده معتبر ندارد؛ رابطه ۵ روی {fmt.int(w.domainsUsed.length)} حوزه میانگین گرفته می‌شود.
+            {t('حوزه {names} توزیع‌کننده معتبر ندارد؛ رابطه ۵ روی {n} حوزه میانگین گرفته می‌شود.', { names: w.domainsMissing.map((d) => p.domains.find((x) => x.id === d)?.name).join(t('، ')), n: fmt.int(w.domainsUsed.length) })}
           </Callout>
         )}
       </Card>
 
-      <Card title="رابطه ۱ تا ۳: وزن‌های هر خبره">
-        <p className="mb-2 text-sm text-muted">رابطه ۳ = وزن گروه (رابطه ۲) × وزن درون‌گروهی (رابطه ۱). برای دیدن روابط ۱ و ۲ روی کد خبره کلیک کنید. ردیف Σ باید برای هر خبره ۱ باشد.</p>
+      <Card title={t('رابطه ۱ تا ۳: وزن‌های هر خبره')}>
+        <p className="mb-2 text-sm text-muted">{t('رابطه ۳ = وزن گروه (رابطه ۲) × وزن درون‌گروهی (رابطه ۱). برای دیدن روابط ۱ و ۲ روی کد خبره کلیک کنید. ردیف Σ باید برای هر خبره ۱ باشد.')}</p>
         <TableWrap>
           <table className="sticky-table text-sm">
             <thead>
               <tr>
-                <th className={th + ' sticky-col'}>کد</th>
+                <th className={th + ' sticky-col'}>{t('کد')}</th>
                 {w.perExpert.map((e) => (
                   <th key={e.expertId} className={th + ' text-center'}>
                     <button type="button" className="ltr underline-offset-2 hover:underline" onClick={() => setOpen(open === e.expertId ? null : e.expertId)}>
@@ -221,7 +229,7 @@ function WeightsTab() {
           return (
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               <div className="rounded-lg border border-line p-3 text-sm">
-                <div className="mb-1 font-semibold">رابطه ۲ — وزن گروه‌ها نزد {codeOf(p, e.expertId)}</div>
+                <div className="mb-1 font-semibold">{t('رابطه ۲ — وزن گروه‌ها نزد {code}', { code: codeOf(p, e.expertId) })}</div>
                 {w.retainedGroups.map((g) => (
                   <div key={g} className="flex justify-between">
                     <span>{p.groups.find((x) => x.id === g)?.name}</span>
@@ -230,7 +238,7 @@ function WeightsTab() {
                 ))}
               </div>
               <div className="rounded-lg border border-line p-3 text-sm">
-                <div className="mb-1 font-semibold">رابطه ۱ — وزن درون‌گروهی</div>
+                <div className="mb-1 font-semibold">{t('رابطه ۱ — وزن درون‌گروهی')}</div>
                 {w.retainedParams.map((id) => (
                   <div key={id} className="flex justify-between">
                     <span className="ltr">{pcode(id)}</span>
@@ -243,21 +251,21 @@ function WeightsTab() {
         })()}
       </Card>
 
-      <Card title="رابطه ۴ و ۵: وزن هر حوزه و وزن نهایی">
+      <Card title={t('رابطه ۴ و ۵: وزن هر حوزه و وزن نهایی')}>
         <TableWrap>
           <table className="sticky-table w-full text-sm">
             <thead>
               <tr>
-                <th className={th}>کد</th>
-                <th className={th}>پارامتر</th>
+                <th className={th}>{t('کد')}</th>
+                <th className={th}>{t('پارامتر')}</th>
                 {used.map((d) => (
                   <th key={d.id} className={th + ' text-center'}>
                     <DomainChip domain={d} />
                   </th>
                 ))}
                 <th className={th + ' text-center'}>Wᵢ</th>
-                <th className={th + ' text-center'}>Wᵢ×۱۰۰</th>
-                <th className={th + ' text-center'}>IQR وزن‌های فردی (Q1–Q3)</th>
+                <th className={th + ' text-center'}>{t('Wᵢ×۱۰۰')}</th>
+                <th className={th + ' text-center'}>{t('IQR وزن‌های فردی (Q1–Q3)')}</th>
               </tr>
             </thead>
             <tbody>
@@ -293,8 +301,8 @@ function WeightsTab() {
           </table>
         </TableWrap>
         <div className="mt-2 flex flex-wrap gap-2 text-sm">
-          <Badge tone={w.checks.expertSumsOk ? 'ok' : 'bad'}>{w.checks.expertSumsOk ? '✓ مجموع وزن‌های کلی هر خبره = ۱' : '✗ مجموع وزن‌های یک خبره ۱ نیست'}</Badge>
-          <Badge tone={w.checks.finalSumOk ? 'ok' : 'bad'}>{w.checks.finalSumOk ? '✓ ΣWᵢ = ۱' : '✗ ΣWᵢ ≠ ۱'}</Badge>
+          <Badge tone={w.checks.expertSumsOk ? 'ok' : 'bad'}>{w.checks.expertSumsOk ? t('✓ مجموع وزن‌های کلی هر خبره = ۱') : t('✗ مجموع وزن‌های یک خبره ۱ نیست')}</Badge>
+          <Badge tone={w.checks.finalSumOk ? 'ok' : 'bad'}>{w.checks.finalSumOk ? t('✓ ΣWᵢ = ۱') : t('✗ ΣWᵢ ≠ ۱')}</Badge>
         </div>
       </Card>
     </div>
@@ -319,7 +327,7 @@ function BriefTab() {
       },
       {
         confirm: had
-          ? { title: 'جایگزینی ستون‌های ماتریس وزن‌دار', items: ['ستون‌ها و وزن‌های فعلی ماتریس پیو وزن‌دار (از جمله ویرایش‌های دستی) با پارامترهای حفظ‌شده و Wᵢ فعلی جایگزین می‌شوند. امتیازهای واردشده برای پارامترهای باقی‌مانده حفظ می‌شوند.'], confirmLabel: 'جایگزین شود' }
+          ? { title: t('جایگزینی ستون‌های ماتریس وزن‌دار'), items: [t('ستون‌ها و وزن‌های فعلی ماتریس پیو وزن‌دار (از جمله ویرایش‌های دستی) با پارامترهای حفظ‌شده و Wᵢ فعلی جایگزین می‌شوند. امتیازهای واردشده برای پارامترهای باقی‌مانده حفظ می‌شوند.')], confirmLabel: t('جایگزین شود') }
           : undefined,
         preview: true,
       },
@@ -332,35 +340,35 @@ function BriefTab() {
     briefSection(r, p);
     return r.document('تفهیم‌نامه طراحی');
   };
-  if (!rows.length || !respondents(p, 'r2').length) return <Empty>پس از ورود پاسخ‌های دور دوم، تفهیم‌نامه طراحی ساخته می‌شود.</Empty>;
+  if (!rows.length || !respondents(p, 'r2').length) return <Empty>{t('پس از ورود پاسخ‌های دور دوم، تفهیم‌نامه طراحی ساخته می‌شود.')}</Empty>;
   return (
     <div className="space-y-4">
       <Card
-        title="تفهیم‌نامه طراحی (Design Brief)"
+        title={t('تفهیم‌نامه طراحی (Design Brief)')}
         actions={
           <>
             <Button icon="print" onClick={() => openReport(briefHtml(), 'design-brief.html', downloadText)}>
-              نمایش و چاپ
+              {t('نمایش و چاپ')}
             </Button>
             <Button icon="refresh" variant="primary" disabled={!retained.length || !w.checks.finalSumOk} onClick={send}>
-              ارسال وزن‌ها به بخش ب
+              {t('ارسال وزن‌ها به بخش ب')}
             </Button>
           </>
         }
       >
-        {p.weighted.sentWeights && <p className="mb-2 text-xs text-muted">آخرین ارسال به بخش ب: {fmt.date(p.weighted.sentWeights.at)}</p>}
+        {p.weighted.sentWeights && <p className="mb-2 text-xs text-muted">{t('آخرین ارسال به بخش ب: {date}', { date: fmt.date(p.weighted.sentWeights.at) })}</p>}
         <TableWrap>
           <table className="sticky-table w-full text-sm">
             <thead>
               <tr>
-                <th className={th}>رتبه</th>
-                <th className={th}>کد</th>
-                <th className={th}>پارامتر</th>
-                <th className={th}>گروه</th>
-                <th className={th}>الزام طراحی</th>
+                <th className={th}>{t('رتبه')}</th>
+                <th className={th}>{t('کد')}</th>
+                <th className={th}>{t('پارامتر')}</th>
+                <th className={th}>{t('گروه')}</th>
+                <th className={th}>{t('الزام طراحی')}</th>
                 <th className={th + ' text-center'}>Wᵢ</th>
-                <th className={th + ' text-center'}>٪</th>
-                <th className={th + ' text-center'}>IQR وزن</th>
+                <th className={th + ' text-center'}>{t('٪')}</th>
+                <th className={th + ' text-center'}>{t('IQR وزن')}</th>
               </tr>
             </thead>
             <tbody>
@@ -386,9 +394,9 @@ function BriefTab() {
       {(['remove', 'none'] as const).map((s) => {
         const list = rows.filter((r) => r.consensus.status === s);
         return (
-          <Card key={s} title={s === 'remove' ? `پارامترهای حذف‌شده (${fmt.int(list.length)})` : `پارامترهای فاقد اجماع (${fmt.int(list.length)})`}>
+          <Card key={s} title={s === 'remove' ? t('پارامترهای حذف‌شده ({n})', { n: fmt.int(list.length) }) : t('پارامترهای فاقد اجماع ({n})', { n: fmt.int(list.length) })}>
             {list.length === 0 ? (
-              <p className="text-sm text-muted">موردی نیست.</p>
+              <p className="text-sm text-muted">{t('موردی نیست.')}</p>
             ) : (
               <ul className="space-y-1 text-sm">
                 {list.map((r) => (
@@ -396,7 +404,7 @@ function BriefTab() {
                     <li>
                       <span className="ltr font-semibold">{r.param.code}</span> {r.param.name} —{' '}
                       <span className="text-muted">
-                        {p.scale.bands.map((b, i) => `${b.label} ${fmt.pct(r.overall.percents[i])}`).join('، ')} (n={fmt.int(r.overall.n)})
+                        {p.scale.bands.map((b, i) => `${b.label} ${fmt.pct(r.overall.percents[i])}`).join(t('، '))} (n={fmt.int(r.overall.n)})
                       </span>
                     </li>
                   </Fragment>
@@ -426,19 +434,19 @@ export function WeightsScreen() {
   return (
     <div className="space-y-4">
       <PageTitle
-        title="اجماع و وزن‌ها"
-        subtitle="معیار اجماع ازپیش‌تعیین‌شده فقط روی امتیازهای دور دوم اعمال می‌شود. وزن‌ها تنها برای پارامترهای حفظ‌شده با روابط ۱ تا ۵ از توزیع سلسله‌مراتبی امتیاز محاسبه می‌شوند."
+        title={t('اجماع و وزن‌ها')}
+        subtitle={t('معیار اجماع ازپیش‌تعیین‌شده فقط روی امتیازهای دور دوم اعمال می‌شود. وزن‌ها تنها برای پارامترهای حفظ‌شده با روابط ۱ تا ۵ از توزیع سلسله‌مراتبی امتیاز محاسبه می‌شوند.')}
         actions={
           <Button icon="print" onClick={() => openReport(report(), 'consensus-weights.html', downloadText)}>
-            گزارش این مرحله
+            {t('گزارش این مرحله')}
           </Button>
         }
       />
       <Tabs
         tabs={[
-          { id: 'consensus', label: 'پنل و اجماع' },
-          { id: 'weights', label: 'وزن‌ها (روابط ۱ تا ۵)' },
-          { id: 'brief', label: 'تفهیم‌نامه طراحی' },
+          { id: 'consensus', label: t('پنل و اجماع') },
+          { id: 'weights', label: t('وزن‌ها (روابط ۱ تا ۵)') },
+          { id: 'brief', label: t('تفهیم‌نامه طراحی') },
         ]}
         value={tab}
         onChange={setTab}

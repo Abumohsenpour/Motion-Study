@@ -7,7 +7,10 @@ import { useMemo, useState, type KeyboardEvent } from 'react';
 import { expertById, projectWeights, respondents, screeningAnalysis, weightedAnalysis, weightedConceptIds, weightedRaterIds, SINGLE, type Id } from '../core';
 import { edit } from '../app/edit';
 import { scoreChart } from '../charts/scoreChart';
+import { isRtl, t } from '../i18n';
 import { prepareFileImports, type ImportItem } from '../io/responses';
+import { blindedConceptLabel } from '../questionnaire/build';
+import { usePrefs } from '../state/prefs';
 import { useProject } from '../state/store';
 import { useFmt } from '../ui/format';
 import { Badge, Button, Callout, Card, Checkbox, DomainChip, Empty, FilePick, IconButton, NumberInput, PageTitle, Reorder, Select, TableWrap, Tabs, cx, td, th } from '../ui/kit';
@@ -41,45 +44,45 @@ function ColumnsTab() {
         d.weighted.columns = Object.keys(partA).map((id) => ({ paramId: id, weight: partA[id] }));
         d.weighted.sentWeights = { at: new Date().toISOString(), weights: { ...partA } };
       },
-      { preview: true, confirm: cols.length ? { title: 'جایگزینی ستون‌ها با وزن‌های فعلی بخش الف', confirmLabel: 'جایگزین شود' } : undefined },
+      { preview: true, confirm: cols.length ? { title: t('جایگزینی ستون‌ها با وزن‌های فعلی بخش الف'), confirmLabel: t('جایگزین شود') } : undefined },
     );
   return (
     <div className="space-y-4">
       {a.partAChanged && (
-        <Callout tone="warn" title="وزن‌های بخش الف تغییر کرده‌اند">
-          <p>وزن‌های این ماتریس با وزن‌های فعلی بخش الف یکی نیست. اگر تغییر از ویرایش‌های دستی شماست، می‌توانید نگه دارید؛ در غیر این صورت دوباره ارسال کنید.</p>
+        <Callout tone="warn" title={t('وزن‌های بخش الف تغییر کرده‌اند')}>
+          <p>{t('وزن‌های این ماتریس با وزن‌های فعلی بخش الف یکی نیست. اگر تغییر از ویرایش‌های دستی شماست، می‌توانید نگه دارید؛ در غیر این صورت دوباره ارسال کنید.')}</p>
           <Button size="sm" className="mt-2" icon="refresh" onClick={sendFromA}>
-            ارسال دوباره وزن‌های بخش الف
+            {t('ارسال دوباره وزن‌های بخش الف')}
           </Button>
         </Callout>
       )}
       <Card
-        title="ستون‌ها: پارامترها و وزن‌ها (Wᵢ)"
+        title={t('ستون‌ها: پارامترها و وزن‌ها (Wᵢ)')}
         actions={
           <>
             <Button size="sm" icon="refresh" onClick={sendFromA} disabled={!Object.keys(partA).length}>
-              دریافت وزن‌ها از بخش الف
+              {t('دریافت وزن‌ها از بخش الف')}
             </Button>
             <Button size="sm" disabled={!cols.length || a.weightsSumToOne} onClick={() => edit('نرمال‌سازی وزن‌ها', (d) => {
-              const s = d.weighted.columns.reduce((t, c) => t + c.weight, 0);
+              const s = d.weighted.columns.reduce((acc, c) => acc + c.weight, 0);
               if (s > 0) for (const c of d.weighted.columns) c.weight = c.weight / s;
             }, { preview: true })}>
-              نرمال‌سازی (مجموع = ۱)
+              {t('نرمال‌سازی (مجموع = ۱)')}
             </Button>
           </>
         }
       >
         {cols.length === 0 ? (
-          <Empty>ستونی تعریف نشده است. از «دریافت وزن‌ها از بخش الف» یا افزودن دستی استفاده کنید.</Empty>
+          <Empty>{t('ستونی تعریف نشده است. از «دریافت وزن‌ها از بخش الف» یا افزودن دستی استفاده کنید.')}</Empty>
         ) : (
           <TableWrap>
             <table className="sticky-table w-full text-sm">
               <thead>
                 <tr>
-                  <th className={th}>کد</th>
-                  <th className={th}>پارامتر</th>
+                  <th className={th}>{t('کد')}</th>
+                  <th className={th}>{t('پارامتر')}</th>
                   <th className={th}>Wᵢ</th>
-                  <th className={th}>Wᵢ بخش الف</th>
+                  <th className={th}>{t('Wᵢ بخش الف')}</th>
                   <th className={th} />
                 </tr>
               </thead>
@@ -91,12 +94,12 @@ function ColumnsTab() {
                       <td className={td + ' ltr'}>{x?.code}</td>
                       <td className={td}>{x?.name}</td>
                       <td className={td + ' w-32'}>
-                        <NumberInput value={c.weight} min={0} lazy onChange={(v) => v !== null && edit('ویرایش دستی وزن ستون', (d) => void (d.weighted.columns[i].weight = v), { preview: true })} aria-label={`وزن ${x?.code}`} />
+                        <NumberInput value={c.weight} min={0} lazy onChange={(v) => v !== null && edit('ویرایش دستی وزن ستون', (d) => void (d.weighted.columns[i].weight = v), { preview: true })} aria-label={t('وزن {code}', { code: String(x?.code) })} />
                       </td>
                       <td className={td + ' text-center text-muted tabular-nums'}>{partA[c.paramId] !== undefined ? fmt.num(partA[c.paramId], 4) : '—'}</td>
                       <td className={td + ' whitespace-nowrap'}>
                         <Reorder first={i === 0} last={i === cols.length - 1} onUp={() => edit('ترتیب ستون‌ها', (d) => move(d.weighted.columns, i, i - 1))} onDown={() => edit('ترتیب ستون‌ها', (d) => move(d.weighted.columns, i, i + 1))} />
-                        <IconButton icon="trash" tone="danger" label="حذف ستون" onClick={() => edit('حذف ستون ماتریس وزن‌دار', (d) => void d.weighted.columns.splice(i, 1), { preview: true, undoToast: 'ستون حذف شد' })} />
+                        <IconButton icon="trash" tone="danger" label={t('حذف ستون')} onClick={() => edit('حذف ستون ماتریس وزن‌دار', (d) => void d.weighted.columns.splice(i, 1), { preview: true, undoToast: t('ستون حذف شد') })} />
                       </td>
                     </tr>
                   );
@@ -104,7 +107,7 @@ function ColumnsTab() {
                 <tr className="font-semibold">
                   <td className={td}>Σ</td>
                   <td className={td} />
-                  <td className={td + ' text-center ' + (a.weightsSumToOne ? 'text-ok' : 'text-warn')}>{fmt.num(a.weightSum, 4)} {a.weightsSumToOne ? '✓' : '(≠ ۱)'}</td>
+                  <td className={td + ' text-center ' + (a.weightsSumToOne ? 'text-ok' : 'text-warn')}>{fmt.num(a.weightSum, 4)} {a.weightsSumToOne ? '✓' : t('(≠ ۱)')}</td>
                   <td className={td} />
                   <td className={td} />
                 </tr>
@@ -116,26 +119,26 @@ function ColumnsTab() {
           <Select
             value={add}
             onChange={setAdd}
-            options={[{ value: '', label: '+ افزودن ستون (پارامتر)…' }, ...p.params.filter((x) => !cols.some((c) => c.paramId === x.id)).map((x) => ({ value: x.id, label: `${x.code} — ${x.name}` }))]}
+            options={[{ value: '', label: t('+ افزودن ستون (پارامتر)…') }, ...p.params.filter((x) => !cols.some((c) => c.paramId === x.id)).map((x) => ({ value: x.id, label: `${x.code} — ${x.name}` }))]}
             className="max-w-md"
-            aria-label="افزودن ستون"
+            aria-label={t('افزودن ستون')}
           />
           <Button size="sm" disabled={!add} onClick={() => edit('افزودن ستون ماتریس وزن‌دار', (d) => void d.weighted.columns.push({ paramId: add, weight: partA[add] ?? 0 }), { preview: true }).then(() => setAdd(''))}>
-            افزودن
+            {t('افزودن')}
           </Button>
         </div>
       </Card>
       <Card
-        title="سطرها: کانسپت‌ها"
+        title={t('سطرها: کانسپت‌ها')}
         actions={
           p.weighted.conceptIds && (
             <Button size="sm" onClick={() => edit('سطرهای ماتریس: کانسپت‌های راه‌یافته', (d) => void (d.weighted.conceptIds = null), { preview: true })}>
-              بازگشت به کانسپت‌های راه‌یافته از غربال
+              {t('بازگشت به کانسپت‌های راه‌یافته از غربال')}
             </Button>
           )
         }
       >
-        <p className="mb-2 text-sm text-muted">پیش‌فرض: کانسپت‌های راه‌یافته از غربال ({forwarded.map((id) => p.concepts.find((c) => c.id === id)?.code).join('، ') || '—'}). افزودن یا حذف دستی ممکن است.</p>
+        <p className="mb-2 text-sm text-muted">{t('پیش‌فرض: کانسپت‌های راه‌یافته از غربال ({list}). افزودن یا حذف دستی ممکن است.', { list: forwarded.map((id) => p.concepts.find((c) => c.id === id)?.code).join(t('، ')) || '—' })}</p>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
           {p.concepts.map((c) => (
             <Checkbox
@@ -155,7 +158,7 @@ function ColumnsTab() {
               }
               label={
                 <span>
-                  <span className="ltr font-semibold">{c.code}</span> {c.name} {!c.feasible && <Badge tone="bad">امکان‌پذیر نیست</Badge>}
+                  <span className="ltr font-semibold">{c.code}</span> {c.name} {!c.feasible && <Badge tone="bad">{t('امکان‌پذیر نیست')}</Badge>}
                 </span>
               }
             />
@@ -169,7 +172,8 @@ function ColumnsTab() {
 function ScoreCell({ value, onSet, onNav, id, label }: { value: number | null; onSet: (v: number | null) => void; onNav: (dr: number, dc: number) => void; id: string; label: string }) {
   const fmt = useFmt();
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    const moves: Record<string, [number, number]> = { ArrowUp: [-1, 0], ArrowDown: [1, 0], Enter: [1, 0], ArrowLeft: [0, 1], ArrowRight: [0, -1] };
+    const fwd = isRtl() ? 1 : -1; // the next column is on the left in RTL and on the right in LTR
+    const moves: Record<string, [number, number]> = { ArrowUp: [-1, 0], ArrowDown: [1, 0], Enter: [1, 0], ArrowLeft: [0, fwd], ArrowRight: [0, -fwd] };
     if (moves[e.key]) {
       e.preventDefault();
       onNav(...moves[e.key]);
@@ -183,9 +187,9 @@ function ScoreCell({ value, onSet, onNav, id, label }: { value: number | null; o
       onFocus={(e) => e.target.select()}
       onKeyDown={onKey}
       onChange={(e) => {
-        const t = e.target.value.trim().replace(/[۰-۹]/g, (c) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).slice(-1);
-        if (t === '') return onSet(null);
-        const n = Number(t);
+        const txt = e.target.value.trim().replace(/[۰-۹]/g, (c) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).slice(-1);
+        if (txt === '') return onSet(null);
+        const n = Number(txt);
         if (Number.isInteger(n) && n >= 1 && n <= 5) {
           onSet(n);
           onNav(0, 1);
@@ -201,6 +205,7 @@ function ScoreCell({ value, onSet, onNav, id, label }: { value: number | null; o
 function ScoringTab() {
   const p = useProject();
   const fmt = useFmt();
+  const digits = usePrefs((s) => s.digits);
   const concepts = weightedConceptIds(p);
   const cols = p.weighted.columns;
   const raters = weightedRaterIds(p);
@@ -214,30 +219,30 @@ function ScoringTab() {
   const total = concepts.length * cols.length;
   const gridId = 'wg';
   const focus = (r: number, c: number) => document.getElementById(`${gridId}-${r}-${c}`)?.focus();
-  if (!cols.length || !concepts.length) return <Empty>ابتدا ستون‌ها (پارامترها و وزن‌ها) و سطرها (کانسپت‌ها) را تعیین کنید.</Empty>;
+  if (!cols.length || !concepts.length) return <Empty>{t('ابتدا ستون‌ها (پارامترها و وزن‌ها) و سطرها (کانسپت‌ها) را تعیین کنید.')}</Empty>;
   return (
     <div className="space-y-4">
-      <Card title="امتیازدهندگان">
+      <Card title={t('امتیازدهندگان')}>
         <div className="mb-2 flex flex-wrap items-center gap-3">
           <Select
             value={p.weighted.mode}
             onChange={(v) => edit('حالت امتیازدهی ماتریس وزن‌دار', (d) => void (d.weighted.mode = v), { preview: true })}
             options={[
-              { value: 'panel', label: 'اعضای پنل (روابط ۶ و ۷ به تفکیک حوزه)' },
-              { value: 'single', label: 'یک امتیازدهنده (ساده)' },
+              { value: 'panel', label: t('اعضای پنل (روابط ۶ و ۷ به تفکیک حوزه)') },
+              { value: 'single', label: t('یک امتیازدهنده (ساده)') },
             ]}
             className="w-80"
-            aria-label="حالت امتیازدهی"
+            aria-label={t('حالت امتیازدهی')}
           />
           {!single && p.weighted.raterIds && (
             <Button size="sm" onClick={() => edit('امتیازدهندگان: پیش‌فرض', (d) => void (d.weighted.raterIds = null), { preview: true })}>
-              بازگشت به پیش‌فرض (پاسخ‌دهندگان دور دوم)
+              {t('بازگشت به پیش‌فرض (پاسخ‌دهندگان دور دوم)')}
             </Button>
           )}
         </div>
         {!single && (
           <>
-            <p className="mb-2 text-sm text-muted">طبق طرح، اعضای پنل که دور دوم را تکمیل کرده‌اند امتیاز می‌دهند؛ پژوهشگر که کانسپت‌ها را تولید کرده امتیاز نمی‌دهد. کانسپت‌ها در فایل هر خبره با کد تصادفی و ترتیب تصادفی نمایش داده می‌شوند و نتایج غربال اعلام نمی‌شود.</p>
+            <p className="mb-2 text-sm text-muted">{t('طبق طرح، اعضای پنل که دور دوم را تکمیل کرده‌اند امتیاز می‌دهند؛ پژوهشگر که کانسپت‌ها را تولید کرده امتیاز نمی‌دهد. کانسپت‌ها در فایل هر خبره با کد تصادفی و ترتیب تصادفی نمایش داده می‌شوند و نتایج غربال اعلام نمی‌شود.')}</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               {p.experts
                 .filter((e) => !e.excludeAllData)
@@ -261,7 +266,7 @@ function ScoringTab() {
                       <span className="inline-flex items-center gap-1">
                         <DomainChip domain={p.domains.find((d) => d.id === e.domainId)} />
                         <span className="ltr">{e.code}</span>
-                        {!r2.includes(e.id) && <span className="text-xs text-muted">(بدون دور دوم)</span>}
+                        {!r2.includes(e.id) && <span className="text-xs text-muted">{t('(بدون دور دوم)')}</span>}
                         <span className="text-xs text-muted">
                           {fmt.int(filled(e.id))}/{fmt.int(total)}
                         </span>
@@ -272,17 +277,17 @@ function ScoringTab() {
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button icon="download" variant="primary" disabled={!raters.length} onClick={() => downloadAllQuestionnaires(raters, 'pugh')}>
-                فایل‌های امتیازدهی همه (ZIP)
+                {t('فایل‌های امتیازدهی همه (ZIP)')}
               </Button>
               <FilePick accept=".json,application/json" multiple onFiles={async (files) => setItems(await prepareFileImports(files, p, 'pugh'))}>
-                ورود فایل‌های امتیاز <span className="ltr">(.json)</span>
+                {t('ورود فایل‌های امتیاز')} <span className="ltr">(.json)</span>
               </FilePick>
             </div>
           </>
         )}
       </Card>
       <Card
-        title="امتیازدهی (مقیاس ارزش ۵ سطحی)"
+        title={t('امتیازدهی (مقیاس ارزش ۵ سطحی)')}
         actions={
           !single && (
             <Select
@@ -293,7 +298,7 @@ function ScoringTab() {
                 return { value: id, label: `${e.code} — ${p.domains.find((d) => d.id === e.domainId)?.shortLabel ?? ''} (${fmt.int(filled(id))}/${fmt.int(total)})` };
               })}
               className="w-56"
-              aria-label="امتیازدهنده"
+              aria-label={t('امتیازدهنده')}
             />
           )
         }
@@ -306,13 +311,13 @@ function ScoringTab() {
           ))}
         </div>
         {!current ? (
-          <Empty>امتیازدهنده‌ای انتخاب نشده است.</Empty>
+          <Empty>{t('امتیازدهنده‌ای انتخاب نشده است.')}</Empty>
         ) : (
           <>
             {!single && (
               <div className="mb-2 flex items-center gap-2 text-sm">
                 <Button size="sm" icon="download" onClick={() => downloadQuestionnaire(current, 'pugh')}>
-                  فایل امتیازدهی {expertById(p, current)?.code}
+                  {t('فایل امتیازدهی {code}', { code: expertById(p, current)?.code ?? '' })}
                 </Button>
               </div>
             )}
@@ -320,7 +325,7 @@ function ScoringTab() {
               <table className="sticky-table text-sm">
                 <thead>
                   <tr>
-                    <th className={th + ' sticky-col'}>کانسپت</th>
+                    <th className={th + ' sticky-col'}>{t('کانسپت')}</th>
                     {cols.map((c) => (
                       <th key={c.paramId} className={th + ' text-center'} title={p.params.find((x) => x.id === c.paramId)?.name}>
                         <span className="ltr">{p.params.find((x) => x.id === c.paramId)?.code}</span>
@@ -331,10 +336,13 @@ function ScoringTab() {
                 <tbody>
                   {concepts.map((cid, ri) => {
                     const c = p.concepts.find((x) => x.id === cid)!;
+                    // the code this concept carries in the selected expert's blinded scoring file (none before the file is made)
+                    const blinded = single ? null : blindedConceptLabel(p.weighted.blinding[current], cid, digits);
                     return (
                       <tr key={cid}>
                         <td className={td + ' sticky-col whitespace-nowrap'}>
                           <span className="ltr font-semibold">{c.code}</span> {c.name}
+                          {blinded && <span className="block text-xs font-normal text-muted">{t('در فایل خبره: {label}', { label: blinded })}</span>}
                         </td>
                         {cols.map((col, ci) => (
                           <td key={col.paramId} className={td + ' text-center'}>
@@ -385,30 +393,30 @@ function ResultsTab() {
   const pcode = (id: Id) => p.params.find((x) => x.id === id)?.code ?? '';
   const domains = p.weighted.mode === 'single' ? [] : p.domains;
   const [detail, setDetail] = useState(false);
-  if (!cols.length || !a.conceptIds.length) return <Empty>ماتریس هنوز ستون یا سطر ندارد.</Empty>;
+  if (!cols.length || !a.conceptIds.length) return <Empty>{t('ماتریس هنوز ستون یا سطر ندارد.')}</Empty>;
   const rankOf = new Map(a.result.ranking.map((r) => [r.id, r]));
   return (
     <div className="space-y-4">
-      {!a.weightsSumToOne && <Callout tone="warn">مجموع وزن‌ها {fmt.num(a.weightSum, 4)} است (نه ۱). امتیاز وزنی با وزن‌های فعلی محاسبه شده است؛ برای نرمال‌سازی به تب «ستون‌ها و وزن‌ها» بروید.</Callout>}
+      {!a.weightsSumToOne && <Callout tone="warn">{t('مجموع وزن‌ها {sum} است (نه ۱). امتیاز وزنی با وزن‌های فعلی محاسبه شده است؛ برای نرمال‌سازی به تب «ستون‌ها و وزن‌ها» بروید.', { sum: fmt.num(a.weightSum, 4) })}</Callout>}
       {a.result.incomplete.length > 0 && (
         <Callout tone="warn">
-          امتیاز کانسپت‌های {a.result.incomplete.map((c) => cc(c).code).join('، ')} کامل نیست (خانه‌ای بدون هیچ امتیاز)؛ این کانسپت‌ها رتبه‌بندی نمی‌شوند.
+          {t('امتیاز کانسپت‌های {list} کامل نیست (خانه‌ای بدون هیچ امتیاز)؛ این کانسپت‌ها رتبه‌بندی نمی‌شوند.', { list: a.result.incomplete.map((c) => cc(c).code).join(t('، ')) })}
         </Callout>
       )}
-      <Card title="امتیاز تجمیعی (رابطه ۷) و امتیاز وزنی (رابطه ۸)">
+      <Card title={t('امتیاز تجمیعی (رابطه ۷) و امتیاز وزنی (رابطه ۸)')}>
         <TableWrap>
           <table className="sticky-table text-sm">
             <thead>
               <tr>
-                <th className={th + ' sticky-col'}>کانسپت</th>
+                <th className={th + ' sticky-col'}>{t('کانسپت')}</th>
                 {cols.map((c) => (
                   <th key={c.paramId} className={th + ' text-center'}>
                     <span className="ltr">{pcode(c.paramId)}</span>
                     <span className="block text-[10px] font-normal">W={fmt.num(c.weight, 3)}</span>
                   </th>
                 ))}
-                <th className={th + ' text-center'}>امتیاز وزنی</th>
-                <th className={th + ' text-center'}>رتبه</th>
+                <th className={th + ' text-center'}>{t('امتیاز وزنی')}</th>
+                <th className={th + ' text-center'}>{t('رتبه')}</th>
               </tr>
             </thead>
             <tbody>
@@ -423,7 +431,7 @@ function ResultsTab() {
                       <td
                         key={c.paramId}
                         className={td + ' text-center tabular-nums'}
-                        title={domains.map((d) => `${d.name}: میانه ${fmt.auto(cell.domainScore[d.id], 2)} (n=${cell.byDomain[d.id].n})`).join('\n')}
+                        title={domains.map((d) => t('{name}: میانه {m} (n={n})', { name: d.name, m: fmt.auto(cell.domainScore[d.id], 2), n: cell.byDomain[d.id].n })).join('\n')}
                       >
                         {fmt.num(cell.aggregated, 2)}
                       </td>
@@ -451,10 +459,10 @@ function ResultsTab() {
       </Card>
       {domains.length > 0 && (
         <Card
-          title="امتیاز هر حوزه (رابطه ۶) و توافق خبرگان: میانه (Q1–Q3)"
+          title={t('امتیاز هر حوزه (رابطه ۶) و توافق خبرگان: میانه (Q1–Q3)')}
           actions={
             <Button size="sm" onClick={() => setDetail(!detail)}>
-              {detail ? 'پنهان‌کردن' : 'نمایش'}
+              {detail ? t('پنهان‌کردن') : t('نمایش')}
             </Button>
           }
         >
@@ -463,13 +471,13 @@ function ResultsTab() {
               <table className="sticky-table text-xs">
                 <thead>
                   <tr>
-                    <th className={th + ' sticky-col'}>کانسپت / پارامتر</th>
+                    <th className={th + ' sticky-col'}>{t('کانسپت / پارامتر')}</th>
                     {domains.map((d) => (
                       <th key={d.id} className={th + ' text-center'}>
                         <DomainChip domain={d} withName />
                       </th>
                     ))}
-                    <th className={th + ' text-center'}>تجمیعی</th>
+                    <th className={th + ' text-center'}>{t('تجمیعی')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -514,28 +522,29 @@ function SensitivityTab() {
   const cc = (id: Id) => p.concepts.find((c) => c.id === id)?.code ?? id;
   const cols = p.weighted.columns;
   const pcode = (i: number) => p.params.find((x) => x.id === cols[i].paramId)?.code ?? '';
-  if (!s) return <Empty>تحلیل حساسیت به دست‌کم دو کانسپت با امتیاز کامل نیاز دارد.</Empty>;
+  if (!s) return <Empty>{t('تحلیل حساسیت به دست‌کم دو کانسپت با امتیاز کامل نیاز دارد.')}</Empty>;
   const step = p.settings.sensitivity.step;
   return (
     <div className="space-y-4">
-      <Callout tone={s.trigger.triggered ? 'warn' : 'neutral'} title={`شرط اجرای تحلیل حساسیت طبق پروپوزال: ${s.trigger.triggered ? 'برقرار است' : 'برقرار نیست'}`}>
-        اختلاف امتیاز وزنی دو کانسپت برتر ({cc(s.pair[0])} و {cc(s.pair[1])}) = <b>{fmt.num(s.trigger.gap, 3)}</b>؛ آستانه = {fmt.int(p.settings.sensitivity.pctOfRange)}٪ دامنه مقیاس = <b>{fmt.num(s.trigger.threshold, 2)}</b>.
-        {s.supplementary && ' تحلیل زیر چون گزینه «همیشه اجرا شود» فعال است اجرا شده و «تکمیلی» (خارج از شرط پروپوزال) گزارش می‌شود.'}
-        {!s.ran && ' تحلیل اجرا نشد (گزینه «همیشه اجرا شود» در تنظیمات خاموش است).'}
+      <Callout tone={s.trigger.triggered ? 'warn' : 'neutral'} title={s.trigger.triggered ? t('شرط اجرای تحلیل حساسیت طبق پروپوزال: برقرار است') : t('شرط اجرای تحلیل حساسیت طبق پروپوزال: برقرار نیست')}>
+        {t('اختلاف امتیاز وزنی دو کانسپت برتر ({a} و {b}) =', { a: cc(s.pair[0]), b: cc(s.pair[1]) })} <b>{fmt.num(s.trigger.gap, 3)}</b>
+        {t('؛ آستانه = {pct}٪ دامنه مقیاس =', { pct: fmt.int(p.settings.sensitivity.pctOfRange) })} <b>{fmt.num(s.trigger.threshold, 2)}</b>.
+        {s.supplementary && t(' تحلیل زیر چون گزینه «همیشه اجرا شود» فعال است اجرا شده و «تکمیلی» (خارج از شرط پروپوزال) گزارش می‌شود.')}
+        {!s.ran && t(' تحلیل اجرا نشد (گزینه «همیشه اجرا شود» در تنظیمات خاموش است).')}
       </Callout>
       {s.ran && (
-        <Card title={`تحلیل حساسیت تک‌عاملی: هر وزن یک بار ${fmt.int(step * 100)}٪ افزایش و یک بار ${fmt.int(step * 100)}٪ کاهش، سپس نرمال‌سازی`}>
-          <p className="mb-2 text-sm text-muted">رتبه‌بندی پایه: {s.base.map((r) => `${cc(r.id)} (${fmt.num(r.score, 3)})`).join(' > ')}</p>
+        <Card title={t('تحلیل حساسیت تک‌عاملی: هر وزن یک بار {pct}٪ افزایش و یک بار {pct}٪ کاهش، سپس نرمال‌سازی', { pct: fmt.int(step * 100) })}>
+          <p className="mb-2 text-sm text-muted">{t('رتبه‌بندی پایه: {list}', { list: s.base.map((r) => `${cc(r.id)} (${fmt.num(r.score, 3)})`).join(' > ') })}</p>
           <TableWrap>
             <table className="sticky-table w-full text-sm">
               <thead>
                 <tr>
-                  <th className={th}>پارامتر</th>
-                  <th className={th}>تغییر</th>
-                  <th className={th}>وزن پس از نرمال‌سازی</th>
-                  <th className={th}>رتبه‌بندی جدید (امتیاز)</th>
-                  <th className={th}>کانسپت اول تغییر کرد؟</th>
-                  <th className={th}>رتبه‌بندی تغییر کرد؟</th>
+                  <th className={th}>{t('پارامتر')}</th>
+                  <th className={th}>{t('تغییر')}</th>
+                  <th className={th}>{t('وزن پس از نرمال‌سازی')}</th>
+                  <th className={th}>{t('رتبه‌بندی جدید (امتیاز)')}</th>
+                  <th className={th}>{t('کانسپت اول تغییر کرد؟')}</th>
+                  <th className={th}>{t('رتبه‌بندی تغییر کرد؟')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -547,8 +556,8 @@ function SensitivityTab() {
                     </td>
                     <td className={td + ' tabular-nums'}>{fmt.num(sc.weights[sc.paramIndex], 4)}</td>
                     <td className={td + ' text-xs'}>{sc.ranking.map((r) => `${cc(r.id)} (${fmt.num(r.score, 3)})`).join(' > ')}</td>
-                    <td className={td}>{sc.topChanged ? <Badge tone="bad">بله</Badge> : <Badge tone="ok">خیر</Badge>}</td>
-                    <td className={td}>{sc.rankingChanged ? <Badge tone="warn">بله</Badge> : <Badge tone="ok">خیر</Badge>}</td>
+                    <td className={td}>{sc.topChanged ? <Badge tone="bad">{t('بله')}</Badge> : <Badge tone="ok">{t('خیر')}</Badge>}</td>
+                    <td className={td}>{sc.rankingChanged ? <Badge tone="warn">{t('بله')}</Badge> : <Badge tone="ok">{t('خیر')}</Badge>}</td>
                   </tr>
                 ))}
               </tbody>
@@ -556,15 +565,15 @@ function SensitivityTab() {
           </TableWrap>
         </Card>
       )}
-      <Card title={`نقطه سربه‌سر (تکمیلی): کمترین تغییر وزن هر پارامتر که ${cc(s.pair[1])} را با ${cc(s.pair[0])} برابر می‌کند`}>
-        <p className="mb-2 text-sm text-muted">δ* = −D₀ / (wₖ·dₖ)؛ فقط برای دو کانسپت اول. تغییر کمتر از −۱۰۰٪ ممکن نیست (وزن منفی).</p>
+      <Card title={t('نقطه سربه‌سر (تکمیلی): کمترین تغییر وزن هر پارامتر که {b} را با {a} برابر می‌کند', { a: cc(s.pair[0]), b: cc(s.pair[1]) })}>
+        <p className="mb-2 text-sm text-muted">{t('δ* = −D₀ / (wₖ·dₖ)؛ فقط برای دو کانسپت اول. تغییر کمتر از −۱۰۰٪ ممکن نیست (وزن منفی).')}</p>
         <TableWrap>
           <table className="sticky-table w-full text-sm">
             <thead>
               <tr>
-                <th className={th}>پارامتر</th>
-                <th className={th}>تغییر لازم در وزن</th>
-                <th className={th}>وضعیت</th>
+                <th className={th}>{t('پارامتر')}</th>
+                <th className={th}>{t('تغییر لازم در وزن')}</th>
+                <th className={th}>{t('وضعیت')}</th>
               </tr>
             </thead>
             <tbody>
@@ -573,7 +582,7 @@ function SensitivityTab() {
                   <td className={td + ' ltr'}>{pcode(i)}</td>
                   <td className={td + ' tabular-nums'}>{b.delta === null ? '—' : <span className="ltr">{fmt.signedPct(b.delta * 100, 1)}</span>}</td>
                   <td className={td}>
-                    {b.delta === null ? <span className="text-muted">این وزن ترتیب دو کانسپت را تغییر نمی‌دهد (امتیاز برابر در این پارامتر)</span> : b.possible ? (Math.abs(b.delta) <= step ? <Badge tone="warn">در محدوده ±{fmt.int(step * 100)}٪</Badge> : <Badge>ممکن</Badge>) : <Badge tone="ok">ناممکن</Badge>}
+                    {b.delta === null ? <span className="text-muted">{t('این وزن ترتیب دو کانسپت را تغییر نمی‌دهد (امتیاز برابر در این پارامتر)')}</span> : b.possible ? (Math.abs(b.delta) <= step ? <Badge tone="warn">{t('در محدوده ±{pct}٪', { pct: fmt.int(step * 100) })}</Badge> : <Badge>{t('ممکن')}</Badge>) : <Badge tone="ok">{t('ناممکن')}</Badge>}
                   </td>
                 </tr>
               ))}
@@ -590,15 +599,15 @@ export function WeightedScreen() {
   return (
     <div className="space-y-4">
       <PageTitle
-        title="ماتریس پیو وزن‌دار"
-        subtitle="ستون‌ها پارامترهای مورد اجماع با وزن نهایی Wᵢ و سطرها کانسپت‌های راه‌یافته‌اند. امتیازدهی مطلق روی مقیاس ارزش ۵ سطحی است. امتیاز حوزه = میانه (رابطه ۶)، امتیاز تجمیعی = میانگین حوزه‌ها (رابطه ۷)، امتیاز وزنی = Σ Wᵢ × امتیاز تجمیعی (رابطه ۸)."
+        title={t('ماتریس پیو وزن‌دار')}
+        subtitle={t('ستون‌ها پارامترهای مورد اجماع با وزن نهایی Wᵢ و سطرها کانسپت‌های راه‌یافته‌اند. امتیازدهی مطلق روی مقیاس ارزش ۵ سطحی است. امتیاز حوزه = میانه (رابطه ۶)، امتیاز تجمیعی = میانگین حوزه‌ها (رابطه ۷)، امتیاز وزنی = Σ Wᵢ × امتیاز تجمیعی (رابطه ۸).')}
       />
       <Tabs
         tabs={[
-          { id: 'columns', label: 'ستون‌ها و وزن‌ها' },
-          { id: 'scoring', label: 'امتیازدهی' },
-          { id: 'results', label: 'نتایج' },
-          { id: 'sensitivity', label: 'تحلیل حساسیت' },
+          { id: 'columns', label: t('ستون‌ها و وزن‌ها') },
+          { id: 'scoring', label: t('امتیازدهی') },
+          { id: 'results', label: t('نتایج') },
+          { id: 'sensitivity', label: t('تحلیل حساسیت') },
         ]}
         value={tab}
         onChange={setTab}

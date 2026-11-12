@@ -5,6 +5,7 @@
 import * as XLSX from 'xlsx';
 import type { ParamSource } from '../core';
 import { downloadBlob } from './download';
+import { t } from '../i18n';
 
 export type Row = (string | number | null)[];
 
@@ -97,10 +98,10 @@ export function parseParamRows(rows: Row[]): { params: ParsedParam[]; missingCol
     const group = cell(r, 'group');
     const srcRaw = cell(r, 'source');
     const source = parseSource(srcRaw);
-    if (!code) problems.push('کد خالی است');
-    if (!name) problems.push('نام خالی است');
-    if (!group) problems.push('گروه معنایی خالی است');
-    if (srcRaw && !source) problems.push(`منبع «${srcRaw}» شناخته نشد (متون / پتنت / هر دو)`);
+    if (!code) problems.push(t('کد خالی است'));
+    if (!name) problems.push(t('نام خالی است'));
+    if (!group) problems.push(t('گروه معنایی خالی است'));
+    if (srcRaw && !source) problems.push(t('منبع «{v}» شناخته نشد (متون / پتنت / هر دو)', { v: srcRaw }));
     return {
       row: i + 2,
       code,
@@ -116,7 +117,7 @@ export function parseParamRows(rows: Row[]): { params: ParsedParam[]; missingCol
   const seen = new Map<string, number>();
   for (const p of params) {
     if (!p.code) continue;
-    if (seen.has(p.code)) p.problems.push(`کد تکراری (ردیف ${seen.get(p.code)})`);
+    if (seen.has(p.code)) p.problems.push(t('کد تکراری (ردیف {row})', { row: seen.get(p.code) ?? 0 }));
     else seen.set(p.code, p.row);
   }
   return { params: params.filter((p) => p.code || p.name || p.group), missingColumns: [] };

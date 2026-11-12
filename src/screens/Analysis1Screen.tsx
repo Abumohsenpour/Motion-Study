@@ -11,6 +11,7 @@ import { downloadText } from '../io/download';
 import { bandRows, medianIqr } from '../report/delphiSections';
 import { openReport } from '../report/html';
 import { round1ReportHtml } from '../report/round1Report';
+import { t } from '../i18n';
 import { useProject } from '../state/store';
 import { Modal, toast } from '../ui/dialogs';
 import { useFmt } from '../ui/format';
@@ -22,11 +23,11 @@ function StatsTab() {
   const stats = useMemo(() => roundStats(p, 'r1'), [p]);
   const [open, setOpen] = useState<string | null>(null);
   const bands = p.scale.bands;
-  if (!respondents(p, 'r1').length) return <Empty>هنوز پاسخی برای دور اول ثبت نشده است.</Empty>;
+  if (!respondents(p, 'r1').length) return <Empty>{t('هنوز پاسخی برای دور اول ثبت نشده است.')}</Empty>;
   return (
-    <Card title="آمار هر پارامتر (کل پنل و به تفکیک حوزه)">
+    <Card title={t('آمار هر پارامتر (کل پنل و به تفکیک حوزه)')}>
       <p className="mb-3 text-sm text-muted">
-        نوارها توزیع پاسخ‌های معتبر هر حوزه را در طبقه‌ها نشان می‌دهند (کم‌رنگ = طبقه پایین، پررنگ = طبقه بالا). برای دیدن جزئیات هر حوزه روی ردیف کلیک کنید. میانه و دامنه بین چارکی توصیفی‌اند.
+        {t('نوارها توزیع پاسخ‌های معتبر هر حوزه را در طبقه‌ها نشان می‌دهند (کم‌رنگ = طبقه پایین، پررنگ = طبقه بالا). برای دیدن جزئیات هر حوزه روی ردیف کلیک کنید. میانه و دامنه بین چارکی توصیفی‌اند.')}
       </p>
       <div className="mb-2 flex flex-wrap items-center gap-3 text-xs text-muted">
         {p.domains.map((d) => (
@@ -44,11 +45,11 @@ function StatsTab() {
         <table className="sticky-table w-full text-sm">
           <thead>
             <tr>
-              <th className={th}>کد</th>
-              <th className={th}>پارامتر</th>
+              <th className={th}>{t('کد')}</th>
+              <th className={th}>{t('پارامتر')}</th>
               <th className={th}>n</th>
-              <th className={th}>؟</th>
-              <th className={th}>میانه (Q1–Q3)</th>
+              <th className={th}>{t('؟')}</th>
+              <th className={th}>{t('میانه (Q1–Q3)')}</th>
               <th className={th}>IQR</th>
               {bands.map((b) => (
                 <th key={b.id} className={th}>
@@ -58,7 +59,7 @@ function StatsTab() {
                   </span>
                 </th>
               ))}
-              <th className={th}>به تفکیک حوزه</th>
+              <th className={th}>{t('به تفکیک حوزه')}</th>
             </tr>
           </thead>
           <tbody>
@@ -89,10 +90,10 @@ function StatsTab() {
                       <table className="w-full text-xs">
                         <thead>
                           <tr>
-                            <th className={th}>حوزه</th>
+                            <th className={th}>{t('حوزه')}</th>
                             <th className={th}>n</th>
-                            <th className={th}>؟</th>
-                            <th className={th}>میانه (Q1–Q3)</th>
+                            <th className={th}>{t('؟')}</th>
+                            <th className={th}>{t('میانه (Q1–Q3)')}</th>
                             {bands.map((b) => (
                               <th key={b.id} className={th}>
                                 {b.label}
@@ -157,11 +158,11 @@ function CreateParamDialog({ cand, onClose }: { cand: Candidate; onClose: () => 
   return (
     <Modal
       open
-      title="ساخت پارامتر جدید برای دور دوم"
+      title={t('ساخت پارامتر جدید برای دور دوم')}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>انصراف</Button>
+          <Button onClick={onClose}>{t('انصراف')}</Button>
           <Button
             variant="primary"
             disabled={!code.trim() || !name.trim() || !groupId || dup}
@@ -175,31 +176,31 @@ function CreateParamDialog({ cand, onClose }: { cand: Candidate; onClose: () => 
               onClose();
             }}
           >
-            ساخت پارامتر
+            {t('ساخت پارامتر')}
           </Button>
         </>
       }
     >
       <div className="grid gap-3">
         <div className="grid grid-cols-[8rem_1fr] gap-3">
-          <Field label="کد">
+          <Field label={t('کد')}>
             <TextInput ltr value={code} onChange={setCode} />
-            {dup && <span className="text-xs text-bad">تکراری</span>}
+            {dup && <span className="text-xs text-bad">{t('تکراری')}</span>}
           </Field>
-          <Field label="نام پارامتر">
+          <Field label={t('نام پارامتر')}>
             <TextInput value={name} onChange={setName} />
           </Field>
         </div>
-        <Field label="گروه معنایی">
+        <Field label={t('گروه معنایی')}>
           <Select value={groupId} onChange={setGroupId} options={p.groups.map((g) => ({ value: g.id, label: g.name }))} />
         </Field>
-        <Field label="الزام طراحی">
+        <Field label={t('الزام طراحی')}>
           <TextArea rows={2} value={requirement} onChange={setRequirement} />
         </Field>
-        <Field label="توضیح مختصر">
+        <Field label={t('توضیح مختصر')}>
           <TextArea rows={2} value={explanation} onChange={setExplanation} />
         </Field>
-        <p className="text-xs text-muted">منشأ این پارامتر «افزوده در دور دوم» ثبت می‌شود و در پرسش‌نامه دور دوم با برچسب «جدید» و بدون داده دور اول نمایش داده می‌شود.</p>
+        <p className="text-xs text-muted">{t('منشأ این پارامتر «افزوده در دور دوم» ثبت می‌شود و در پرسش‌نامه دور دوم با برچسب «جدید» و بدون داده دور اول نمایش داده می‌شود.')}</p>
       </div>
     </Modal>
   );
@@ -213,13 +214,14 @@ function CandidatesCard() {
   const [label, setLabel] = useState('');
   const [creating, setCreating] = useState<Candidate | null>(null);
   return (
-    <Card title="پارامترهای نامزد">
+    <Card title={t('پارامترهای نامزد')}>
       <p className="mb-3 text-sm text-muted">
-        پشتیبانی هر نامزد = تعداد خبرگان متمایز پس از ادغام موارد هم‌معنا. آستانه: دست‌کم {fmt.int(p.settings.candidatePct)}٪ از {fmt.int(nResp)} پاسخ‌دهنده دور اول ={' '}
-        <b>{fmt.int(rows[0]?.minNeeded ?? Math.ceil((p.settings.candidatePct * nResp) / 100))}</b> خبره. نامزدهای به آستانه رسیده به‌طور پیش‌فرض به دور دوم افزوده می‌شوند؛ تصمیم دستی خلاف قاعده نیاز به دلیل دارد و ثبت می‌شود.
+        {t('پشتیبانی هر نامزد = تعداد خبرگان متمایز پس از ادغام موارد هم‌معنا. آستانه: دست‌کم {pct} از {n} پاسخ‌دهنده دور اول =', { pct: fmt.pct(p.settings.candidatePct, 0), n: fmt.int(nResp) })}{' '}
+        <b>{fmt.int(rows[0]?.minNeeded ?? Math.ceil((p.settings.candidatePct * nResp) / 100))}</b>{' '}
+        {t('خبره. نامزدهای به آستانه رسیده به‌طور پیش‌فرض به دور دوم افزوده می‌شوند؛ تصمیم دستی خلاف قاعده نیاز به دلیل دارد و ثبت می‌شود.')}
       </p>
       <div className="mb-3 flex gap-2">
-        <TextInput value={label} onChange={setLabel} placeholder="عنوان نامزد جدید" className="max-w-sm" />
+        <TextInput value={label} onChange={setLabel} placeholder={t('عنوان نامزد جدید')} className="max-w-sm" />
         <Button
           icon="plus"
           disabled={!label.trim()}
@@ -228,22 +230,22 @@ function CandidatesCard() {
             setLabel('');
           }}
         >
-          افزودن نامزد
+          {t('افزودن نامزد')}
         </Button>
       </div>
       {rows.length === 0 ? (
-        <Empty>هنوز نامزدی تعریف نشده است. از فهرست پاسخ‌های باز، پاسخ‌ها را به نامزدها نسبت دهید.</Empty>
+        <Empty>{t('هنوز نامزدی تعریف نشده است. از فهرست پاسخ‌های باز، پاسخ‌ها را به نامزدها نسبت دهید.')}</Empty>
       ) : (
         <TableWrap>
           <table className="sticky-table w-full text-sm">
             <thead>
               <tr>
-                <th className={th}>نامزد</th>
-                <th className={th}>ادغام در</th>
-                <th className={th}>خبرگان</th>
-                <th className={th}>قاعده {fmt.int(p.settings.candidatePct)}٪</th>
-                <th className={th}>تصمیم</th>
-                <th className={th}>پارامتر دور دوم</th>
+                <th className={th}>{t('نامزد')}</th>
+                <th className={th}>{t('ادغام در')}</th>
+                <th className={th}>{t('خبرگان')}</th>
+                <th className={th}>{t('قاعده {pct}', { pct: fmt.pct(p.settings.candidatePct, 0) })}</th>
+                <th className={th}>{t('تصمیم')}</th>
+                <th className={th}>{t('پارامتر دور دوم')}</th>
                 <th className={th} />
               </tr>
             </thead>
@@ -255,26 +257,26 @@ function CandidatesCard() {
                 return (
                   <tr key={c.id} className={r.merged ? 'opacity-70' : undefined}>
                     <td className={td + ' min-w-48'}>
-                      <TextInput value={c.label} onChange={(v) => edit('عنوان نامزد', (d) => void (d.candidates[i].label = v))} aria-label="عنوان نامزد" />
+                      <TextInput value={c.label} onChange={(v) => edit('عنوان نامزد', (d) => void (d.candidates[i].label = v))} aria-label={t('عنوان نامزد')} />
                     </td>
                     <td className={td + ' min-w-40'}>
                       <Select
                         value={c.mergedInto ?? ''}
                         onChange={(v) => edit('ادغام موارد هم‌معنا', (d) => void (d.candidates[i].mergedInto = v || null), { preview: true })}
-                        options={[{ value: '', label: '— (مستقل)' }, ...p.candidates.filter((x) => x.id !== c.id).map((x) => ({ value: x.id, label: x.label }))]}
-                        aria-label="ادغام در"
+                        options={[{ value: '', label: t('— (مستقل)') }, ...p.candidates.filter((x) => x.id !== c.id).map((x) => ({ value: x.id, label: x.label }))]}
+                        aria-label={t('ادغام در')}
                       />
                     </td>
                     <td className={td + ' text-xs'}>
                       {r.merged ? (
-                        <span className="text-muted">در نامزد دیگر شمرده می‌شود</span>
+                        <span className="text-muted">{t('در نامزد دیگر شمرده می‌شود')}</span>
                       ) : (
                         <>
                           <b>{fmt.int(r.supporters.length)}</b> <span className="ltr text-muted">{r.supporters.map((id) => codeOf(p, id)).sort().join(', ')}</span>
                         </>
                       )}
                     </td>
-                    <td className={td}>{r.merged ? '—' : r.meetsThreshold ? <Badge tone="ok">به آستانه رسید</Badge> : <Badge>نرسید</Badge>}</td>
+                    <td className={td}>{r.merged ? '—' : r.meetsThreshold ? <Badge tone="ok">{t('به آستانه رسید')}</Badge> : <Badge>{t('نرسید')}</Badge>}</td>
                     <td className={td + ' min-w-56'}>
                       {!r.merged && (
                         <>
@@ -282,17 +284,17 @@ function CandidatesCard() {
                             value={c.override ?? 'rule'}
                             onChange={(v) => edit('تصمیم دستی درباره نامزد', (d) => void (d.candidates[i].override = v === 'rule' ? null : v), { preview: true })}
                             options={[
-                              { value: 'rule', label: `طبق قاعده (${r.meetsThreshold ? 'افزوده می‌شود' : 'افزوده نمی‌شود'})` },
-                              { value: 'add', label: 'افزوده شود (تصمیم دستی)' },
-                              { value: 'reject', label: 'افزوده نشود (تصمیم دستی)' },
+                              { value: 'rule', label: r.meetsThreshold ? t('طبق قاعده (افزوده می‌شود)') : t('طبق قاعده (افزوده نمی‌شود)') },
+                              { value: 'add', label: t('افزوده شود (تصمیم دستی)') },
+                              { value: 'reject', label: t('افزوده نشود (تصمیم دستی)') },
                             ]}
-                            aria-label="تصمیم"
+                            aria-label={t('تصمیم')}
                           />
                           {c.override && (
                             <TextInput
                               className={'mt-1 ' + (!c.overrideReason.trim() ? 'border-warn' : '')}
                               value={c.overrideReason}
-                              placeholder="دلیل تصمیم دستی (الزامی)"
+                              placeholder={t('دلیل تصمیم دستی (الزامی)')}
                               onChange={(v) => edit('دلیل تصمیم دستی نامزد', (d) => void (d.candidates[i].overrideReason = v))}
                             />
                           )}
@@ -306,7 +308,7 @@ function CandidatesCard() {
                         </Badge>
                       ) : r.add ? (
                         <Button size="sm" variant="primary" onClick={() => setCreating(c)}>
-                          ساخت پارامتر
+                          {t('ساخت پارامتر')}
                         </Button>
                       ) : (
                         <span className="text-xs text-muted">—</span>
@@ -316,7 +318,7 @@ function CandidatesCard() {
                       <IconButton
                         icon="trash"
                         tone="danger"
-                        label="حذف نامزد"
+                        label={t('حذف نامزد')}
                         onClick={() =>
                           edit(
                             'حذف پارامتر نامزد',
@@ -325,7 +327,7 @@ function CandidatesCard() {
                               for (const x of d.candidates) if (x.mergedInto === c.id) x.mergedInto = null;
                               for (const k of Object.keys(d.codings)) d.codings[k].candidateIds = d.codings[k].candidateIds.filter((x) => x !== c.id);
                             },
-                            { undoToast: 'نامزد حذف شد' },
+                            { undoToast: t('نامزد حذف شد') },
                           )
                         }
                       />
@@ -339,7 +341,7 @@ function CandidatesCard() {
       )}
       {rows.some((r) => r.add && !r.candidate.paramId) && (
         <Callout tone="warn" className="mt-3">
-          نامزدهای تأییدشده باید پیش از ساخت فایل‌های دور دوم به پارامتر تبدیل شوند (دکمه «ساخت پارامتر»).
+          {t('نامزدهای تأییدشده باید پیش از ساخت فایل‌های دور دوم به پارامتر تبدیل شوند (دکمه «ساخت پارامتر»).')}
         </Callout>
       )}
       {creating && <CreateParamDialog cand={creating} onClose={() => setCreating(null)} />}
@@ -357,17 +359,17 @@ function AnswerCard({ a, p }: { a: ReturnType<typeof openAnswers>[number]; p: Pr
       <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-muted">
         <DomainChip domain={p.domains.find((d) => d.id === e.domainId)} />
         <span className="ltr font-semibold text-ink">{e.code}</span>
-        <span>گروه: {p.groups.find((g) => g.id === a.groupId)?.name}</span>
+        <span>{t('گروه: {name}', { name: p.groups.find((g) => g.id === a.groupId)?.name ?? '' })}</span>
       </div>
       <p className="mb-2 rounded bg-surface-2 p-2 text-sm leading-7 whitespace-pre-wrap">{a.text}</p>
       <div className="grid gap-3 md:grid-cols-2">
         <div className="space-y-2">
-          <div className="text-xs font-medium text-muted">نامزدها:</div>
+          <div className="text-xs font-medium text-muted">{t('نامزدها:')}</div>
           <div className="flex flex-wrap gap-1">
             {(coding?.candidateIds ?? []).map((cid) => (
               <Badge key={cid} tone="accent">
                 {p.candidates.find((c) => c.id === cid)?.label}
-                <button type="button" aria-label="برداشتن" onClick={() => setCoding(a.key, (c) => void (c.candidateIds = c.candidateIds.filter((x) => x !== cid)))}>
+                <button type="button" aria-label={t('برداشتن')} onClick={() => setCoding(a.key, (c) => void (c.candidateIds = c.candidateIds.filter((x) => x !== cid)))}>
                   ×
                 </button>
               </Badge>
@@ -377,12 +379,12 @@ function AnswerCard({ a, p }: { a: ReturnType<typeof openAnswers>[number]; p: Pr
             <Select
               value=""
               onChange={(v) => v && setCoding(a.key, (c) => void (c.candidateIds.includes(v) || c.candidateIds.push(v)))}
-              options={[{ value: '', label: '+ نسبت‌دادن به نامزد…' }, ...p.candidates.filter((c) => !c.mergedInto).map((c) => ({ value: c.id, label: c.label }))]}
-              aria-label="نسبت‌دادن به نامزد"
+              options={[{ value: '', label: t('+ نسبت‌دادن به نامزد…') }, ...p.candidates.filter((c) => !c.mergedInto).map((c) => ({ value: c.id, label: c.label }))]}
+              aria-label={t('نسبت‌دادن به نامزد')}
             />
           </div>
           <div className="flex gap-1">
-            <TextInput value={newCand} onChange={setNewCand} placeholder="نامزد تازه از این پاسخ" />
+            <TextInput value={newCand} onChange={setNewCand} placeholder={t('نامزد تازه از این پاسخ')} />
             <Button
               size="sm"
               disabled={!newCand.trim()}
@@ -396,32 +398,32 @@ function AnswerCard({ a, p }: { a: ReturnType<typeof openAnswers>[number]; p: Pr
                 setNewCand('');
               }}
             >
-              افزودن
+              {t('افزودن')}
             </Button>
           </div>
           <Select
             value=""
             onChange={(v) => v && setCoding(a.key, (c) => void (c.paramIds.includes(v) || c.paramIds.push(v)))}
-            options={[{ value: '', label: '+ مربوط به پارامتر موجود…' }, ...p.params.map((x) => ({ value: x.id, label: `${x.code} — ${x.name}` }))]}
-            aria-label="مربوط به پارامتر موجود"
+            options={[{ value: '', label: t('+ مربوط به پارامتر موجود…') }, ...p.params.map((x) => ({ value: x.id, label: `${x.code} — ${x.name}` }))]}
+            aria-label={t('مربوط به پارامتر موجود')}
           />
           <div className="flex flex-wrap gap-1">
             {(coding?.paramIds ?? []).map((pid) => (
               <Badge key={pid}>
                 <span className="ltr">{p.params.find((x) => x.id === pid)?.code}</span>
-                <button type="button" aria-label="برداشتن" onClick={() => setCoding(a.key, (c) => void (c.paramIds = c.paramIds.filter((x) => x !== pid)))}>
+                <button type="button" aria-label={t('برداشتن')} onClick={() => setCoding(a.key, (c) => void (c.paramIds = c.paramIds.filter((x) => x !== pid)))}>
                   ×
                 </button>
               </Badge>
             ))}
           </div>
-          <Checkbox checked={!!coding?.commentOnly} onChange={(v) => setCoding(a.key, (c) => void (c.commentOnly = v))} label="فقط توضیح است (پیشنهاد پارامتر نیست)" />
+          <Checkbox checked={!!coding?.commentOnly} onChange={(v) => setCoding(a.key, (c) => void (c.commentOnly = v))} label={t('فقط توضیح است (پیشنهاد پارامتر نیست)')} />
         </div>
         <div className="space-y-2">
-          <Field label="متن قابل‌انتشار (در خروجی‌ها؛ جزئیات هویت‌بخش را حذف کنید)">
+          <Field label={t('متن قابل‌انتشار (در خروجی‌ها؛ جزئیات هویت‌بخش را حذف کنید)')}>
             <TextArea rows={3} value={display} onChange={(v) => setCoding(a.key, (c) => void (c.displayText = v === a.text ? null : v))} />
           </Field>
-          <Field label="یادداشت کدگذاری">
+          <Field label={t('یادداشت کدگذاری')}>
             <TextInput value={coding?.note ?? ''} onChange={(v) => setCoding(a.key, (c) => void (c.note = v))} />
           </Field>
         </div>
@@ -440,20 +442,20 @@ function CodingTab() {
   return (
     <div className="space-y-4">
       <Card
-        title={`پاسخ‌های باز (${fmt.int(answers.length)})`}
+        title={t('پاسخ‌های باز ({n})', { n: fmt.int(answers.length) })}
         actions={
           <Select
             value={filter}
             onChange={setFilter}
             options={[
-              { value: 'all', label: 'همه' },
-              { value: 'uncoded', label: `کدگذاری‌نشده (${fmt.int(answers.filter(uncoded).length)})` },
+              { value: 'all', label: t('همه') },
+              { value: 'uncoded', label: t('کدگذاری‌نشده ({n})', { n: fmt.int(answers.filter(uncoded).length) }) },
             ]}
-            aria-label="فیلتر"
+            aria-label={t('فیلتر')}
           />
         }
       >
-        {shown.length === 0 ? <Empty>پاسخ بازی برای نمایش نیست.</Empty> : <div className="space-y-3">{shown.map((a) => <AnswerCard key={a.key} a={a} p={p} />)}</div>}
+        {shown.length === 0 ? <Empty>{t('پاسخ بازی برای نمایش نیست.')}</Empty> : <div className="space-y-3">{shown.map((a) => <AnswerCard key={a.key} a={a} p={p} />)}</div>}
       </Card>
       <CandidatesCard />
     </div>
@@ -465,20 +467,20 @@ function ReportTab() {
   const fmt = useFmt();
   const make = () => round1ReportHtml(p, fmt);
   return (
-    <Card title="گزارش دور اول برای تیم پژوهش">
-      <p className="mb-3 text-sm text-muted">شامل توصیف پنل و نرخ پاسخ، آمار هر پارامتر (کل و به تفکیک حوزه)، نمودارهای رنگی حوزه‌ها، پاسخ‌های باز و پارامترهای نامزد. فقط کد خبرگان در آن می‌آید.</p>
+    <Card title={t('گزارش دور اول برای تیم پژوهش')}>
+      <p className="mb-3 text-sm text-muted">{t('شامل توصیف پنل و نرخ پاسخ، آمار هر پارامتر (کل و به تفکیک حوزه)، نمودارهای رنگی حوزه‌ها، پاسخ‌های باز و پارامترهای نامزد. فقط کد خبرگان در آن می‌آید.')}</p>
       <div className="flex gap-2">
         <Button variant="primary" icon="print" onClick={() => openReport(make(), 'round1-report.html', downloadText)}>
-          نمایش و چاپ
+          {t('نمایش و چاپ')}
         </Button>
         <Button
           icon="download"
           onClick={() => {
             downloadText(make(), 'round1-report.html', 'text/html');
-            toast('گزارش ذخیره شد.');
+            toast(t('گزارش ذخیره شد.'));
           }}
         >
-          دانلود HTML
+          {t('دانلود HTML')}
         </Button>
       </div>
     </Card>
@@ -489,12 +491,12 @@ export function Analysis1Screen() {
   const [tab, setTab] = useState<'stats' | 'coding' | 'report'>('stats');
   return (
     <div className="space-y-4">
-      <PageTitle title="تحلیل دور اول" subtitle="برای هر پارامتر، میانه، دامنه بین چارکی و درصد پاسخ‌ها در هر طبقه، به‌صورت کلی و به تفکیک حوزه. پاسخ‌های باز کدگذاری و موارد هم‌معنا تجمیع می‌شوند." />
+      <PageTitle title={t('تحلیل دور اول')} subtitle={t('برای هر پارامتر، میانه، دامنه بین چارکی و درصد پاسخ‌ها در هر طبقه، به‌صورت کلی و به تفکیک حوزه. پاسخ‌های باز کدگذاری و موارد هم‌معنا تجمیع می‌شوند.')} />
       <Tabs
         tabs={[
-          { id: 'stats', label: 'آمار پارامترها' },
-          { id: 'coding', label: 'کدگذاری پاسخ‌های باز' },
-          { id: 'report', label: 'گزارش دور اول' },
+          { id: 'stats', label: t('آمار پارامترها') },
+          { id: 'coding', label: t('کدگذاری پاسخ‌های باز') },
+          { id: 'report', label: t('گزارش دور اول') },
         ]}
         value={tab}
         onChange={setTab}

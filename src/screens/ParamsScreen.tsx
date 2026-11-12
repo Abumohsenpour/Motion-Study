@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { newId, type ParamOrigin, type ParamSource, type Parameter, type Project } from '../core';
 import { edit } from '../app/edit';
+import { t } from '../i18n';
 import { useProject } from '../state/store';
 import { downloadParamTemplate, parseParamRows, readRows, type ParsedParam } from '../io/sheets';
 import { Modal, toast } from '../ui/dialogs';
@@ -31,22 +32,22 @@ function GroupsCard() {
   const fmt = useFmt();
   return (
     <Card
-      title="گروه‌های معنایی"
+      title={t('گروه‌های معنایی')}
       actions={
         <Button size="sm" icon="plus" onClick={() => edit('افزودن گروه معنایی', (d) => void d.groups.push({ id: newId('g_'), name: 'گروه جدید' }))}>
-          افزودن گروه
+          {t('افزودن گروه')}
         </Button>
       }
     >
-      <p className="mb-3 text-sm text-muted">ترتیب گروه‌ها ترتیب نمایش در پرسش‌نامه و جدول‌هاست. توزیع ۱۰۰ امتیاز دور دوم ابتدا میان همین گروه‌ها انجام می‌شود.</p>
+      <p className="mb-3 text-sm text-muted">{t('ترتیب گروه‌ها ترتیب نمایش در پرسش‌نامه و جدول‌هاست. توزیع ۱۰۰ امتیاز دور دوم ابتدا میان همین گروه‌ها انجام می‌شود.')}</p>
       <ul className="space-y-2">
         {p.groups.map((g, i) => {
           const n = p.params.filter((x) => x.groupId === g.id).length;
           return (
             <li key={g.id} className="flex items-center gap-2">
               <span className="w-6 text-center text-sm text-muted">{fmt.int(i + 1)}</span>
-              <TextInput value={g.name} onChange={(v) => edit('نام گروه معنایی', (d) => void (d.groups[i].name = v))} className="max-w-sm" aria-label="نام گروه" />
-              <Badge>{fmt.int(n)} پارامتر</Badge>
+              <TextInput value={g.name} onChange={(v) => edit('نام گروه معنایی', (d) => void (d.groups[i].name = v))} className="max-w-sm" aria-label={t('نام گروه')} />
+              <Badge>{t('{n} پارامتر', { n: fmt.int(n) })}</Badge>
               <Reorder
                 first={i === 0}
                 last={i === p.groups.length - 1}
@@ -56,10 +57,10 @@ function GroupsCard() {
               <IconButton
                 icon="trash"
                 tone="danger"
-                label="حذف گروه"
+                label={t('حذف گروه')}
                 onClick={() => {
-                  if (n > 0) return toast(`این گروه ${n} پارامتر دارد؛ ابتدا آن‌ها را به گروه دیگری منتقل یا حذف کنید.`, { tone: 'bad' });
-                  edit('حذف گروه معنایی', (d) => void d.groups.splice(i, 1), { preview: true, undoToast: `گروه «${g.name}» حذف شد` });
+                  if (n > 0) return toast(t('این گروه {n} پارامتر دارد؛ ابتدا آن‌ها را به گروه دیگری منتقل یا حذف کنید.', { n }), { tone: 'bad' });
+                  edit('حذف گروه معنایی', (d) => void d.groups.splice(i, 1), { preview: true, undoToast: t('گروه «{name}» حذف شد', { name: g.name }) });
                 }}
               />
             </li>
@@ -79,27 +80,27 @@ function ParamRow({ x, index, total }: { x: Parameter; index: number; total: num
   return (
     <tr className="align-top">
       <td className={td + ' w-24'}>
-        <TextInput ltr value={x.code} onChange={(v) => set('کد پارامتر', (q) => void (q.code = v))} aria-label="کد" className={dup ? 'border-bad' : ''} />
-        {dup && <span className="text-xs text-bad">تکراری</span>}
+        <TextInput ltr value={x.code} onChange={(v) => set('کد پارامتر', (q) => void (q.code = v))} aria-label={t('کد')} className={dup ? 'border-bad' : ''} />
+        {dup && <span className="text-xs text-bad">{t('تکراری')}</span>}
       </td>
       <td className={td + ' min-w-48'}>
-        <TextArea rows={2} value={x.name} onChange={(v) => set('نام پارامتر', (q) => void (q.name = v))} aria-label="نام پارامتر" />
+        <TextArea rows={2} value={x.name} onChange={(v) => set('نام پارامتر', (q) => void (q.name = v))} aria-label={t('نام پارامتر')} />
       </td>
       <td className={td + ' min-w-56'}>
-        <TextArea rows={2} value={x.requirement} onChange={(v) => set('الزام طراحی', (q) => void (q.requirement = v))} aria-label="الزام طراحی" />
+        <TextArea rows={2} value={x.requirement} onChange={(v) => set('الزام طراحی', (q) => void (q.requirement = v))} aria-label={t('الزام طراحی')} />
       </td>
       <td className={td + ' min-w-56'}>
-        <TextArea rows={2} value={x.explanation} onChange={(v) => set('توضیح پارامتر', (q) => void (q.explanation = v))} aria-label="توضیح" />
+        <TextArea rows={2} value={x.explanation} onChange={(v) => set('توضیح پارامتر', (q) => void (q.explanation = v))} aria-label={t('توضیح')} />
       </td>
       <td className={td + ' w-32'}>
-        <TextInput value={x.range} onChange={(v) => set('محدوده عددی', (q) => void (q.range = v))} aria-label="محدوده عددی" />
+        <TextInput value={x.range} onChange={(v) => set('محدوده عددی', (q) => void (q.range = v))} aria-label={t('محدوده عددی')} />
       </td>
       <td className={td + ' w-28'}>
-        <Select value={x.source} onChange={(v) => set('منبع پارامتر', (q) => void (q.source = v))} options={SOURCE_OPTIONS} aria-label="منبع" className="min-w-24" />
+        <Select value={x.source} onChange={(v) => set('منبع پارامتر', (q) => void (q.source = v))} options={SOURCE_OPTIONS.map((o) => ({ ...o, label: t(o.label) }))} aria-label={t('منبع')} className="min-w-24" />
       </td>
       <td className={td + ' w-36'}>
-        <Select value={x.groupId} onChange={(v) => set('گروه پارامتر', (q) => void (q.groupId = v), true)} options={p.groups.map((g) => ({ value: g.id, label: g.name }))} aria-label="گروه معنایی" className="min-w-36" />
-        <Select value={x.origin} onChange={(v) => set('منشأ پارامتر', (q) => void (q.origin = v), true)} options={ORIGIN_OPTIONS} className="mt-1 min-w-36" aria-label="منشأ" />
+        <Select value={x.groupId} onChange={(v) => set('گروه پارامتر', (q) => void (q.groupId = v), true)} options={p.groups.map((g) => ({ value: g.id, label: g.name }))} aria-label={t('گروه معنایی')} className="min-w-36" />
+        <Select value={x.origin} onChange={(v) => set('منشأ پارامتر', (q) => void (q.origin = v), true)} options={ORIGIN_OPTIONS.map((o) => ({ ...o, label: t(o.label) }))} className="mt-1 min-w-36" aria-label={t('منشأ')} />
       </td>
       <td className={td + ' whitespace-nowrap'}>
         <Reorder
@@ -125,7 +126,7 @@ function ParamRow({ x, index, total }: { x: Parameter; index: number; total: num
         <IconButton
           icon="trash"
           tone="danger"
-          label="حذف پارامتر"
+          label={t('حذف پارامتر')}
           onClick={() =>
             edit(
               'حذف پارامتر',
@@ -137,8 +138,8 @@ function ParamRow({ x, index, total }: { x: Parameter; index: number; total: num
               },
               {
                 preview: true,
-                confirm: hasRatings(p, x.id) ? { title: `حذف پارامتر ${x.code}`, items: ['امتیازهای ثبت‌شده برای این پارامتر دیگر در تحلیل‌ها شمرده نمی‌شوند.'], confirmLabel: 'حذف' } : undefined,
-                undoToast: `پارامتر ${x.code} حذف شد`,
+                confirm: hasRatings(p, x.id) ? { title: t('حذف پارامتر {code}', { code: x.code }), items: [t('امتیازهای ثبت‌شده برای این پارامتر دیگر در تحلیل‌ها شمرده نمی‌شوند.')], confirmLabel: t('حذف') } : undefined,
+                undoToast: t('پارامتر {code} حذف شد', { code: x.code }),
               },
             )
           }
@@ -186,7 +187,7 @@ function ImportDialog({ rows, onClose }: { rows: ParsedParam[]; onClose: () => v
       { preview: true, detail: `${rows.length - bad.length} ردیف` },
     );
     if (ok) {
-      toast(`${fmt.int(rows.length - bad.length)} پارامتر وارد شد.`);
+      toast(t('{n} پارامتر وارد شد.', { n: fmt.int(rows.length - bad.length) }));
       onClose();
     }
   };
@@ -194,33 +195,33 @@ function ImportDialog({ rows, onClose }: { rows: ParsedParam[]; onClose: () => v
     <Modal
       open
       wide
-      title="پیش‌نمایش ورود پارامترها"
+      title={t('پیش‌نمایش ورود پارامترها')}
       onClose={onClose}
       footer={
         <>
-          <Button onClick={onClose}>انصراف</Button>
+          <Button onClick={onClose}>{t('انصراف')}</Button>
           <Button onClick={() => run('replace')} variant="danger" disabled={rows.length === bad.length}>
-            جایگزینی کل فهرست
+            {t('جایگزینی کل فهرست')}
           </Button>
           <Button onClick={() => run('append')} variant="primary" disabled={rows.length === bad.length}>
-            افزودن / به‌روزرسانی (بر اساس کد)
+            {t('افزودن / به‌روزرسانی (بر اساس کد)')}
           </Button>
         </>
       }
     >
       <div className="mb-3 space-y-2 text-sm">
         <div>
-          {fmt.int(rows.length)} ردیف خوانده شد؛ {fmt.int(rows.length - bad.length)} ردیف سالم.
+          {t('{n} ردیف خوانده شد؛ {ok} ردیف سالم.', { n: fmt.int(rows.length), ok: fmt.int(rows.length - bad.length) })}
         </div>
-        {newGroups.length > 0 && <Callout tone="accent">گروه‌های جدید ساخته می‌شوند: {newGroups.join('، ')}</Callout>}
-        {existing.length > 0 && <Callout tone="neutral">{fmt.int(existing.length)} کد در فهرست فعلی هست؛ در حالت «افزودن» آن پارامترها به‌روز می‌شوند و امتیازهای ثبت‌شده‌شان می‌ماند.</Callout>}
-        {bad.length > 0 && <Callout tone="warn">{fmt.int(bad.length)} ردیف مشکل دارد و وارد نمی‌شود.</Callout>}
+        {newGroups.length > 0 && <Callout tone="accent">{t('گروه‌های جدید ساخته می‌شوند: {list}', { list: newGroups.join(t('، ')) })}</Callout>}
+        {existing.length > 0 && <Callout tone="neutral">{t('{n} کد در فهرست فعلی هست؛ در حالت «افزودن» آن پارامترها به‌روز می‌شوند و امتیازهای ثبت‌شده‌شان می‌ماند.', { n: fmt.int(existing.length) })}</Callout>}
+        {bad.length > 0 && <Callout tone="warn">{t('{n} ردیف مشکل دارد و وارد نمی‌شود.', { n: fmt.int(bad.length) })}</Callout>}
       </div>
       <TableWrap maxHeight="45vh">
         <table className="sticky-table w-full text-sm">
           <thead>
             <tr>
-              {['ردیف', 'کد', 'نام', 'گروه', 'الزام طراحی', 'منبع', 'مشکل'].map((h) => (
+              {[t('ردیف'), t('کد'), t('نام'), t('گروه'), t('الزام طراحی'), t('منبع'), t('مشکل')].map((h) => (
                 <th key={h} className={th}>
                   {h}
                 </th>
@@ -235,8 +236,8 @@ function ImportDialog({ rows, onClose }: { rows: ParsedParam[]; onClose: () => v
                 <td className={td}>{r.name}</td>
                 <td className={td}>{r.group}</td>
                 <td className={td + ' text-xs'}>{r.requirement}</td>
-                <td className={td}>{SOURCE_OPTIONS.find((s) => s.value === r.source)?.label}</td>
-                <td className={td + ' text-xs text-bad'}>{r.problems.join('؛ ')}</td>
+                <td className={td}>{t(SOURCE_OPTIONS.find((s) => s.value === r.source)?.label ?? '')}</td>
+                <td className={td + ' text-xs text-bad'}>{r.problems.join(t('؛ '))}</td>
               </tr>
             ))}
           </tbody>
@@ -260,27 +261,27 @@ export function ParamsScreen() {
   return (
     <div className="space-y-5">
       <PageTitle
-        title="گروه‌های معنایی و پارامترها"
-        subtitle="خروجی فاز اکتشاف: برای هر پارامتر گروه معنایی، تعریف، الزام طراحی متناظر، محدوده عددی گزارش‌شده و منبع (متون، پتنت یا هر دو). این جدول پرسش‌نامه دور اول را می‌سازد."
+        title={t('گروه‌های معنایی و پارامترها')}
+        subtitle={t('خروجی فاز اکتشاف: برای هر پارامتر گروه معنایی، تعریف، الزام طراحی متناظر، محدوده عددی گزارش‌شده و منبع (متون، پتنت یا هر دو). این جدول پرسش‌نامه دور اول را می‌سازد.')}
         actions={
           <>
             <Button icon="download" onClick={downloadParamTemplate}>
-              الگوی Excel
+              {t('الگوی Excel')}
             </Button>
             <FilePick
               accept=".xlsx,.xls,.csv"
               onFiles={async ([f]) => {
                 try {
                   const { params, missingColumns } = parseParamRows(await readRows(f));
-                  if (missingColumns.length) return toast(`ستون‌های لازم پیدا نشد: ${missingColumns.join('، ')}`, { tone: 'bad' });
-                  if (!params.length) return toast('ردیفی برای ورود پیدا نشد.', { tone: 'bad' });
+                  if (missingColumns.length) return toast(t('ستون‌های لازم پیدا نشد: {list}', { list: missingColumns.join(t('، ')) }), { tone: 'bad' });
+                  if (!params.length) return toast(t('ردیفی برای ورود پیدا نشد.'), { tone: 'bad' });
                   setImported(params);
                 } catch {
-                  toast('خواندن فایل ممکن نشد.', { tone: 'bad' });
+                  toast(t('خواندن فایل ممکن نشد.'), { tone: 'bad' });
                 }
               }}
             >
-              ورود از Excel / CSV
+              {t('ورود از Excel / CSV')}
             </FilePick>
           </>
         }
@@ -298,24 +299,24 @@ export function ParamsScreen() {
             }
             actions={
               <Button size="sm" icon="plus" onClick={() => addParam(g.id)}>
-                پارامتر
+                {t('پارامتر')}
               </Button>
             }
           >
             {list.length === 0 ? (
-              <Empty>این گروه هنوز پارامتری ندارد.</Empty>
+              <Empty>{t('این گروه هنوز پارامتری ندارد.')}</Empty>
             ) : (
               <TableWrap>
                 <table className="sticky-table w-full text-sm">
                   <thead>
                     <tr>
-                      <th className={th}>کد</th>
-                      <th className={th}>نام پارامتر</th>
-                      <th className={th}>الزام طراحی</th>
-                      <th className={th}>توضیح مختصر</th>
-                      <th className={th}>محدوده عددی</th>
-                      <th className={th}>منبع</th>
-                      <th className={th}>گروه / منشأ</th>
+                      <th className={th}>{t('کد')}</th>
+                      <th className={th}>{t('نام پارامتر')}</th>
+                      <th className={th}>{t('الزام طراحی')}</th>
+                      <th className={th}>{t('توضیح مختصر')}</th>
+                      <th className={th}>{t('محدوده عددی')}</th>
+                      <th className={th}>{t('منبع')}</th>
+                      <th className={th}>{t('گروه / منشأ')}</th>
                       <th className={th} />
                     </tr>
                   </thead>
@@ -331,7 +332,7 @@ export function ParamsScreen() {
         );
       })}
       {p.params.some((x) => !p.groups.some((g) => g.id === x.groupId)) && (
-        <Callout tone="bad">برخی پارامترها به گروهی تعلق دارند که دیگر وجود ندارد؛ گروه آن‌ها را از فهرست بالا تعیین کنید.</Callout>
+        <Callout tone="bad">{t('برخی پارامترها به گروهی تعلق دارند که دیگر وجود ندارد؛ گروه آن‌ها را از فهرست بالا تعیین کنید.')}</Callout>
       )}
       {imported && <ImportDialog rows={imported} onClose={() => setImported(null)} />}
     </div>

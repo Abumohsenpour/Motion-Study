@@ -129,6 +129,7 @@ export function createProject(title = 'پروژه جدید'): Project {
       sentWeights: null,
     },
     captions: {},
+    labelsEn: {},
     settingsSnapshot: null,
     changeLog: [],
     expertCodeCounter: 0,

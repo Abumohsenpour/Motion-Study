@@ -68,6 +68,10 @@ const PARAMS: [number, string, string, string, string, Parameter['source'], Prof
   [4, 'پایداری و جلوگیری از سقوط', 'عدم جابه‌جایی ناپایدار مرکز ثقل', 'دستگاه نباید تعادل ایستادن را بر هم بزند', '', 'literature', 'strong'],
 ];
 
+/** English names for the English version of the charts (optional project content, see charts/labels.ts). */
+const PARAMS_EN = ["Forward trunk flexion range", "Axial trunk rotation", "Shoulder and arm freedom", "Hip joint axis alignment", "Walking and moving in the room", "Static load transfer of the lead apron", "Load path to the pelvis", "Total exoskeleton mass", "Passive compensation with an elastic element", "Pressure distribution at contact points", "Thermal comfort and ventilation", "Ease of donning and doffing", "No distraction", "Support in prolonged standing", "Bulk and profile protrusion", "Trunk length adjustment", "Pelvic width adjustment", "Compatibility with apron types", "Elastic element preload adjustment", "Quick tool-free adjustment", "Preserving the sterile field", "Emergency quick release", "No interference with radiation protection", "Surface disinfection", "Stability and fall prevention", "Compatibility with thyroid shield and lead glasses"];
+const CONCEPTS_EN = ["Simple shoulder straps with a vertical stay", "Carbon-fibre back beam with pelvic belt", "Column frame with floor support", "Back frame with gravity-compensating spring", "Pelvic belt with crossed elastic straps"];
+
 const GROUPS = ['سینماتیک', 'دینامیک', 'ارگونومی', 'تنظیم‌پذیری', 'ایمنی'];
 
 /**
@@ -312,6 +316,7 @@ export function buildDemoProject(): { project: Project; identities: Record<Id, E
   p.weighted.sentWeights = { at: '2027-01-05T10:00:00.000Z', weights: Object.fromEntries(w.retainedParams.map((id) => [id, w.final[id]])) };
 
   p.settingsSnapshot = { at: '2026-11-10T09:00:00.000Z', scale: structuredClone(p.scale), consensus: { ...p.settings.consensus }, candidatePct: p.settings.candidatePct };
+  p.labelsEn = Object.fromEntries([...p.params.map((x, i) => [x.id, PARAMS_EN[i]]), ...p.concepts.map((c, i) => [c.id, CONCEPTS_EN[i]])]);
   const identities: Record<Id, ExpertIdentity> = Object.fromEntries(
     p.experts.map((e, i) => [e.id, { name: `خبره نمونه ${i + 1}`, contact: `expert${i + 1}@example.org`, notes: 'داده فرضی برای نمایش' }]),
   );
