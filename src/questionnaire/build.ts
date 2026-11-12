@@ -94,6 +94,13 @@ export function makeBlindingKey(conceptIds: readonly Id[], seed = crypto.getRand
   return { seed, codes, order };
 }
 
+/** The label a concept carries in one expert's blinded scoring file (e.g. «طرح ۴۲»); null if the key lacks it. */
+export function blindedConceptLabel(key: BlindingKey | undefined, conceptId: Id, digits: 'fa' | 'latin'): string | null {
+  const code = key?.codes[conceptId];
+  if (!code) return null;
+  return `طرح ${digits === 'fa' ? code.replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]) : code}`;
+}
+
 export function questionnaireData(p: Project, expertId: Id, kind: RoundKey, opts: { digits: 'fa' | 'latin'; deadlineText: string }): QData {
   const e = expertById(p, expertId);
   if (!e) throw new Error('unknown expert');
@@ -145,8 +152,7 @@ export function questionnaireData(p: Project, expertId: Id, kind: RoundKey, opts
     .filter((id) => ids.includes(id))
     .map((id) => {
       const c = p.concepts.find((x) => x.id === id)!;
-      const shown = opts.digits === 'fa' ? key.codes[id].replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]) : key.codes[id];
-      return { code: key.codes[id], label: `طرح ${shown}`, sketch: c.sketch, description: c.description };
+      return { code: key.codes[id], label: blindedConceptLabel(key, id, opts.digits)!, sketch: c.sketch, description: c.description };
     });
   base.params = p.weighted.columns
     .map((col) => p.params.find((x) => x.id === col.paramId))
@@ -154,6 +160,17 @@ export function questionnaireData(p: Project, expertId: Id, kind: RoundKey, opts
     .map((x) => ({ id: x.id, code: x.code, name: x.name, requirement: x.requirement }));
   return base;
 }
+
+/**
+ * The CORTEX mark. Copy of LOGO_SVG in src/ui/brand.tsx (that file is React code and is not imported here).
+ * It is embedded as an <img> data URL so its gradient id cannot clash with anything else in the page.
+ */
+const LOGO_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="cx-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b4ff0"/><stop offset="1" stop-color="#12b5a6"/></linearGradient></defs>' +
+  '<rect width="64" height="64" rx="15" fill="url(#cx-g)"/>' +
+  '<g fill="none" stroke="#fff" stroke-linecap="round"><path d="M45.6 16.4a22 22 0 1 0 0 31.2" stroke-width="5"/><path d="M40.5 23.5a12 12 0 1 0 0 17" stroke-width="4.2" stroke-opacity=".8"/></g>' +
+  '<circle cx="32" cy="32" r="4.2" fill="#fff"/><circle cx="48.5" cy="32" r="3" fill="#fff" fill-opacity=".9"/><path d="M36.5 32h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-opacity=".9"/></svg>';
+const LOGO_IMG = `<img class="logo" alt="" src="data:image/svg+xml,${encodeURIComponent(LOGO_SVG)}">`;
 
 const escHtml = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
@@ -174,6 +191,9 @@ ${QUESTIONNAIRE_CSS}
 </head>
 <body>
 <main id="app"><noscript>برای پاسخ به این پرسش‌نامه باید جاوااسکریپت مرورگر فعال باشد.</noscript></main>
+<!-- print-only answer sheet, filled in by «ذخیره نسخه PDF» (see runtime.js, part 10) -->
+<section id="print-sheet" class="sheet" aria-hidden="true"></section>
+<template id="qlogo">${LOGO_IMG}</template>
 <script type="application/json" id="qdata">${json}</script>
 <script>
 ${sha}

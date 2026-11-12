@@ -48,6 +48,38 @@ describe('expert questionnaire files', () => {
     expect(html).not.toMatch(/<\/script>[^]*<\/script>[^]*<\/script>/); // exactly two script blocks
   });
 
+  it('carries the print-only answer sheet, the PDF button and the CORTEX mark, still with no external resource', () => {
+    const html = questionnaireHtml(questionnaireData(buildProject(), 'E2', 'r2', opts));
+    // the sheet container exists once, outside the interactive app, and is print-only
+    expect(html.match(/<section id="print-sheet"/g)).toHaveLength(1);
+    expect(html).toMatch(/<\/main>\s*(<!--[^]*?-->\s*)?<section id="print-sheet" class="sheet" aria-hidden="true"><\/section>/);
+    expect(html).toContain('#print-sheet{display:none}');
+    expect(html).toMatch(/@media print\{[^]*#app\{display:none!important\}[^]*#print-sheet\{display:block\}/);
+    expect(html).toContain('@page{size:A4');
+    expect(html).toContain('break-inside:avoid');
+    expect(html).toContain('display:table-header-group');
+    // the runtime offers the PDF copy through the browser's own print dialog (no PDF library)
+    expect(html).toContain('ذخیره نسخه PDF');
+    expect(html).toContain('window.print()');
+    expect(html).toContain('پیش‌نویس — هنوز ذخیره نشده');
+    expect(html).not.toMatch(/jspdf|pdfmake|pdf-lib/i);
+    // brand mark as an inline data URL; nothing is fetched
+    expect(html).toContain('<template id="qlogo"><img class="logo" alt="" src="data:image/svg+xml,');
+    expect(html).toContain('ساخته‌شده با ');
+    expect(html).not.toMatch(/(src|href)=["']https?:/);
+    expect(html).not.toMatch(/url\(\s*["']?https?:/);
+  });
+
+  it('the answer sheet is empty in the generated file: answers and other experts never appear outside the data block', () => {
+    const p = buildProject();
+    const html = questionnaireHtml(questionnaireData(p, 'E1', 'r2', opts));
+    const rest = html.replace(dataBlock(html), '').replace(/data:font\/woff2;base64,[A-Za-z0-9+/=]+/, '');
+    for (const code of ['E01', 'E02', 'E03', 'E04', 'E05']) expect(rest.replace(/<title>[^]*?<\/title>/, '')).not.toContain(code);
+    // the response file format written by the runtime is unchanged
+    expect(rest).toContain("format: 'delphi-pugh/response', version: 1, projectId: DATA.projectId, kind: DATA.kind, expertId: DATA.expertId, expertCode: DATA.expertCode, payload: payload(submittedAt)");
+    expect(rest).toContain('env.checksum = sha256Hex(canonicalJson(env))');
+  });
+
   it('blinding: random two-digit codes and order, reproducible from the seed', () => {
     const a = makeBlindingKey(['K1', 'K2', 'K3', 'K4', 'K5'], 12345);
     const b = makeBlindingKey(['K1', 'K2', 'K3', 'K4', 'K5'], 12345);
