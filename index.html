@@ -2020,10 +2020,13 @@ function nextUnvisited(from) {
 function next() {
   if (nav.busy) return;
   const key = nav.key;
-  if (key === 'cover') return show('menu', { dir: 1, user: true });
+  if (key === 'cover') {
+    if (nextUnvisited(0) >= state.sections.length) resetPresented();   // دور دوم ارائه: همه بخش‌ها از نو
+    return show('menu', { dir: 1, user: true });
+  }
   if (key === 'menu') {
     if (nav.cursor < state.sections.length) return zoomIn(nav.cursor, 0);
-    return toast('پایان ارائه — سپاس از توجه شما');
+    return toast('پایان ارائه؛ برای ارائه دوباره کلید Home را بزنید (بازگشت به جلد و پاک شدن «ارائه‌شده»).');
   }
   const { si, k } = parseKey(key);
   if (k < state.sections[si].slides.length - 1) return show(`s${si}-${k + 1}`, { dir: 1, user: true });
@@ -2053,7 +2056,15 @@ function goMenu() {
   }
   if (nav.key === 'cover') show('menu', { dir: 1, user: true });
 }
+// پاک کردن وضعیت «ارائه‌شده» تا ارائه از ابتدا دوباره اجرا شود
+function resetPresented() {
+  nav.visited = new Set();
+  nav.cursor = 0;
+  updateMenuState();
+  updateProgress();
+}
 function goTo(key) {
+  if (key === 'cover' && !nav.busy) resetPresented();
   if (nav.busy || !slideEls[key]) return;
   show(key, { user: true });
 }
@@ -2793,7 +2804,7 @@ function buildHelp() {
       <tr><td><kbd>${prevK}</kbd> <kbd>Shift+Space</kbd> <kbd>↑</kbd> <kbd>PageUp</kbd></td><td>اسلاید قبل</td></tr>
       <tr><td><kbd>Esc</kbd> یا <kbd>M</kbd></td><td>بازگشت به منو با زوم معکوس</td></tr>
       <tr><td><kbd>۱</kbd> تا <kbd>۹</kbd> (در منو)</td><td>ورود مستقیم به بخش</td></tr>
-      <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>جلد / آخرین اسلاید</td></tr>
+      <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>جلد (و پاک شدن وضعیت «ارائه‌شده» برای ارائه دوباره) / آخرین اسلاید</td></tr>
       <tr><td><kbd>F</kbd></td><td>تمام‌صفحه؛ در کروم برای خروج Esc را نگه دارید. در فایرفاکس Esc از تمام‌صفحه خارج می‌شود، پس برای منو <kbd>M</kbd> را بزنید.</td></tr>
       <tr><td><kbd>N</kbd></td><td>یادداشت سخنران زیر همین صفحه</td></tr>
       <tr><td><kbd>P</kbd></td><td>نمای ارائه‌دهنده: پنجره جدا با تصویر زنده اسلاید، اسلاید بعد، متن سخنران و تایمر (برای لپ‌تاپ؛ پنجره اصلی روی پرده)</td></tr>
